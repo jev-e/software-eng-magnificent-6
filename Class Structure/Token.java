@@ -5,13 +5,17 @@
  *	name of token
  *	image path //TODO Paths to be added
  */
+
+import java.lang.*;
+
+
 public enum Token {
-    CAT("Cat",""),
-    HATSTAND("Hat Stand",""),
-    SMARTPHONE("Smartphone",""),
-    BOOT("Boot",""),
-    GOBLET("Goblet",""),
-    SPOON("Spoon","");
+    CAT("Cat","CatToken.png"),
+    HATSTAND("Hat Stand","HatstandToken.png"),
+    SMARTPHONE("Smartphone","PhoneToken.png"),
+    BOOT("Boot","BootToken.png"),
+    GOBLET("Goblet","GobletToken.png"),
+    SPOON("Spoon","SpoonToken.png");
 
     private String name;
     private String imgPath;
@@ -25,4 +29,11 @@ public enum Token {
     public String toString() {
         return name;
     }
+    public String getPath() {
+        return imgPath;
+    }
+
 }
+
+
+
