@@ -1,5 +1,5 @@
+package ClassStructure;
 /**
- *
  * @author Ayman Bensreti
  * an interface for board tile objects
  *

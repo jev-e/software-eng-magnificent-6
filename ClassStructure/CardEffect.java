@@ -1,5 +1,5 @@
+package ClassStructure;
 /**
- *
  * @author Ayman Bensreti
  *	Card generic structure
  */

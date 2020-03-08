@@ -1,5 +1,5 @@
+package ClassStructure;
 /**
- *
  * @author Ayman Bensreti
  * 	Effects of non property tiles
  *

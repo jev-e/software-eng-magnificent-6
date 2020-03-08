@@ -1,8 +1,8 @@
+package ClassStructure;
 /**
- *
  * @author Ayman Bensreti
  *	an enum for property groups
- *	name of group
+ *  name of group
  *	display colour (To be added)
  */
 public enum Group {
@@ -17,7 +17,7 @@ public enum Group {
 
     private String name;
 
-    private Group(String name) {
+     Group(String name) {
         this.name = name;
     }
 

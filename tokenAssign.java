@@ -1,21 +1,20 @@
-/**
- *
- * @author Jacob Evans
- *	Class / Method for creation of players
- *	Dependant on token/player classes
- */
-
+import ClassStructure.*;
 
 import java.util.Scanner;
 import java.lang.*;
 
+/**
+ * @author Jacob Evans
+ *	Class / Method for creation of players
+ *	Dependant on token/player classes
+ */
 public class tokenAssign {
     public static void main(String[] args) {
         Player player1;
         player1 = playerCreate();
         System.out.println(player1.getName());
         System.out.println(player1.getToken());
-        System.out.println(player1.getToken().getPath());
+        System.out.println(player1.getToken().getImgPath());
     }
 
     public static Player playerCreate() {
