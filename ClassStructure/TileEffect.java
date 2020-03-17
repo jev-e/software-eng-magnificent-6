@@ -7,4 +7,9 @@ package ClassStructure;
 public abstract class TileEffect extends BoardTile{
 
     String text;
+    Board board;
+
+    public void setBoard(Board board) {
+        this.board = board;
+    }
 }

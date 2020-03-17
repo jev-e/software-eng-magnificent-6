@@ -31,6 +31,18 @@ public class Board {
         turns = 0;
         taxPot = 0;
         repeat =  false;
+        //Set board references for activation methods
+        for (CardEffect c : potLuck) {
+            c.setBoard(this);
+        }
+        for (CardEffect c : opportunityKnocks) {
+            c.setBoard(this);
+        }
+        for (BoardTile b : tiles.values()) {
+            if(b instanceof TileEffect) {
+                ((TileEffect) b).setBoard(this);
+            }
+        }
     }
 
     /**
@@ -41,7 +53,7 @@ public class Board {
         int n = tiles.size();
         int padding = (n-4)/4;
         int row = padding + 2;
-        int spacerAmount = 15;
+        int spacerAmount = 20;
         int currentTile = 0;
         int leftSide = n-1;
         int rightSide = row;
@@ -214,14 +226,20 @@ public class Board {
      * @return Effect
      */
     public CardEffect drawPotLuck() {
-        return null;
+        CardEffect card = potLuck.removeFirst();
+        potLuck.addLast(card);
+        return card;
     }
     /**
      * draw opportunity knocks card from the top of the deque
      * @return Effect
      */
     public  CardEffect drawOpportunityKnocks() {
-        return null;
+        CardEffect card = opportunityKnocks.removeFirst();
+        if(!(card instanceof GetOutOfJail)) {//if card is not get out of jail free place it at the bottom of the deque
+            opportunityKnocks.addLast(card);
+        }
+        return card;
     }
     /**
      * rolls two die and returns the number of places to move
@@ -237,7 +255,7 @@ public class Board {
         }
         int result = die1+die2;
         int position = (currentPlayer.getCurrentPos() + result) % tiles.size();
-        System.out.printf("%s:%s Rolled |%d|%d| = %d",currentPlayer.getName(),currentPlayer.getToken().getImgPath(),die1,die2,result);
+        System.out.printf("%s:%s Rolled |%d|%d| = %d",currentPlayer.getName(),currentPlayer.getToken().getSymbol(),die1,die2,result);
         currentPlayer.setCurrentPos(position);
         return result;
     }
@@ -249,6 +267,11 @@ public class Board {
         displayAsString();
         String tempIn;
         int count = 1;
+        for(Player p: turnOrder) {
+            System.out.println(p.getName() + " Money:" + p.getMoney());
+        }
+
+
         while (turns < 10) {
             for(Player p : turnOrder) {
                 do{
@@ -261,9 +284,15 @@ public class Board {
                     }
                     roll(p);
                     displayAsString();
+                    tiles.get(p.getCurrentPos()).activeEffect(p);
+                    displayAsString();
                 }while (repeat);
             }
             turns++;
+        }
+
+        for(Player p: turnOrder) {
+            System.out.println(p.getName() + " Money:" + p.getMoney());
         }
     }
 

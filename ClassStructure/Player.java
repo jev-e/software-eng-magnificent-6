@@ -12,6 +12,7 @@ public class Player {
     private int money;
     private LinkedList<Object> assets;
     private boolean canBuy;
+    private boolean jailed;
 
     /**
      * Sets players name and token and initialises the players starting assets
@@ -23,9 +24,10 @@ public class Player {
         this.token = token;
         currentPos = 0;
         previousPos = 0;
-        money = 0;//TODO look up starting money in brief
+        money = 1500;//All references to money is in £'s
         assets = new LinkedList<>();
         canBuy = false;
+        jailed = false;
     }
 
     /**
@@ -34,6 +36,14 @@ public class Player {
      */
     public void alterBalance(int amount) {
         money += amount;
+    }
+
+    public void addAsset(Object item) {
+        assets.add(item);
+    }
+
+    public void removeAsset(Object item) {
+        assets.remove(item);
     }
 
     public String getName() {
@@ -91,5 +101,9 @@ public class Player {
 
     public Token getToken() {
         return token;
+    }
+
+    public void setJailed(boolean jailed) {
+        this.jailed = jailed;
     }
 }

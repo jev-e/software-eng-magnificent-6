@@ -5,6 +5,11 @@ package ClassStructure;
  */
 public abstract class CardEffect {
     String cardText;
+    Board board;
 
-    abstract void effect(Player currentPlayer);//potential need for additional parameter of player pool
+    abstract void effect(Player currentPlayer);
+
+    public void setBoard(Board board) {
+        this.board = board;
+    }
 }

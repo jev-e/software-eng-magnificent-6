@@ -10,6 +10,7 @@ public class Property extends BoardTile{
     int[] buildingRents;
     int houseCost;
     int housesNo;
+    int hotelNo;
     int hotelCost;
     Player owner;
     boolean mortgaged;
@@ -41,10 +42,19 @@ public class Property extends BoardTile{
         this.mortgaged = false;
         this.completedSet = false;
         housesNo = 0;
+        hotelNo = 0;
     }
 
     @Override
     public void activeEffect(Player currentPlayer) {
         //TODO write deducting rent from current player and paying to owner
+    }
+
+    public int getHousesNo() {
+        return housesNo;
+    }
+
+    public int getHotelNo() {
+        return hotelNo;
     }
 }
