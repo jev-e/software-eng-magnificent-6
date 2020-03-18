@@ -1,5 +1,8 @@
 package ClassStructure;
 
+/**
+ * Move player to a provided location without performing a pass go check
+ */
 public class MovePlayerNoPassGo extends CardEffect{
 
     int destination;
@@ -14,6 +17,10 @@ public class MovePlayerNoPassGo extends CardEffect{
         this.destination = destination;
     }
 
+    /**
+     * Moves player to tile location
+     * @param currentPlayer player who drew the card and target to be moved
+     */
     @Override
     void effect(Player currentPlayer) {
         currentPlayer.setCurrentPos(destination);

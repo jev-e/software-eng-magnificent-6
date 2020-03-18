@@ -12,7 +12,7 @@ public class Player {
     private int money;
     private LinkedList<Object> assets;
     private boolean canBuy;
-    private boolean jailed;
+    private boolean jailed;//indicator to differ between players who are jailed or just visiting
 
     /**
      * Sets players name and token and initialises the players starting assets
@@ -31,17 +31,45 @@ public class Player {
     }
 
     /**
-     * Alters the players balance
-     * @param amount positive or negative integer to modify the balance by
+     * Adds amount to players balance
+     * @param amount integer amount to modify the balance by
      */
     public void alterBalance(int amount) {
         money += amount;
     }
 
+    /**
+     * Deducts amount from players money if they can pay returning the amount
+     * if they cannot pay assets can be sold
+     * if assets will not cover payment the player is bankrupt
+     * @param amount amount to be deducted
+     * @return the amount of money the player was able to pay
+     */
+    public int deductAmount(int amount) {
+        if(money > amount) {
+            alterBalance(-amount);
+            return amount;
+        }else{
+            //check for ability to sell assets
+            if(money > amount) {
+                return amount;
+            }
+        }
+        return money;//returns what the player can pay
+    }
+
+    /**
+     * Adds an item(Property|Station|Utility|Card) to players assets
+     * @param item one of (Property|Station|Utility|Card) to be added
+     */
     public void addAsset(Object item) {
         assets.add(item);
     }
 
+    /**
+     * Removes an item(Property|Station|Utility|Card) to players assets
+     * @param item one of (Property|Station|Utility|Card)
+     */
     public void removeAsset(Object item) {
         assets.remove(item);
     }
@@ -54,6 +82,10 @@ public class Player {
         return currentPos;
     }
 
+    /**
+     * Sets the position on the board that the player is on and updates previous position
+     * @param currentPos new position for player to be moved to
+     */
     public void setCurrentPos(int currentPos) {
         this.previousPos = this.currentPos;//maintains previous position before change
         this.currentPos = currentPos;
@@ -83,6 +115,10 @@ public class Player {
         this.money = money;
     }
 
+    /**
+     * Fetches the players assets list
+     * @return a list of items(Property|Station|Utility|Card)
+     */
     public LinkedList<Object> getAssets() {
         return assets;
     }
@@ -99,10 +135,18 @@ public class Player {
         this.canBuy = canBuy;
     }
 
+    /**
+     * Getter for players token enum
+     * @return enum consisting of the token name and image path
+     */
     public Token getToken() {
         return token;
     }
 
+    /**
+     * Sets the jail status of the player based on input
+     * @param jailed true or false
+     */
     public void setJailed(boolean jailed) {
         this.jailed = jailed;
     }

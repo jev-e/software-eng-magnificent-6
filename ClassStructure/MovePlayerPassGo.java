@@ -1,5 +1,8 @@
 package ClassStructure;
 
+/**
+ * Move player and perform a pass go check to conditionally collect £200
+ */
 public class MovePlayerPassGo extends CardEffect{
 
     int destination;
@@ -14,6 +17,10 @@ public class MovePlayerPassGo extends CardEffect{
         this.destination = destination;
     }
 
+    /**
+     * Move player to tile location and check if they pass Go
+     * @param currentPlayer player who drew card and target to be moved
+     */
     @Override
     void effect(Player currentPlayer) {
         currentPlayer.setCurrentPos(destination);

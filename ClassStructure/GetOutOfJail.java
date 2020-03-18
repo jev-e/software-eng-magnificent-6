@@ -1,9 +1,16 @@
 package ClassStructure;
 
+/**
+ * Get out of jail free card effect
+ */
 public class GetOutOfJail extends CardEffect {
 
-    private Player owner;
+    private Player owner;//Reference to player who currently owns this card
 
+    /**
+     * Create new get out of jail free card with provided card text
+     * @param cardText text to be displayed on card
+     */
     public GetOutOfJail(String cardText) {
         this.cardText = cardText;
     }
@@ -12,6 +19,7 @@ public class GetOutOfJail extends CardEffect {
     void effect(Player currentPlayer) {
         currentPlayer.addAsset(this);//adds this item to players assets
         owner = currentPlayer;//keep reference the owner of the card until it is played
+        //When card is drawn from deck owner will be overwritten
     }
 
     /**

@@ -2,19 +2,33 @@ package ClassStructure;
 
 import java.util.LinkedList;
 
+/**
+ * Station tile events
+ */
 public class Station extends TileEffect {
 
     private int cost;
     private Player owner;
 
+    /**
+     * Creates a new station tile
+     * @param iD board position for station
+     * @param title name of the station
+     */
     public Station(int iD, String title) {
         this.owner = null;
-        this.cost = 200;
+        this.cost = 200;//all stations cost 200
         this.iD = iD;
         this.title = title;
         this.canPurchase = true;
     }
 
+    /**
+     * On land on options to purchase if the station is unowned
+     * If station is owned a count for the number stations owned by the owner is done
+     * Player that lands on tiles pays differing amounts depending on number of stations
+     * @param currentPlayer player to have amount deducted from
+     */
     @Override
     public void activeEffect(Player currentPlayer) {
         int stationCount = 0;
@@ -39,8 +53,11 @@ public class Station extends TileEffect {
                        amount = 200;
                        break;
                }
-               owner.alterBalance(amount);
-               currentPlayer.alterBalance(-amount);//take from current player
+               int payment = currentPlayer.deductAmount(amount);//take from current player
+               owner.alterBalance(payment);// gives the amount the player was able to pay
+               if(payment < amount) {//if the player couldn't pay the full amount
+                   this.board.bankruptPlayer(currentPlayer);//bankrupt player
+               }
            }
         }else{
             //purchase logic

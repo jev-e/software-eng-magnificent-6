@@ -1,8 +1,11 @@
 package ClassStructure;
 
+/**
+ * Go to jail card event
+ */
 public class GoToJailCard extends CardEffect{
 
-    private int jail;
+    private int jail;//Temporary
 
     /**
      * Card that when drawn sends player to jail
@@ -14,6 +17,10 @@ public class GoToJailCard extends CardEffect{
         this.jail = jail;
     }
 
+    /**
+     * Sends player to jail and updates their jailed indicator
+     * @param currentPlayer player to be sent to jail
+     */
     @Override
     void effect(Player currentPlayer) {
         currentPlayer.setJailed(true);

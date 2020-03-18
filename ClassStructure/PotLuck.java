@@ -1,7 +1,14 @@
 package ClassStructure;
 
+/**
+ * Pot luck tile
+ */
 public class PotLuck extends TileEffect {
 
+    /**
+     * Creates new pot luck tile at given board location
+     * @param iD tile position on board
+     */
     public PotLuck(int iD) {
         this.title = "Pot Luck";
         this.iD = iD;

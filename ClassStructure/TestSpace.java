@@ -44,7 +44,7 @@ public class TestSpace {
         //construction of a test board
         BoardTile temp;
 
-        for (int i = 0; i < 12; i++) {
+        for (int i = 0; i < 8; i++) {
             if(i == 5) {
                 temp = new Property(i, "Example Street", Group.GREEN, 10, 10, null, 10, 10, ayman);
             }else if(i == 7) {

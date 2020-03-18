@@ -5,7 +5,7 @@ import java.util.LinkedList;
 import java.util.Random;
 /**
  * @author Ayman Bensreti
- *	Game board
+ *	Game board and logic
  */
 public class Board {
     Deque<CardEffect> potLuck;
@@ -31,7 +31,7 @@ public class Board {
         turns = 0;
         taxPot = 0;
         repeat =  false;
-        //Set board references for activation methods
+        //Set board references for activation methods in tiles and cards
         for (CardEffect c : potLuck) {
             c.setBoard(this);
         }
@@ -227,7 +227,9 @@ public class Board {
      */
     public CardEffect drawPotLuck() {
         CardEffect card = potLuck.removeFirst();
-        potLuck.addLast(card);
+        if(!(card instanceof GetOutOfJail)) {//if card is not get out of jail free place it at the bottom of the deque
+            potLuck.addLast(card);
+        }
         return card;
     }
     /**

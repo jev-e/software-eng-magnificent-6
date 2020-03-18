@@ -1,5 +1,10 @@
 package ClassStructure;
 
+/**
+ * Player pays tax to the bank tile events
+ * Super tax
+ * Income tax
+ */
 public class PayBankTax extends TileEffect{
     private int amount;
 
@@ -20,9 +25,13 @@ public class PayBankTax extends TileEffect{
 
     /**
      * Deduct tax amount from player balance
+     * this does not get added to the tax pot despite the name
      */
     @Override
     public void activeEffect(Player currentPlayer) {
-        currentPlayer.alterBalance(-amount);
+        int payment = currentPlayer.deductAmount(amount);
+        if(payment < amount) {
+            this.board.bankruptPlayer(currentPlayer);//bankrupt player for failure to pay full amount
+        }
     }
 }

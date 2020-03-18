@@ -1,7 +1,7 @@
 package ClassStructure;
 /**
  * @author Ayman Bensreti
- * an interface for board tile objects
+ * Structure for board tile objects
  *
  */
 public abstract class BoardTile {

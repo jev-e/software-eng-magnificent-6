@@ -47,6 +47,11 @@ public class Property extends BoardTile{
 
     @Override
     public void activeEffect(Player currentPlayer) {
+        /*Involves checks for hotels and houses
+        * if there is a full set
+        * if the property is mortgaged
+        * purchase functionality if not owned
+        */
         //TODO write deducting rent from current player and paying to owner
     }
 
