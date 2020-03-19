@@ -228,18 +228,37 @@ public class Board {
      * Version for sprint 1 demo, to b updated
      * @return int combination of die results
      */
-    public int roll(Player currentPlayer) {
+    public int roll(Player currentPlayer, int count) {
+        int result = 0;
         Random rand = new Random();
         int die1 = rand.nextInt(6)+1;
         int die2 = rand.nextInt(6)+1;
         if(die1 == die2) {
             repeat = true;//tracks double rolled for player to go again
+            if (count >= 3) {
+                result = die1 + die2;
+                System.out.printf("%s:%s Has Gone To Jail", currentPlayer.getName(), currentPlayer.getToken().getImgPath());
+                goToJail(currentPlayer, 0);
+            }
         }
-        int result = die1+die2;
-        int position = (currentPlayer.getCurrentPos() + result) % tiles.size();
-        System.out.printf("%s:%s Rolled |%d|%d| = %d",currentPlayer.getName(),currentPlayer.getToken().getImgPath(),die1,die2,result);
-        currentPlayer.setCurrentPos(position);
+        if(count < 3) {
+            result = die1 + die2;
+            int position = (currentPlayer.getCurrentPos() + result) % tiles.size();
+            System.out.printf("%s:%s Rolled |%d|%d| = %d", currentPlayer.getName(), currentPlayer.getToken().getImgPath(), die1, die2, result);
+            currentPlayer.setCurrentPos(position);
+        }
         return result;
+    }
+
+    /**
+     * sends a given player to jail
+     * @param currentPlayer - The player to be sent to jail
+     * @param position - The position of the jail (in case it moves, will change to permanent number for GUI)
+     */
+    public void goToJail(Player currentPlayer, int position) {
+
+        currentPlayer.setCurrentPos(position);
+        currentPlayer.toggleJail();
     }
 
     /**
@@ -248,10 +267,12 @@ public class Board {
     public void demo() {
         displayAsString();
         String tempIn;
-        int count = 1;
+
         while (turns < 10) {
             for(Player p : turnOrder) {
+                int count = 0;
                 do{
+                    count++;
                     repeat = false;
                     System.out.println("Press Enter to continue");
                     try {
@@ -259,7 +280,7 @@ public class Board {
                     }catch(Exception e) {
                         e.printStackTrace();
                     }
-                    roll(p);
+                    roll(p, count);
                     displayAsString();
                 }while (repeat);
             }

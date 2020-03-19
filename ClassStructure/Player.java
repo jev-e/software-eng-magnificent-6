@@ -13,6 +13,11 @@ public class Player {
     private LinkedList<Object> assets;
     private boolean canBuy;
 
+    // Attributes added by me
+
+    private boolean inJail;
+    private int jailTime;
+
     /**
      * Sets players name and token and initialises the players starting assets
      * @param name player name
@@ -26,6 +31,7 @@ public class Player {
         money = 0;//TODO look up starting money in brief
         assets = new LinkedList<>();
         canBuy = false;
+        inJail = false;
     }
 
     /**
@@ -47,8 +53,6 @@ public class Player {
     public void setCurrentPos(int currentPos) {
         this.previousPos = this.currentPos;//maintains previous position before change
         this.currentPos = currentPos;
-        if(currentPos < previousPos):
-            alterBalance(200);
     }
 
     public int getPreviousPos() {
@@ -94,4 +98,18 @@ public class Player {
     public Token getToken() {
         return token;
     }
+
+    // Functions added by me
+
+    public void toggleJail() { this.inJail = !this.inJail; }
+
+    public boolean getJailStatus() { return inJail; }
+
+    public int getJailTime() { return jailTime; }
+
+    public void setJailTime(int time) { this.jailTime = time; }
+
+
+
+
 }
