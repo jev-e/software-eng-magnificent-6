@@ -47,6 +47,8 @@ public class Player {
     public void setCurrentPos(int currentPos) {
         this.previousPos = this.currentPos;//maintains previous position before change
         this.currentPos = currentPos;
+        if(currentPos < previousPos):
+            alterBalance(200);
     }
 
     public int getPreviousPos() {
