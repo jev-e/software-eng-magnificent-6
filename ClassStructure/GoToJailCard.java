@@ -23,7 +23,7 @@ public class GoToJailCard extends CardEffect{
      */
     @Override
     void effect(Player currentPlayer) {
-        currentPlayer.setJailed(true);
+        currentPlayer.jailPlayer();
         currentPlayer.setCurrentPos(jail);
     }
 }

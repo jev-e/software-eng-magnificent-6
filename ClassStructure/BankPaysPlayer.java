@@ -24,7 +24,7 @@ public class BankPaysPlayer extends CardEffect {
      */
     @Override
     void effect(Player currentPlayer) {
-        currentPlayer.alterBalance(amount);
+        currentPlayer.payPlayerAmount(amount);
         System.out.println(cardText);//Display for test version
     }
 }

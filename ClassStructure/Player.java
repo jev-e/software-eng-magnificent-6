@@ -12,7 +12,8 @@ public class Player {
     private int money;
     private LinkedList<Object> assets;
     private boolean canBuy;
-    private boolean jailed;//indicator to differ between players who are jailed or just visiting
+    private boolean inJail;//indicator to differ between players who are jailed or just visiting
+    private int jailTime;//counter to indicate how many turns a player has spent in jail
 
     /**
      * Sets players name and token and initialises the players starting assets
@@ -27,14 +28,15 @@ public class Player {
         money = 1500;//All references to money is in £'s
         assets = new LinkedList<>();
         canBuy = false;
-        jailed = false;
+        inJail = false;
+        this.jailTime = 0;
     }
 
     /**
      * Adds amount to players balance
      * @param amount integer amount to modify the balance by
      */
-    public void alterBalance(int amount) {
+    public void payPlayerAmount(int amount) {
         money += amount;
     }
 
@@ -47,7 +49,7 @@ public class Player {
      */
     public int deductAmount(int amount) {
         if(money > amount) {
-            alterBalance(-amount);
+            payPlayerAmount(-amount);
             return amount;
         }else{
             //check for ability to sell assets
@@ -111,9 +113,6 @@ public class Player {
         return money;
     }
 
-    public void setMoney(int money) {
-        this.money = money;
-    }
 
     /**
      * Fetches the players assets list
@@ -123,16 +122,20 @@ public class Player {
         return assets;
     }
 
-    public void setAssets(LinkedList<Object> assets) {
-        this.assets = assets;
-    }
-
     public boolean CanBuy() {
         return canBuy;
     }
 
-    public void setCanBuy(boolean canBuy) {
-        this.canBuy = canBuy;
+    /**
+     * Pass go check and money
+     */
+    public void passGo() {
+        if(currentPos < previousPos) {
+            payPlayerAmount(200);//collect £200
+        }
+        if(!canBuy) {//Checks if the player can buy and set it to true if false
+            canBuy = true;
+        }
     }
 
     /**
@@ -144,10 +147,36 @@ public class Player {
     }
 
     /**
-     * Sets the jail status of the player based on input
-     * @param jailed true or false
+     * sets player to be in jail
+     * to be added to alo move player to jail location
      */
-    public void setJailed(boolean jailed) {
-        this.jailed = jailed;
+    public void jailPlayer() {
+        inJail = true;
+        //jailTime++; check brief to see how many turns to be spent in jail
+        //move player to jail location
+    }
+
+    /**
+     * Increments time spent in jail by one turn
+     */
+    public void serveJailTime() {
+        jailTime++;
+    }
+
+    /**
+     * Time player has been in jail getter
+     * @return int number of turns player has been jailed for
+     */
+    public int getJailTime() {
+        return jailTime;
+    }
+    /**
+     * Used to remove a player from jail by any means
+     * Pay to get out/ spend turns in jail/ get out of jail card
+     * maintains jailed boolean and jail count
+     */
+    public void leaveJail() {
+        inJail = false;
+        jailTime = 0;
     }
 }

@@ -2,6 +2,7 @@ package ClassStructure;
 
 /**
  * Move player to a provided location without performing a pass go check
+ * used for any move backwards event or where the card specifies not to pass go or collect
  */
 public class MovePlayerNoPassGo extends CardEffect{
 

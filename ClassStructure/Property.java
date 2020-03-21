@@ -4,17 +4,16 @@ package ClassStructure;
  * Structure for property objects
  */
 public class Property extends BoardTile{
-    Group group;
-    int cost;
-    int rent;
-    int[] buildingRents;
-    int houseCost;
+    Group group;//enum colour group the tile belongs to
+    int cost;//amount to be paid to purchase property. This is also the sell value
+    int rent;//default rent of a property which developments are added to
+    int[] buildingRents; //4 int length array, amounts to increase rent by per house [1 House,2 Houses,3 Houses, 4 Houses]
     int housesNo;
     int hotelNo;
-    int hotelCost;
+    int hotelRent;//A given property may have only one hotel this functions the same as building rent
     Player owner;
-    boolean mortgaged;
-    boolean completedSet;
+    boolean mortgaged;//if property is mortgaged no rent is deducted. Can be restored by paying half the cost to the bank
+    boolean completedSet;//If a single player owns all properties in group this is true and false otherwise
 
     /**
      * Creation of new property
@@ -24,19 +23,16 @@ public class Property extends BoardTile{
      * @param cost tile cost
      * @param rent tile rent
      * @param buildingRents building rents array
-     * @param houseCost single house cost
-     * @param hotelCost single hotel cost
      * @param owner player that owns the property
      */
-    public Property(int iD, String title,Group group, int cost, int rent, int[] buildingRents, int houseCost, int hotelCost, Player owner) {
+    public Property(int iD, String title,Group group, int cost, int rent, int[] buildingRents,int hotelRent, Player owner) {
         this.iD = iD;
         this.title = title;
         this.group = group;
         this.cost = cost;
         this.rent = rent;
         this.buildingRents = buildingRents;
-        this.houseCost = houseCost;
-        this.hotelCost = hotelCost;
+        this.hotelRent = hotelRent;
         this.owner = owner;
         this.canPurchase = true;
         this.mortgaged = false;
@@ -45,6 +41,10 @@ public class Property extends BoardTile{
         hotelNo = 0;
     }
 
+    /**
+     * Property activation functionality, both unowned and owned
+     * @param currentPlayer land on player, either able to purchase or subject to rent
+     */
     @Override
     public void activeEffect(Player currentPlayer) {
         /*Involves checks for hotels and houses
@@ -61,5 +61,12 @@ public class Property extends BoardTile{
 
     public int getHotelNo() {
         return hotelNo;
+    }
+
+    /**
+     * Clears the owner
+     */
+    public void returnToBank() {
+        owner = null;
     }
 }

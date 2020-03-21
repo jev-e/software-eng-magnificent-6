@@ -25,8 +25,8 @@ public class GetOutOfJail extends CardEffect {
     /**
      * Playing get out of jail free card logic. Maintains deck
      */
-    void playCard() {
-        owner.setJailed(false);
+    public void playCard() {
+        owner.leaveJail();//set player out of jail and resets jailCount
         owner.removeAsset(this);//removes this card from asset list
         this.board.opportunityKnocks.addLast(this);//add this card back to the bottom of the deque
     }

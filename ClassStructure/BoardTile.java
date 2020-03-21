@@ -2,7 +2,7 @@ package ClassStructure;
 /**
  * @author Ayman Bensreti
  * Structure for board tile objects
- *
+ * Property and Tile Effects
  */
 public abstract class BoardTile {
 

@@ -25,7 +25,7 @@ public class GoToJail extends TileEffect {
      */
     @Override
     public void activeEffect(Player currentPlayer) {
-        currentPlayer.setJailed(true);
+        currentPlayer.jailPlayer();
         currentPlayer.setCurrentPos(jail);
     }
 }

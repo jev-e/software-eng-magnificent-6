@@ -1,9 +1,9 @@
 import ClassStructure.*;
-
 import java.util.Scanner;
 import java.lang.*;
 
 /**
+ *
  * @author Jacob Evans
  *	Class / Method for creation of players
  *	Dependant on token/player classes
@@ -31,41 +31,17 @@ public class tokenAssign {
                 "5. Goblet" + newline +
                 "6. Spoon" + newline));
         String playerChoice = in.nextLine();
-        Player newPlayer = null;
         String tokenChoice = playerChoice.toUpperCase();
-        if ("CAT".equals(tokenChoice)) {
-            System.out.println("You have chosen the Cat token.");
-            Token playerToken = Token.valueOf(tokenChoice);
-            newPlayer = new Player(name,playerToken);
-
-        } else if ("HATSTAND".equals(tokenChoice)) {
-            System.out.println("You have chosen the Hatstand token.");
-            Token playerToken = Token.valueOf(tokenChoice);
-            newPlayer = new Player(name,playerToken);
-
-        } else if ("SMARTPHONE".equals(tokenChoice)) {
-            System.out.println("You have chosen the Smartphone token.");
-            Token playerToken = Token.valueOf(tokenChoice);
-            newPlayer = new Player(name,playerToken);
-
-
-        } else if ("BOOT".equals(tokenChoice)) {
-            System.out.println("You have chosen the Boot token.");
-            Token playerToken = Token.valueOf(tokenChoice);
-            newPlayer = new Player(name,playerToken);
-
-
-        } else if ("GOBLET".equals(tokenChoice)) {
-            System.out.println("You have chosen the Goblet token.");
-            Token playerToken = Token.valueOf(tokenChoice);
-            newPlayer = new Player(name,playerToken);
-
-
-        } else if ("SPOON".equals(tokenChoice)) {
-            System.out.println("You have chosen the Spoon token.");
-            Token playerToken = Token.valueOf(tokenChoice);
-            newPlayer = new Player(name,playerToken);
+        Player newPlayer;
+        try {
+            newPlayer = new Player(name, Token.valueOf(tokenChoice));
+        } catch (IllegalArgumentException e) {
+            // Do some error handling, player didn't choose any tokens
+            // Maybe a do .. while()
+            return null;
         }
+        System.out.println("You have chosen the " + tokenChoice + " token.");
+
         return newPlayer;
     }
 }

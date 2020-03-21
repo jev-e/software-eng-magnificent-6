@@ -39,8 +39,8 @@ public class Utility extends TileEffect {
                 amount = 10 * (die1 + die2);
                 multiplier = "10";
             }
-            currentPlayer.alterBalance(-amount);//take the amount from current player
-            owner.alterBalance(amount);//give owner the amount
+            currentPlayer.payPlayerAmount(-amount);//take the amount from current player
+            owner.payPlayerAmount(amount);//give owner the amount
             this.text  ="You pay £"+amount+" resulting from roll |"+die1+"|"+die2+"| = "+result + "times multiplier "
             + multiplier;
         }else{

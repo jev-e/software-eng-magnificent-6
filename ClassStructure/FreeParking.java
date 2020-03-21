@@ -24,6 +24,6 @@ public class FreeParking extends TileEffect{
     public void activeEffect(Player currentPlayer) {
         int amount = this.board.taxPot;
         this.board.taxPot = 0;//resets tax pot
-        currentPlayer.alterBalance(amount);
+        currentPlayer.payPlayerAmount(amount);
     }
 }

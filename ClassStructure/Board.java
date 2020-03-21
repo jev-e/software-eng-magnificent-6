@@ -245,20 +245,29 @@ public class Board {
     }
     /**
      * rolls two die and returns the number of places to move
-     * Version for sprint 1 demo, to b updated
      * @return int combination of die results
      */
-    public int roll(Player currentPlayer) {
+    public int roll(Player currentPlayer, int count) {
+        int result = 0;
         Random rand = new Random();
         int die1 = rand.nextInt(6)+1;
         int die2 = rand.nextInt(6)+1;
         if(die1 == die2) {
             repeat = true;//tracks double rolled for player to go again
+            if (count >= 3) {
+                result = die1 + die2;
+                System.out.printf("%s:%s Has Gone To Jail", currentPlayer.getName(), currentPlayer.getToken().getSymbol());
+                currentPlayer.jailPlayer();//sets players status to jailed
+                currentPlayer.setCurrentPos(0);//Currently sends player to Go however must be changed to jail position
+                //In future versions the player method jailPlayer will move the player to the jail tile
+            }
         }
-        int result = die1+die2;
-        int position = (currentPlayer.getCurrentPos() + result) % tiles.size();
-        System.out.printf("%s:%s Rolled |%d|%d| = %d",currentPlayer.getName(),currentPlayer.getToken().getSymbol(),die1,die2,result);
-        currentPlayer.setCurrentPos(position);
+        if(count < 3) {
+            result = die1 + die2;
+            int position = (currentPlayer.getCurrentPos() + result) % tiles.size();
+            System.out.printf("%s:%s Rolled |%d|%d| = %d", currentPlayer.getName(), currentPlayer.getToken().getSymbol(), die1, die2, result);
+            currentPlayer.setCurrentPos(position);
+        }
         return result;
     }
 
@@ -268,7 +277,6 @@ public class Board {
     public void demo() {
         displayAsString();
         String tempIn;
-        int count = 1;
         for(Player p: turnOrder) {
             System.out.println(p.getName() + " Money:" + p.getMoney());
         }
@@ -276,7 +284,9 @@ public class Board {
 
         while (turns < 10) {
             for(Player p : turnOrder) {
+                int count = 0;
                 do{
+                    count++;//keep track of number of repeat turns player has had
                     repeat = false;
                     System.out.println("Press Enter to continue");
                     try {
@@ -284,7 +294,7 @@ public class Board {
                     }catch(Exception e) {
                         e.printStackTrace();
                     }
-                    roll(p);
+                    roll(p,count);
                     displayAsString();
                     tiles.get(p.getCurrentPos()).activeEffect(p);
                     displayAsString();

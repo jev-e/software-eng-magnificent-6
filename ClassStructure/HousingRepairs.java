@@ -36,7 +36,7 @@ public class HousingRepairs extends CardEffect {
         for(Object item: assets) {//Count number of houses and hotels a player owns
             if(item instanceof Property) {//checks the asset is a property
                 hotelCount += ((Property) item).hotelNo;
-                houseCount += ((Property) item).houseCost;
+                houseCount += ((Property) item).housesNo;
             }
         }
         amount = (hotelCount*hotelFine) + (houseCount*houseFine);//calculate the total fine

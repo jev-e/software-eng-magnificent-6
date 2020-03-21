@@ -2,6 +2,7 @@ package ClassStructure;
 
 /**
  * Move player and perform a pass go check to conditionally collect £200
+ * Used for any card labelled advance to
  */
 public class MovePlayerPassGo extends CardEffect{
 
@@ -25,8 +26,6 @@ public class MovePlayerPassGo extends CardEffect{
     void effect(Player currentPlayer) {
         currentPlayer.setCurrentPos(destination);
         //if current position is less than previous then the 0 position has been passed
-        if(currentPlayer.getCurrentPos() < currentPlayer.getPreviousPos()) {
-            currentPlayer.alterBalance(200);//collect £200 for passing go
-        }
+        currentPlayer.passGo();
     }
 }

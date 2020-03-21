@@ -39,7 +39,7 @@ public class Station extends TileEffect {
                if(item instanceof Station) {
                    stationCount++;//count number of stations owned by this tiles owner
                }
-               switch (stationCount) {
+               switch (stationCount) {//selects the amount based on how many station owned
                    case 1:
                        amount = 25;
                        break;
@@ -54,7 +54,7 @@ public class Station extends TileEffect {
                        break;
                }
                int payment = currentPlayer.deductAmount(amount);//take from current player
-               owner.alterBalance(payment);// gives the amount the player was able to pay
+               owner.payPlayerAmount(payment);// gives the amount the player was able to pay
                if(payment < amount) {//if the player couldn't pay the full amount
                    this.board.bankruptPlayer(currentPlayer);//bankrupt player
                }

@@ -46,9 +46,9 @@ public class TestSpace {
 
         for (int i = 0; i < 8; i++) {
             if(i == 5) {
-                temp = new Property(i, "Example Street", Group.GREEN, 10, 10, null, 10, 10, ayman);
+                temp = new Property(i, "Example Street", Group.GREEN, 10, 10, null, 10, ayman);
             }else if(i == 7) {
-                temp = new Property(i, "Test crescent", Group.DEEP_BLUE, 10, 10, null, 10, 10, calvin);
+                temp = new Property(i, "Test crescent", Group.DEEP_BLUE, 10, 10, null, 10, calvin);
             }else if(i == 0) {
                     temp = new Go();
             }else{
@@ -79,6 +79,6 @@ class tImp extends TileEffect {
 
     @Override
     public void activeEffect(Player currentPlayer) {
-        System.out.println("The current player is " + currentPlayer.getName() + " their token is " + currentPlayer.getToken() + "\n" + text);
+        System.out.println("The current player is " + currentPlayer.getName() + " their token is " + currentPlayer.getToken().getSymbol() + "\n" + text);
     }
 }

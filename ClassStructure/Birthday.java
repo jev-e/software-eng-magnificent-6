@@ -31,6 +31,6 @@ public class Birthday extends CardEffect{
                 payment += temp;
             }
         }
-        currentPlayer.alterBalance(payment);//give player the total collected
+        currentPlayer.payPlayerAmount(payment);//give player the total collected
     }
 }
