@@ -55,6 +55,9 @@ public class Property extends BoardTile{
         //TODO write deducting rent from current player and paying to owner
     }
 
+
+
+
     public int getHousesNo() {
         return housesNo;
     }
@@ -63,10 +66,82 @@ public class Property extends BoardTile{
         return hotelNo;
     }
 
+    public Player getOwner(){
+        return this.owner;
+    }
+
+    public void addHotel(){
+        this.hotelNo += 1;
+    }
+
+    public void addHouse(){
+        this.housesNo += 1;
+    }
+
+    public Boolean isDeveloped(){
+        return(this.housesNo != 0 | this.hotelNo != 0);
+    }
+
     /**
      * Clears the owner
      */
     public void returnToBank() {
         owner = null;
+    }
+
+    /**
+     * Function to sell houses and hotels on a property.
+     * @return Either the cost of the building or 0 if their is no buildings to sell.
+     */
+    public int sellHouseOrHotel(){
+        if(this.hotelNo == 1){
+            this.hotelNo -= 1;
+            return(group.getBuildingCost());
+        }
+        else if(this.housesNo > 0){
+            this.housesNo -= 1;
+            return(group.getBuildingCost());
+        }
+        else{
+            return(0);
+        }
+    }
+
+    /**
+     * Function to allow for the ability to mortgage the property.
+     * Will set the property to being mortgaged to stop rent being acquired
+     * @return Half the value of the property.
+     */
+    public int mortgageProperty() {
+        if (this.isDeveloped()) {
+            return (0);
+        }
+        else if(this.mortgaged){
+            return (0);
+        }
+        else{
+            this.mortgaged = true;
+            return(this.cost/2);
+        }
+    }
+
+    /**
+     * Function to sell the property. Will not be able to sell if property is developed, and will only sell at
+     * half price when property is mortgaged.
+     * @ 0 for developed properties, half of property cost if mortgaged and full property cost if not mortgaged.
+     */
+    public int sellProperty(){
+        if (this.isDeveloped()) {
+            return (0);
+        }
+        else if(this.mortgaged){
+            this.returnToBank();
+            this.mortgaged = false;
+            return(this.cost/2);
+        }
+        else {
+            this.returnToBank();
+            return (this.cost);
+        }
     }
 }
