@@ -503,6 +503,9 @@ public class Board {
                 if( (asset instanceof Property) && count.get(key) == key.getMemberCount() && !((Property) asset).completedSet ) {
                     ((Property) asset).completedSet = true;
                     ((Property) asset).updateRent();
+                } else if((asset instanceof Property) && count.get(key) == key.getMemberCount() && ((Property) asset).completedSet ){
+                    ((Property) asset).completedSet = false;
+                    ((Property) asset).updateRent();
                 }
             }
         }
