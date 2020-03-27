@@ -19,6 +19,7 @@ public class Property extends BoardTile{
     Player owner;
     boolean mortgaged;//if property is mortgaged no rent is deducted. Can be restored by paying half the cost to the bank
     boolean completedSet;//If a single player owns all properties in group this is true and false otherwise
+    boolean rentDoubled = false; //Flag representing whether the rent on this property has been doubled
 
     /**
      * Creation of new property
@@ -189,9 +190,7 @@ public class Property extends BoardTile{
      */
     private void purchase( Player currentPlayer) {
 
-        Scanner userInputScanner = new Scanner( System.in ); //scanner for user input
         boolean wishToPurchase = false; //flag for purchase choice
-        boolean valid = false; //flag for valid input
 
         String message = currentPlayer.getName() + ", do you want to make a purchase (yes/no)?";
 
@@ -208,6 +207,7 @@ public class Property extends BoardTile{
             //transfer ownership
             owner = currentPlayer;
             currentPlayer.addAsset(this);
+            board.completeSetProperties( currentPlayer ); //purchase has been made, update complete set flags
             System.out.println("You have purchased " + title + " for £" + cost);
         } else {
             //trigger auction
@@ -215,6 +215,24 @@ public class Property extends BoardTile{
         }
 
     }
+
+    /**
+     * Doubles rent if the board is part of a complete set and has no improvements, halves rent if board is no longer
+     * in a complete set
+     */
+    public void updateRent() {
+        if( housesNo == 0 && hotelNo == 0 && completedSet ){
+            rent *= 2;
+            rentDoubled = true;
+            System.out.println("Rent has been doubled");
+        } else if( rentDoubled && !completedSet ){
+            rent /= 2;
+            rentDoubled = false;
+            System.out.println("Rent has been reset");
+        }
+    }
+
+
 
     /**
      * Deducts rent amount for property from currentPlayer and pays rent amount to property owner
@@ -231,7 +249,7 @@ public class Property extends BoardTile{
 
     /**
      * Increments housesNo, removes money from players account. A check will have already been performed to ensure
-     * sufficient funds
+     * sufficient funds, updates rent amount
      *
      * @param currentPlayer, the player purchasing the house
      */

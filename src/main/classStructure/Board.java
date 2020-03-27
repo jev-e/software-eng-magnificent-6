@@ -329,7 +329,7 @@ public class Board {
         System.out.println("Properties available for improvement:");
         if(currentPlayer.getAssets().size() != 0){
             //update complete set flags for all assets of player
-            completeSetProperties( currentPlayer );
+            completeSetProperties( currentPlayer ); //TODO is this necessary
             //loop through assets, finding all properties
             for(Object asset : currentPlayer.getAssets()) {
                     if(asset instanceof Property) {
@@ -479,11 +479,12 @@ public class Board {
     }
 
     /**
-     * Calculates if the property is a complete set and updates boolean flag
-     * 
+     * Updates flags for all player's properties, updates base rent amount if complete set with no properties. Should
+     * be called whenever a change to property ownership has occurred - e.g in purchase, sale, trading etc
+     *
      * @param currentPlayer
      */
-    private void completeSetProperties( Player currentPlayer ) {
+    public void completeSetProperties( Player currentPlayer ) {
         HashMap<Group, Integer> count = new HashMap<>();
 
         for(Object asset : currentPlayer.getAssets()){
@@ -499,8 +500,9 @@ public class Board {
         }
         for(Group key : count.keySet()){
             for( Object asset: currentPlayer.getAssets()){
-                if( (asset instanceof Property) && count.get(key) == key.getMemberCount() ) {
+                if( (asset instanceof Property) && count.get(key) == key.getMemberCount() && !((Property) asset).completedSet ) {
                     ((Property) asset).completedSet = true;
+                    ((Property) asset).updateRent();
                 }
             }
         }
