@@ -137,6 +137,7 @@ public class Property extends BoardTile{
             highestBidder.deductAmount( cost );
             owner = highestBidder;
             currentPlayer.addAsset(this);
+            board.completeSetProperties(currentPlayer);
 
         } else {
             System.out.println( "No bids were made");

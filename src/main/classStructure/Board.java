@@ -329,7 +329,7 @@ public class Board {
         System.out.println("Properties available for improvement:");
         if(currentPlayer.getAssets().size() != 0){
             //update complete set flags for all assets of player
-            completeSetProperties( currentPlayer ); //TODO is this necessary
+            //completeSetProperties( currentPlayer ); //TODO is this necessary
             //loop through assets, finding all properties
             for(Object asset : currentPlayer.getAssets()) {
                     if(asset instanceof Property) {
@@ -490,20 +490,23 @@ public class Board {
         for(Object asset : currentPlayer.getAssets()){
             //pull out all properties owned and form a count
             if( asset instanceof Property){
-                if (count.get(((Property) asset).group) == null) {
-                    count.put(((Property) asset).group, 1);
-                } else {
-                    int previousCount = count.get(((Property) asset).group);
-                    count.put(((Property) asset).group, previousCount++ );
+                int prev = 0;
+                if (count.get(((Property) asset).group) != null) {
+                    prev = count.get(((Property) asset).group);
                 }
+                count.put( ((Property) asset).group, prev + 1);
+
             }
         }
+        System.out.println(count.toString());
         for(Group key : count.keySet()){
             for( Object asset: currentPlayer.getAssets()){
                 if( (asset instanceof Property) && count.get(key) == key.getMemberCount() && !((Property) asset).completedSet ) {
+                    System.out.println(((Property) asset).title + " complete set updated");
                     ((Property) asset).completedSet = true;
                     ((Property) asset).updateRent();
                 } else if((asset instanceof Property) && count.get(key) == key.getMemberCount() && ((Property) asset).completedSet ){
+                    System.out.println(((Property) asset).title + " complete set removed");
                     ((Property) asset).completedSet = false;
                     ((Property) asset).updateRent();
                 }

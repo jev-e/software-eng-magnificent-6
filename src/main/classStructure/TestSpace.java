@@ -47,7 +47,7 @@ public class TestSpace {
         for (int i = 0; i < 8; i++) {
             int[] rent = { 10, 20, 30, 40};
             if(i == 5) {
-                temp = new Property(i, "Example Street", Group.GREEN, 10, 10, rent, 10, null);
+                temp = new Property(i, "Example Street", Group.DEEP_BLUE, 10, 10, rent, 10, null);
             }else if(i == 7) {
                 temp = new Property(i, "Test crescent", Group.DEEP_BLUE, 10, 10, rent, 10, calvin);
                 calvin.addAsset(temp);
