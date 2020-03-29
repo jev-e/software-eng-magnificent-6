@@ -41,7 +41,7 @@ class GameTest {
 
         for (int i = 0; i < 8; i++) {
             if(i == 5) {
-                temp = new Property(i, "Example Street", Group.GREEN, 10, 10, null, 10, ayman);
+                temp = new Property(i, "Example Street", Group.GREEN, 10, 10, null, 10, null);
             }else if(i == 7) {
                 temp = new Property(i, "Test crescent", Group.DEEP_BLUE, 10, 10, null, 10, calvin);
             }else if(i == 0) {
@@ -81,7 +81,7 @@ class GameTest {
         assert(thirdCard instanceof Birthday);//Check that cards are being drawn in order they are inserted
         CardEffect fourthCard = board.drawOpportunityKnocks();
         fourthCard.effect(board.turnOrder.getFirst());
-        assertNotEquals(fourthCard,board.opportunityKnocks.peekLast());//checks GetOutOfJail card has not been added to deck
+        assertNotEquals(fourthCard,board.opportunityKnocks.peekLast());//checks classStructure.GetOutOfJail card has not been added to deck
         ((GetOutOfJail)fourthCard).playCard();
         assertTrue(board.opportunityKnocks.peekLast() instanceof GetOutOfJail);//Checks that once the card is played
         assertEquals(board.opportunityKnocks.peekLast(),fourthCard);//It is returned to the bottom of deck
@@ -126,13 +126,13 @@ class GameTest {
 
     /**
      * Testing the move player cards work
-     * Move No Go check and Move with Go check
+     * Move No classStructure.Go check and Move with classStructure.Go check
      * Move back 3
      * Additionally tests that player correctly receives money when they pass go
      */
     @Test
     public void movePlayer() {
-        pot.add(new MovePlayerNoPassGo("Go here",2));
+        pot.add(new MovePlayerNoPassGo("classStructure.Go here",2));
         pot.add(new MoveBack3());
         pot.add(new MovePlayerPassGo("Move here",2));
         board = new Board(order,tileSet,pot,opp);
@@ -174,5 +174,28 @@ class GameTest {
         board.tiles.get(currentPlayer.getCurrentPos()).activeEffect(currentPlayer);//activate tile
         assertEquals(1500,currentPlayer.getMoney());//check player received tax pot
         assertEquals(0,board.taxPot);//check the tax pot has been emptied
+    }
+
+    /**
+     * Test of rent paying when property is landed on
+     */
+    @Test
+    public void rentTest() {
+
+        Player calvin = order.get(3); //owner of test property
+        Player currentPlayer = order.peekFirst(); //ayman
+
+        //move player to property
+        currentPlayer.setCurrentPos(7);
+        //activate effect of tile
+        board.tiles.get(currentPlayer.getCurrentPos()).activeEffect(currentPlayer);
+        assertEquals(1490,currentPlayer.getMoney()); //has paid rent
+        assertEquals( 1510, calvin.getMoney()); //has received rent
+        //move current player to property with no owner
+        currentPlayer.setCurrentPos(5);
+        //activate effect, no rent should be paid
+        board.tiles.get(currentPlayer.getCurrentPos()).activeEffect(currentPlayer);
+        assertEquals(1490,currentPlayer.getMoney()); //has not paid rent
+
     }
 }

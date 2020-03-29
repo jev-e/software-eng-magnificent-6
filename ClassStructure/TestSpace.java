@@ -45,12 +45,14 @@ public class TestSpace {
         BoardTile temp;
 
         for (int i = 0; i < 8; i++) {
+            int[] rent = { 10, 20, 30, 40};
             if(i == 5) {
-                temp = new Property(i, "Example Street", Group.GREEN, 10, 10, null, 10, ayman);
+                temp = new Property(i, "Example Street", Group.DEEP_BLUE, 10, 10, rent, 10, null);
             }else if(i == 7) {
-                temp = new Property(i, "Test crescent", Group.DEEP_BLUE, 10, 10, null, 10, calvin);
+                temp = new Property(i, "Test crescent", Group.DEEP_BLUE, 10, 10, rent, 10, calvin);
+                calvin.addAsset(temp);
             }else if(i == 0) {
-                    temp = new Go();
+                temp = new Go();
             }else{
                 if(rand.nextInt(2) == 0) {
                     temp = new PotLuck(i);

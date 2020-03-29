@@ -1,4 +1,5 @@
 package ClassStructure;
+
 /**
  * @author Ayman Bensreti
  *	an enum for property groups
@@ -8,21 +9,23 @@ package ClassStructure;
  *	display colour (To be added)
  */
 public enum Group {
-    BLUE("Blue",50),
-    BROWN("Brown",50),
-    DEEP_BLUE("Deep Blue",200),
-    GREEN("Green",200),
-    ORANGE("Orange",100),
-    PURPLE("Purple",100),
-    RED("Red",150),
-    YELLOW("Yellow",150);
+    BLUE("Blue",50, 3),
+    BROWN("Brown",50, 2),
+    DEEP_BLUE("Deep Blue",200, 2),
+    GREEN("Green",200, 3),
+    ORANGE("Orange",100, 3),
+    PURPLE("Purple",100, 3),
+    RED("Red",150, 3),
+    YELLOW("Yellow",150, 3);
 
     private String name;
     private int buildingCost;
+    private int memberCount;
 
-     Group(String name,int buildingCost) {
+    Group(String name,int buildingCost, int memberCount) {
         this.name = name;
         this.buildingCost = buildingCost;
+        this.memberCount = memberCount;
     }
 
     @Override
@@ -31,10 +34,16 @@ public enum Group {
     }
 
     /**
-     * Fetches the building cost for use in property functionality 
+     * Fetches the building cost for use in property functionality
      * @return int associated building cost with the colour group
      */
     public int getBuildingCost() {
         return buildingCost;
     }
+
+    /**
+     * Fetches the member count for use in the board class
+     * @return int associated member count with the colour group
+     */
+    public int getMemberCount() { return memberCount; }
 }

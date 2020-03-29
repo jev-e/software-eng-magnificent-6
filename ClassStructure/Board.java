@@ -3,6 +3,8 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Random;
+import java.util.Scanner;
+import java.util.ArrayList;
 /**
  * @author Ayman Bensreti
  *	Game board and logic
@@ -296,15 +298,14 @@ public class Board {
                     }
                     roll(p,count);
                     displayAsString();
+                    p.passGo();
                     tiles.get(p.getCurrentPos()).activeEffect(p);
                     displayAsString();
                 }while (repeat);
+                propertyImprovement(p);
             }
-            turns++;
-        }
 
-        for(Player p: turnOrder) {
-            System.out.println(p.getName() + " Money:" + p.getMoney());
+            turns++;
         }
     }
 
@@ -316,4 +317,204 @@ public class Board {
     void bankruptPlayer(Player target) {
         turnOrder.remove(target);
     }
+
+    /**
+     * Drives the interactive menu for property improvement and contains logic
+     * occurs at the end of the turn for the player
+     *
+     * @param currentPlayer, the player looking to make some improvements
+     */
+    private void propertyImprovement( Player currentPlayer ) {
+        ArrayList<Property> improvableProperties = new ArrayList<>();
+        Scanner userInputScanner = new Scanner( System.in );
+
+        //find all improvable properties
+        System.out.println("Properties available for improvement:");
+        if(currentPlayer.getAssets().size() != 0){
+            //update complete set flags for all assets of player
+            //completeSetProperties( currentPlayer ); //TODO is this necessary
+            //loop through assets, finding all properties
+            for(Object asset : currentPlayer.getAssets()) {
+                if(asset instanceof Property) {
+                    //if potentially improvable (part of complete set and doesn't have a hotel built and isn't currently mortgaged)
+                    if( ((Property) asset).completedSet  && ((Property) asset).hotelNo != 1 && !((Property) asset).mortgaged) {
+                        System.out.println(((Property) asset).iD + " " + ((Property) asset).title); //print for selection
+                        improvableProperties.add((Property) asset); //add improvable properties for ease of search
+                    }
+                }
+            }
+        }
+        //check if we have any properties as this contains a lot of looping
+        if(improvableProperties.size() != 0){
+            boolean valid = false; //flag for valid input
+            boolean goAgain = true; //flag for repeating loop
+            boolean improve; //flag for if improvements desired
+            int decision = 0;
+
+            //fetch confirmation
+            improve = yesNoInput("Do you want to make an improvement? (yes/no)");
+
+            if(improve) {
+                while( goAgain ) {
+                    while(!valid){
+                        boolean found = false; //flag for if given property found
+                        System.out.println("Please enter a property ID: ");
+                        decision = userInputScanner.nextInt(); //fetch user input
+
+                        for( Property pp : improvableProperties){
+                            if(pp.iD == decision){
+                                found = true; //user input reflects a possible property
+                            }
+                        }
+
+                        //give response to user
+                        if( found ){
+                            System.out.println("You have selected property: " + decision);
+                            valid = true;
+                        }else {
+                            System.out.println("Sorry, please try again, ID not found");
+                        }
+                    }
+                    //reset flag
+                    valid = false;
+                    //fetch property chosen by user
+                    Property toBeImproved = (Property) tiles.get(decision);
+
+                    //init group store
+                    ArrayList<Property> group = new ArrayList<>();
+                    //find all houses in same group
+                    for( Property pp : improvableProperties){
+                        if(pp.group == toBeImproved.group){
+                            group.add(pp);
+                        }
+                    }
+
+                    //flag for if improvement is possible
+                    boolean validPurchase = true;
+
+
+                    //if hotel needs to be bought
+                    if((toBeImproved.getHousesNo() == 4) && (toBeImproved.hotelNo == 0)){
+                        //all other properties in group must have 4 houses as well
+                        for( Property pp: group ){
+                            if(pp.housesNo != 4){
+                                validPurchase = false;
+                                break;
+                            }
+                        }
+                        //if purchase possible and if player can afford it
+                        if( validPurchase && (currentPlayer.getMoney() > toBeImproved.group.getBuildingCost())){
+                            improve = yesNoInput("Do you want to purchase a hotel for £" + toBeImproved.group.getBuildingCost() + " (yes/no)?");
+                            if( improve) {
+                                toBeImproved.purchaseHotel( currentPlayer ); //manages transaction
+                                improvableProperties.remove( toBeImproved );
+                            }
+                        } else {
+                            System.out.println("Sorry, the property is not currently improvable");
+                        }
+
+                    } else if((toBeImproved.getHousesNo() < 4) && (toBeImproved.getHotelNo() == 0 )) { //only a house can be bought
+                        //all other properties must have the same or more than the number of houses on the property
+                        for( Property pp: group ){
+                            if( pp.housesNo < toBeImproved.getHousesNo() ){
+                                validPurchase = false;
+                                break;
+                            }
+                        }
+                        //if purchase possible and if player can afford it
+                        if( validPurchase && (currentPlayer.getMoney() > toBeImproved.group.getBuildingCost())){
+                            improve = yesNoInput("Do you want to purchase a house £" + toBeImproved.group.getBuildingCost() + " (yes/no)?");
+                            if( improve) {
+                                toBeImproved.purchaseHouse( currentPlayer ); //manages transaction
+                            }
+                        } else {
+                            System.out.println("Sorry, the property is not currently improvable");
+                        }
+
+                    }
+                    //find if any improvable properties left
+                    if(improvableProperties.size() == 0){
+                        System.out.println("No properties left to improve");
+                        break;
+                    }
+                    goAgain = yesNoInput("Do you want to go again? (yes/no)");
+                }
+            }
+
+
+
+        }
+
+
+
+
+    }
+
+    /**
+     * Takes a yes no question and returns a boolean if answer is yes or no, loops until correct input is recieved
+     *
+     * @param message must have an answer of yes or no
+     */
+    private boolean yesNoInput( String message ) {
+        System.out.println( message );
+        Scanner userInputScanner = new Scanner( System.in ); //scanner for user input
+        boolean valid = false; //flag for valid input
+        boolean userDecision = false;
+
+        //ask if want to purchase
+        while(!valid){
+            String decision = userInputScanner.nextLine();
+            //normalise input
+            decision = decision.toLowerCase();
+
+            if( decision.equals( "no" )){
+                userDecision = false;
+                valid = true;
+            }else if( decision.equals( "yes" )){
+                userDecision = true;
+                valid = true;
+            }else {
+                System.out.println("Sorry, please try again (you need to type yes OR no)");
+            }
+        }
+
+        return userDecision;
+    }
+
+    /**
+     * Updates flags for all player's properties, updates base rent amount if complete set with no properties. Should
+     * be called whenever a change to property ownership has occurred - e.g in purchase, sale, trading etc
+     *
+     * @param currentPlayer player to check status of their property sets
+     */
+    public void completeSetProperties( Player currentPlayer ) {
+        HashMap<Group, Integer> count = new HashMap<>();
+
+        for(Object asset : currentPlayer.getAssets()){
+            //pull out all properties owned and form a count
+            if( asset instanceof Property){
+                int prev = 0;
+                if (count.get(((Property) asset).group) != null) {
+                    prev = count.get(((Property) asset).group);
+                }
+                count.put( ((Property) asset).group, prev + 1);
+
+            }
+        }
+        System.out.println(count.toString());
+        for(Group key : count.keySet()){
+            for( Object asset: currentPlayer.getAssets()){
+                if( (asset instanceof Property) && count.get(key) == key.getMemberCount() && !((Property) asset).completedSet ) {
+                    System.out.println(((Property) asset).title + " complete set updated");
+                    ((Property) asset).completedSet = true;
+                    ((Property) asset).updateRent();
+                } else if((asset instanceof Property) && count.get(key) == key.getMemberCount() && ((Property) asset).completedSet ){
+                    System.out.println(((Property) asset).title + " complete set removed");
+                    ((Property) asset).completedSet = false;
+                    ((Property) asset).updateRent();
+                }
+            }
+        }
+    }
+
 }
