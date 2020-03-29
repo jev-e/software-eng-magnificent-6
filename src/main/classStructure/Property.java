@@ -261,6 +261,7 @@ public class Property extends BoardTile{
     public void purchaseHouse( Player currentPlayer) {
         if( housesNo <= 4) {
             housesNo++;
+            updateRent();
             currentPlayer.deductAmount( group.getBuildingCost() );
             rent += buildingRents[housesNo - 1];
             System.out.println("House purchased for " + title  + ", the new rent is: £" + rent);
