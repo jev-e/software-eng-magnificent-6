@@ -136,8 +136,8 @@ public class Property extends BoardTile{
             System.out.println( highestBidder.getName() + " has won the auction for " + title + " with a bid of £" + highestBid );
             highestBidder.deductAmount( cost );
             owner = highestBidder;
-            currentPlayer.addAsset(this);
-            board.completeSetProperties(currentPlayer);
+            highestBidder.addAsset(this);
+            board.completeSetProperties(highestBidder); //purchase made, update complete set flags
 
         } else {
             System.out.println( "No bids were made");
@@ -227,6 +227,10 @@ public class Property extends BoardTile{
             rentDoubled = true;
             System.out.println("Rent has been doubled");
         } else if( rentDoubled && !completedSet ){
+            rent /= 2;
+            rentDoubled = false;
+            System.out.println("Rent has been reset");
+        } else if (rentDoubled && completedSet && housesNo == 1){
             rent /= 2;
             rentDoubled = false;
             System.out.println("Rent has been reset");
