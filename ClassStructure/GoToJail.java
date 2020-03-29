@@ -1,22 +1,20 @@
 package ClassStructure;
 
+
 /**
  * Go to Jail tile event
  */
 public class GoToJail extends TileEffect {
 
-    private int jail;//Temporary
     /**
      * Sends player to jail
      * @param iD tiles ID on the board
-     * @param jail temporary ID pointer to location of jail for testing full version will be constant
      */
     public GoToJail(int iD, String text, int jail) {
         this.iD = iD;
         this.title = "Go to Jail";
         this.canPurchase = false;
         this.text = text;
-        this.jail = jail;
     }
 
     /**
@@ -25,7 +23,7 @@ public class GoToJail extends TileEffect {
      */
     @Override
     public void activeEffect(Player currentPlayer) {
-        currentPlayer.jailPlayer();
-        currentPlayer.setCurrentPos(jail);
+            currentPlayer.jailPlayer();
+        }
     }
-}
+

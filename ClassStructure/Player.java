@@ -1,5 +1,7 @@
 package ClassStructure;
 import java.util.LinkedList;
+import java.util.Scanner;
+
 /**
  * @author Ayman Bensreti
  *	Player information
@@ -148,12 +150,52 @@ public class Player {
 
     /**
      * sets player to be in jail
-     * to be added to alo move player to jail location
+     * to be added to alo move player to jail location instead of Go as currently set
+     * Gives the player the option to pay or use get out of jail free card
      */
     public void jailPlayer() {
-        inJail = true;
-        //jailTime++; check brief to see how many turns to be spent in jail
-        //move player to jail location
+        inJail = true;//sets player in jail
+        GetOutOfJail getOutOfJail = null;
+        setCurrentPos(0);//to be changed to position of jail
+        for(Object item: assets) {//looks for a get out of jail free card
+            if(item instanceof GetOutOfJail) {
+                getOutOfJail = (GetOutOfJail) item;//if found getOutOfJail is set to this card
+            }//If the player has two the first one is used
+        }
+        //Player choice here
+        Scanner userIn = new Scanner(System.in);
+        int choice;
+        boolean selected = false;
+        while (!selected) {//Repeat until an option is selected
+            System.out.println("Type the number of the option you would like to select");
+            System.out.println("1. Serve Jail time\n2. Pay £50 bail");
+            if(getOutOfJail != null) {
+                System.out.println("3. Use get out of jail free card");//only display option is player has card
+            }
+            choice = userIn.nextInt();
+            switch (choice) {
+                case 1:
+                    //Do nothing player serves time
+                    break;
+                case 2:
+                    if(money > 50) {//If the player has the funds take the amount and remove them from jail
+                        deductAmount(50);
+                        leaveJail();
+                        selected = true;//note a selection has been made
+                    }else{
+                        System.out.println("Insufficient funds");
+                    }
+                    break;
+                case 3:
+                    if(getOutOfJail != null) {//check player has card for text version, will be impossible in GUI
+                        getOutOfJail.playCard();//play get out of jail free card
+                        selected = true;
+                    }
+                    break;
+                default:
+                    System.out.println("Invalid Input");
+            }
+        }
     }
 
     /**
@@ -178,5 +220,12 @@ public class Player {
     public void leaveJail() {
         inJail = false;
         jailTime = 0;
+    }
+
+    /**
+     * Check to see if the player is in jail for jail tile and rent checks
+     */
+    public boolean isInJail() {
+        return inJail;
     }
 }

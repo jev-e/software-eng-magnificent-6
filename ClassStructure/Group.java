@@ -10,7 +10,7 @@ package ClassStructure;
 public enum Group {
     BLUE("Blue",50),
     BROWN("Brown",50),
-    DEEP_BLUE("DeepBlue",200),
+    DEEP_BLUE("Deep Blue",200),
     GREEN("Green",200),
     ORANGE("Orange",100),
     PURPLE("Purple",100),

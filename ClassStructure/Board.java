@@ -311,6 +311,7 @@ public class Board {
     /**
      * Bankrupts player from the game
      * @param target player to removed from turn order
+     * To be added handling of assets
      */
     void bankruptPlayer(Player target) {
         turnOrder.remove(target);
