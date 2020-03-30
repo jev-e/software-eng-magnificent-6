@@ -41,9 +41,7 @@ public class Board {
             c.setBoard(this);
         }
         for (BoardTile b : tiles.values()) {
-            if(b instanceof TileEffect) {
-                ((TileEffect) b).setBoard(this);
-            }
+            b.setBoard(this);
         }
     }
 
@@ -303,6 +301,7 @@ public class Board {
                     displayAsString();
                 }while (repeat);
                 propertyImprovement(p);
+                trade(p);
             }
 
             turns++;
@@ -329,8 +328,8 @@ public class Board {
         Scanner userInputScanner = new Scanner( System.in );
 
         //find all improvable properties
-        System.out.println("Properties available for improvement:");
         if(currentPlayer.getAssets().size() != 0){
+            System.out.println("Properties available for improvement:");
             //update complete set flags for all assets of player
             //completeSetProperties( currentPlayer ); //TODO is this necessary
             //loop through assets, finding all properties
@@ -513,6 +512,207 @@ public class Board {
                     ((Property) asset).completedSet = false;
                     ((Property) asset).updateRent();
                 }
+            }
+        }
+    }
+
+    /**
+     * Player trading method, called at the end of the turn for the player right now, in GUI should only be called once
+     * per turn per player
+     *
+     * @param currentPlayer
+     */
+    public void trade( Player currentPlayer ) {
+
+        LinkedList<Object> tradeableAssetsReceive = new LinkedList<>(); //assets to be traded from currentPlayer
+        LinkedList<Object> tradeableAssetsGive = new LinkedList<>(); //assets to be traded to currentPlayer
+        LinkedList<Object> tradeAssetsGive = new LinkedList<>(); //assets to be traded to currentPlayer
+        LinkedList<Object> tradeAssetsReceive = new LinkedList<>(); //assets to be traded to currentPlayer
+
+        Player choice = null; //container for chosen player
+        Scanner userInputScanner = new Scanner( System.in ); //scanner for user input
+        boolean valid = false; //flag for valid input
+        boolean goAgain = true; //flag for repeating input
+        boolean input = false;
+        boolean cancel = false;
+
+        //ask for confirmation
+        if(currentPlayer.getAssets().size() != 0){
+            input = yesNoInput(currentPlayer.getName() + ", would you like to trade (yes/no)?");
+        }
+
+        //select player
+        if( input ){
+            //print players
+            System.out.println("AVAILABLE TRADES:");
+            int count = 0;
+            for( Player player : turnOrder ){
+                if(player.getAssets().size() != 0 && (player != currentPlayer)){
+                    System.out.println(player.getName());
+                    count++;
+                }
+            }
+            //loop until valid choice
+            if(count != 0){
+
+            }
+            while(!valid ){
+                String decision = null;
+                boolean found = false; //flag for if given player found
+                System.out.println("Please enter a player name or type cancel: ");
+                decision = userInputScanner.nextLine(); //fetch user input
+                if( decision.toLowerCase().equals("cancel")){
+                    cancel = true;
+                    break;
+                }else {
+                    for( Player player : turnOrder) {
+                        if(player.getName().toLowerCase().equals(decision.toLowerCase())){
+                            found = true; //user input reflects a possible property
+                            choice = player; //assign chosen player to allow for trading
+                            break;
+                        }
+                    }
+                }
+
+
+                //give response to user
+                if( found ){
+                    System.out.println("You have selected " + choice.getName());
+                    valid = true;
+                }else {
+                    System.out.println("Sorry, please try again, ID not found");
+                }
+            }
+
+            if( !cancel ){
+                valid = false;
+
+                //find tradeable assets for both players
+
+                //select assets to give to chosen player
+                System.out.println(currentPlayer + ", select assets that you want to give " + choice.getName());
+
+                //current player
+                for( Object asset: currentPlayer.getAssets() ) {
+                    if( asset instanceof Property ){
+                        if( !((Property) asset).developed ){
+                            System.out.println(((Property) asset).title);
+                            tradeableAssetsGive.add(asset);
+                        }
+                    } else if( !(asset instanceof GetOutOfJail) ){
+                        System.out.println(((BoardTile)asset).title);
+                        tradeableAssetsGive.add(asset);
+                    }
+                }
+
+                String assetChoice = null;
+                while( goAgain ) {
+                    while (!valid) {
+                        boolean found = false; //flag for if given property found
+                        System.out.println("Please enter an asset name: ");
+                        assetChoice = userInputScanner.nextLine(); //fetch user input
+
+
+                        for (Object asset : tradeableAssetsGive ) {
+                            if (((BoardTile)asset).title.toLowerCase().equals(assetChoice.toLowerCase())) {
+                                System.out.println("You have selected property: " + ((BoardTile) asset).title);
+                                tradeAssetsGive.add( asset );
+                                found = true; //user input reflects a possible property
+                            }
+                        }
+
+                        //give response to user
+                        if (found) {
+
+                            valid = true;
+                        } else {
+                            System.out.println("Sorry, please try again, asset not found");
+                        }
+                    }
+
+                    //reset flag
+                    valid = false;
+                    //find if any improvable properties left
+                    if(tradeableAssetsGive.size() == tradeAssetsGive.size()){
+                        System.out.println("No assets left to choose");
+                        break;
+                    }
+                    goAgain = yesNoInput("Do you want to go again? (yes/no)");
+                }
+
+                System.out.println(currentPlayer.getName() + ", select " + choice.getName() + "'s assets that you want in return");
+                //player being traded with
+                for( Object asset: choice.getAssets() ) {
+                    if( asset instanceof Property ){
+                        if( !((Property) asset).developed ){
+                            System.out.println(((Property) asset).title);
+                            tradeableAssetsReceive.add(asset);
+                        }
+                    } else if( !(asset instanceof GetOutOfJail) ){
+                        System.out.println(((BoardTile)asset).title);
+                        tradeableAssetsReceive.add(asset);
+                    }
+                }
+
+                assetChoice = null;
+                while( goAgain ) {
+                    while (!valid) {
+                        boolean found = false; //flag for if given property found
+                        System.out.println("Please enter an asset name: ");
+                        assetChoice = userInputScanner.nextLine(); //fetch user input
+
+
+                        for (Object asset : tradeableAssetsReceive ) {
+                            if (((BoardTile)asset).title.toLowerCase().equals(assetChoice.toLowerCase())) {
+                                System.out.println("You have selected property: " + ((BoardTile) asset).title);
+                                tradeAssetsReceive.add( asset );
+                                found = true; //user input reflects a possible property
+                            }
+                        }
+
+                        //give response to user
+                        if (found) {
+                            valid = true;
+                        } else {
+                            System.out.println("Sorry, please try again, asset not found");
+                        }
+                    }
+
+                    //reset flag
+                    valid = false;
+                    //find if any improvable properties left
+                    if(tradeableAssetsReceive.size() == tradeAssetsReceive.size()){
+                        System.out.println("No assets left to choose");
+                        break;
+                    }
+                    goAgain = yesNoInput("Do you want to go again? (yes/no)");
+                }
+                //print selections
+                System.out.println("Your Choices:");
+                System.out.println("Give:");
+                System.out.println(tradeAssetsGive.toString());
+                System.out.println("Receive:");
+                System.out.println(tradeAssetsReceive.toString());
+                //get confirmation from the other player
+                boolean confirm = yesNoInput( choice.getName() + ", do you accept the offer (yes/no)?");
+                //perform transfers
+                if(confirm) {
+                    for( Object asset : tradeAssetsGive ){
+                        currentPlayer.getAssets().remove( asset );
+                        choice.getAssets().add( asset );
+                    }
+                    for( Object asset : tradeAssetsReceive ){
+                        choice.getAssets().remove( asset );
+                        currentPlayer.getAssets().add( asset );
+                    }
+                    System.out.println("Trade Complete");
+                    //check for complete set
+                    completeSetProperties( currentPlayer );
+                    completeSetProperties( choice );
+                } else {
+                    System.out.println("Trade Rejected");
+                }
+
             }
         }
     }

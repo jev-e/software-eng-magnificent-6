@@ -18,6 +18,7 @@ public class Property extends BoardTile{
     boolean mortgaged;//if property is mortgaged no rent is deducted. Can be restored by paying half the cost to the bank
     boolean completedSet;//If a single player owns all properties in group this is true and false otherwise
     boolean rentDoubled; //Flag representing whether the rent on this property has been doubled
+    boolean developed; //flag for if property improved
 
     /**
      * Creation of new property
@@ -42,8 +43,8 @@ public class Property extends BoardTile{
         this.mortgaged = false;
         this.completedSet = false;
         this.rentDoubled = false;
-        housesNo = 0;
-        hotelNo = 0;
+        this.housesNo = 0;
+        this.hotelNo = 0;
     }
 
     /**
@@ -58,7 +59,7 @@ public class Property extends BoardTile{
          * purchase functionality if not owned
          */
         //is there an owner?
-        if( owner != null && owner != currentPlayer ){
+        if( owner != null && owner != currentPlayer && !mortgaged){
             //there is an owner, collect rent
             collectRent( currentPlayer );
         } else if( owner != currentPlayer ){
@@ -78,20 +79,10 @@ public class Property extends BoardTile{
     }
 
     public Player getOwner(){
-        return this.owner;
+        return owner;
     }
 
-    public void addHotel(){
-        this.hotelNo += 1;
-    }
-
-    public void addHouse(){
-        this.housesNo += 1;
-    }
-
-    public Boolean isDeveloped(){
-        return(this.housesNo != 0 | this.hotelNo != 0);
-    }
+    public boolean getDeveloped() { return developed; }
 
     /**
      * Clears the owner
@@ -105,16 +96,14 @@ public class Property extends BoardTile{
      * @return Either the cost of the building or 0 if their is no buildings to sell.
      */
     public int sellHouseOrHotel(){
-        if(this.hotelNo == 1){
-            this.hotelNo -= 1;
-            return(group.getBuildingCost());
-        }
-        else if(this.housesNo > 0){
+        if( hotelNo == 1 ){
+            hotelNo -= 1;
+            return( 5 * group.getBuildingCost() );
+        } else if( housesNo > 0 ){
             this.housesNo -= 1;
-            return(group.getBuildingCost());
-        }
-        else{
-            return(0);
+            return( group.getBuildingCost() );
+        } else{
+            return( 0 );
         }
     }
 
@@ -124,15 +113,13 @@ public class Property extends BoardTile{
      * @return Half the value of the property.
      */
     public int mortgageProperty() {
-        if (this.isDeveloped()) {
+        if ( developed ) {
             return (0);
-        }
-        else if(this.mortgaged){
+        } else if( mortgaged ){
             return (0);
-        }
-        else{
-            this.mortgaged = true;
-            return(this.cost/2);
+        } else {
+            mortgaged = true;
+            return( cost/2 );
         }
     }
 
@@ -142,19 +129,21 @@ public class Property extends BoardTile{
      * @ 0 for developed properties, half of property cost if mortgaged and full property cost if not mortgaged.
      */
     public int sellProperty(){
-        if (this.isDeveloped()) {
+        if ( developed ) {
             return (0);
-        }
-        else if(this.mortgaged){
-            this.returnToBank();
-            this.mortgaged = false;
+        } else if( mortgaged ){
+            owner.getAssets().remove( this );
+            owner = null;
+            mortgaged = false;
             return(this.cost/2);
-        }
-        else {
-            this.returnToBank();
+        } else {
+            owner.getAssets().remove( this );
+            owner = null;
+            returnToBank();
             return (this.cost);
         }
     }
+
     /**
      * Runs an auction for the players to purchase the property. Each player makes an (optional) bid and the highest
      * bidding player purchases the property
@@ -166,7 +155,6 @@ public class Property extends BoardTile{
         System.out.println("==========================================================================================");
         Player highestBidder = null;
         int highestBid = 0;
-
         //for each player that isn't the current player
         for( Player bidder: super.board.turnOrder ) {
             if( bidder != currentPlayer && bidder.CanBuy() ){
@@ -300,7 +288,7 @@ public class Property extends BoardTile{
             rent /= 2;
             rentDoubled = false;
             System.out.println("Rent has been reset");
-        } else if (rentDoubled && completedSet && housesNo == 1){
+        } else if ( rentDoubled && housesNo == 1 ){
             rent /= 2;
             rentDoubled = false;
             System.out.println("Rent has been reset");
@@ -329,6 +317,9 @@ public class Property extends BoardTile{
     public void purchaseHouse( Player currentPlayer) {
         if( housesNo <= 4) {
             housesNo++;
+            if( housesNo == 1 ){
+                developed = true;
+            }
             updateRent();
             currentPlayer.deductAmount( group.getBuildingCost() );
             rent += buildingRents[housesNo - 1];

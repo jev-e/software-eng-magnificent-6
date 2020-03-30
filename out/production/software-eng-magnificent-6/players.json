@@ -1,0 +1,27 @@
+{
+    "player_1": {
+        "name" : "Jacob",
+        "token" : "/game/boot.png",
+        "money" : 500,
+        "assets" : [
+            "Beachfront",
+            "Hotel",
+            "Club Revenge"
+        ],
+        "passed_go": true
+    },
+
+    "player_2": {
+        "name" : "Calvin",
+        "token" : "/game/hat.png",
+        "money" : 300,  
+        "assets" : [
+            "Nandos",
+            "Pool",
+            "Pryzm"
+        ],
+        "passed_go": false
+    }
+    
+
+}
