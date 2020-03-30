@@ -21,6 +21,18 @@ public class Property extends BoardTile{
     boolean developed; //flag for if property improved
 
     /**
+     * Default constructor for Jackson
+     */
+    public Property() {
+        canPurchase = true;
+        mortgaged = false;
+        completedSet = false;
+        rentDoubled = false;
+        developed = false;
+        owner = null;
+    }
+
+    /**
      * Creation of new property
      * @param iD tile ID
      * @param title Property title
@@ -348,5 +360,89 @@ public class Property extends BoardTile{
         } else {
             System.out.println("not enough houses");
         }
+    }
+
+    public Group getGroup() {
+        return group;
+    }
+
+    public void setGroup(Group group) {
+        this.group = group;
+    }
+
+    public int getCost() {
+        return cost;
+    }
+
+    public void setCost(int cost) {
+        this.cost = cost;
+    }
+
+    public int getRent() {
+        return rent;
+    }
+
+    public void setRent(int rent) {
+        this.rent = rent;
+    }
+
+    public int[] getBuildingRents() {
+        return buildingRents;
+    }
+
+    public void setBuildingRents(int[] buildingRents) {
+        this.buildingRents = buildingRents;
+    }
+
+    public void setHousesNo(int housesNo) {
+        this.housesNo = housesNo;
+    }
+
+    public void setHotelNo(int hotelNo) {
+        this.hotelNo = hotelNo;
+    }
+
+    public int getHotelRent() {
+        return hotelRent;
+    }
+
+    public void setHotelRent(int hotelRent) {
+        this.hotelRent = hotelRent;
+    }
+
+    public void setOwner(Player owner) {
+        this.owner = owner;
+    }
+
+    public boolean isMortgaged() {
+        return mortgaged;
+    }
+
+    public void setMortgaged(boolean mortgaged) {
+        this.mortgaged = mortgaged;
+    }
+
+    public boolean isCompletedSet() {
+        return completedSet;
+    }
+
+    public void setCompletedSet(boolean completedSet) {
+        this.completedSet = completedSet;
+    }
+
+    public boolean isRentDoubled() {
+        return rentDoubled;
+    }
+
+    public void setRentDoubled(boolean rentDoubled) {
+        this.rentDoubled = rentDoubled;
+    }
+
+    public boolean isDeveloped() {
+        return developed;
+    }
+
+    public void setDeveloped(boolean developed) {
+        this.developed = developed;
     }
 }

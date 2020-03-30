@@ -6,6 +6,12 @@ package ClassStructure;
  */
 public class MovePlayerNoPassGo extends CardEffect{
 
+    /**
+     * Default constructor for Jackson
+     */
+    public MovePlayerNoPassGo() {
+
+    }
     int destination;
 
     /**
@@ -25,5 +31,13 @@ public class MovePlayerNoPassGo extends CardEffect{
     @Override
     void effect(Player currentPlayer) {
         currentPlayer.setCurrentPos(destination);
+    }
+
+    public int getDestination() {
+        return destination;
+    }
+
+    public void setDestination(int destination) {
+        this.destination = destination;
     }
 }

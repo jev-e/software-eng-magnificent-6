@@ -7,6 +7,13 @@ package ClassStructure;
 public class GoToJail extends TileEffect {
 
     /**
+     * Default constructor for Jackson
+     */
+    public GoToJail(){
+        canPurchase = false;
+    }
+
+    /**
      * Sends player to jail
      * @param iD tiles ID on the board
      */

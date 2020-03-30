@@ -12,6 +12,12 @@ public class PayTaxOrDrawOpportunity extends CardEffect {
     private int amount;
 
     /**
+     * Default constructor for Jackson
+     */
+    public PayTaxOrDrawOpportunity() {
+    }
+
+    /**
      * Text version of selection, to be updated when GUI elements are in place
      * @param cardText card text to be displayed on activation
      * @param amount amount of tax to be paid
@@ -43,5 +49,13 @@ public class PayTaxOrDrawOpportunity extends CardEffect {
         }else{
             this.board.drawOpportunityKnocks().effect(currentPlayer);//draw card and activate it's effect
         }
+    }
+
+    public int getAmount() {
+        return amount;
+    }
+
+    public void setAmount(int amount) {
+        this.amount = amount;
     }
 }

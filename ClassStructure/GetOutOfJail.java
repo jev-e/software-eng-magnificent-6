@@ -8,6 +8,13 @@ public class GetOutOfJail extends CardEffect {
     private Player owner;//Reference to player who currently owns this card
 
     /**
+     * Default constructor for Jackson
+     */
+    public GetOutOfJail() {
+
+    }
+
+    /**
      * Create new get out of jail free card with provided card text
      * @param cardText text to be displayed on card
      */

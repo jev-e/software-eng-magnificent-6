@@ -9,6 +9,13 @@ public class BankPaysPlayer extends CardEffect {
     private int amount;
 
     /**
+     * Default constructor for Jackson
+     */
+    public BankPaysPlayer() {
+    }
+
+
+    /**
      * Bank payment constructor to player card event
      * @param cardText Text to be shown when card is activated
      * @param amount The amount to be given to the player
@@ -26,5 +33,13 @@ public class BankPaysPlayer extends CardEffect {
     void effect(Player currentPlayer) {
         currentPlayer.payPlayerAmount(amount);
         System.out.println(cardText);//Display for test version
+    }
+
+    public int getAmount() {
+        return amount;
+    }
+
+    public void setAmount(int amount) {
+        this.amount = amount;
     }
 }

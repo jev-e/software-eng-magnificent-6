@@ -1,0 +1,45 @@
+package ClassStructure;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.TypeFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
+
+/**
+ * Helper class to pass objects from json
+ */
+public class Json {
+
+    private static ObjectMapper objectMapper = getDefaultObjectMapper();
+
+    private static ObjectMapper getDefaultObjectMapper() {
+        ObjectMapper defaultObjectMapper = new ObjectMapper();
+        //Edit settings here
+        return defaultObjectMapper;
+    }
+
+    /**
+     * Reads card data from files
+     * @param src source file
+     * @return A list which can be shuffled with collections and converted to an ArrayDeque
+     * @throws IOException potential file issues
+     */
+    public static List<CardEffect> fromJsonToList(File src) throws IOException {
+        List<CardEffect> out = null;
+        out = Arrays.asList(objectMapper.readValue(src, CardEffect[].class));
+        return out;
+    }
+
+    /**
+     * Reads board tile data from file
+     * @param src source file
+     * @return Hash map of iD: Board Tile
+     * @throws IOException
+     */
+    public static HashMap<Integer, BoardTile> fromJsonToTileSet(File src) throws IOException {
+        return objectMapper.readValue(src, TypeFactory.defaultInstance().constructMapType(HashMap.class, Integer.class, BoardTile.class));
+    }
+
+}

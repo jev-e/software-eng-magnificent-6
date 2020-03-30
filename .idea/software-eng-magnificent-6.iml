@@ -39,11 +39,38 @@
         <CLASSES />
         <JAVADOC />
         <NATIVE>
-          <root url="file://$MODULE_DIR$/../../javafx-sdk-11.0.2" />
+          <root url="file://$USER_HOME$/javafx-sdk-11.0.2" />
         </NATIVE>
         <SOURCES />
       </library>
     </orderEntry>
     <orderEntry type="library" name="javafx-swt" level="application" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/Jackson/jackson-annotations-2.10.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/Jackson/jackson-core-2.10.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/Jackson/jackson-databind-2.10.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>

@@ -9,6 +9,13 @@ public class MovePlayerPassGo extends CardEffect{
     int destination;
 
     /**
+     * Default constructor for Jackson
+     */
+    public MovePlayerPassGo() {
+
+    }
+
+    /**
      * Moves player to location checking for pass go and collecting £200
      * @param cardText text to display on activation
      * @param destination tile ID to move player to
@@ -27,5 +34,13 @@ public class MovePlayerPassGo extends CardEffect{
         currentPlayer.setCurrentPos(destination);
         //if current position is less than previous then the 0 position has been passed
         currentPlayer.passGo();
+    }
+
+    public int getDestination() {
+        return destination;
+    }
+
+    public void setDestination(int destination) {
+        this.destination = destination;
     }
 }

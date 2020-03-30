@@ -7,8 +7,16 @@ import java.util.LinkedList;
  */
 public class HousingRepairs extends CardEffect {
 
+
     private int houseFine;//Fine amount per house
     private int hotelFine;//Fine amount per hotel
+
+    /**
+     * Default constructor for Jackson
+     */
+    public HousingRepairs() {
+
+    }
 
     /**
      * Housing repair card
@@ -45,5 +53,20 @@ public class HousingRepairs extends CardEffect {
         if(payment < amount) {
             this.board.bankruptPlayer(currentPlayer);//bankrupt player for failure to pay
         }
+    }
+    public int getHouseFine() {
+        return houseFine;
+    }
+
+    public void setHouseFine(int houseFine) {
+        this.houseFine = houseFine;
+    }
+
+    public int getHotelFine() {
+        return hotelFine;
+    }
+
+    public void setHotelFine(int hotelFine) {
+        this.hotelFine = hotelFine;
     }
 }

@@ -6,6 +6,15 @@ package ClassStructure;
 public class OpportunityKnocks extends TileEffect{
 
     /**
+     * Default constructor for Jackson
+     */
+    public OpportunityKnocks() {
+        canPurchase = false;
+        title = "Opportunity Knocks";
+        text = "Draw Opportunity Knocks card";
+    }
+
+    /**
      * Creates a new opportunity knocks tile spot
      * @param iD board location to place tile
      */

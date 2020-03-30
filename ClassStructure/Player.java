@@ -156,7 +156,7 @@ public class Player {
     public void jailPlayer() {
         inJail = true;//sets player in jail
         GetOutOfJail getOutOfJail = null;
-        setCurrentPos(0);//to be changed to position of jail
+        setCurrentPos(10);
         for(Object item: assets) {//looks for a get out of jail free card
             if(item instanceof GetOutOfJail) {
                 getOutOfJail = (GetOutOfJail) item;//if found getOutOfJail is set to this card

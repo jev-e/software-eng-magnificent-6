@@ -1,5 +1,7 @@
 package ClassStructure;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 /**
  * @author Ayman Bensreti
  *	an enum for property groups
@@ -46,4 +48,9 @@ public enum Group {
      * @return int associated member count with the colour group
      */
     public int getMemberCount() { return memberCount; }
+
+    @JsonValue
+    final Group value() {
+        return this;
+    }
 }

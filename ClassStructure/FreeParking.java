@@ -6,6 +6,15 @@ package ClassStructure;
 public class FreeParking extends TileEffect{
 
     /**
+     * Default constructor for Jackson
+     */
+    public FreeParking() {
+        canPurchase = false;
+        title = "Free Parking";
+        text = "You collect the tax pot";
+    }
+
+    /**
      * Free Parking tile constructor
      * @param iD board position for tile
      */

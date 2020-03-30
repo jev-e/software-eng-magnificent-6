@@ -6,6 +6,15 @@ package ClassStructure;
 public class PotLuck extends TileEffect {
 
     /**
+     * Default constructor for Jackson
+     */
+    public PotLuck() {
+        canPurchase = false;
+        title = "Pot Luck";
+        text = "Draw Pot Luck card";
+    }
+
+    /**
      * Creates new pot luck tile at given board location
      * @param iD tile position on board
      */

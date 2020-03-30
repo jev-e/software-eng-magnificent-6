@@ -6,7 +6,15 @@ package ClassStructure;
  * Income tax
  */
 public class PayBankTax extends TileEffect{
+
     private int amount;
+
+    /**
+     * Default constructor for Jackson
+     */
+    public PayBankTax() {
+        canPurchase = false;
+    }
 
     /**
      * For Income Tax and Super Tax tiles
@@ -33,5 +41,13 @@ public class PayBankTax extends TileEffect{
         if(payment < amount) {
             this.board.bankruptPlayer(currentPlayer);//bankrupt player for failure to pay full amount
         }
+    }
+
+    public int getAmount() {
+        return amount;
+    }
+
+    public void setAmount(int amount) {
+        this.amount = amount;
     }
 }

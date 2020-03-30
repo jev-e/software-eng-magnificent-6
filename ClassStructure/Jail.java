@@ -6,6 +6,13 @@ package ClassStructure;
 public class Jail extends TileEffect{
 
     /**
+     * Default constructor for Jackson
+     */
+    public Jail() {
+        canPurchase = false;
+    }
+
+    /**
      * Creates Jail tile
      * @param iD location of tile
      * @param title Name of tile

@@ -11,7 +11,7 @@ public class Birthday extends CardEffect{
      * Birthday card event is non generic and takes no parameters
      */
     public Birthday() {
-        this.cardText = "It's your birthday. Collect £10 from each player";//card text is unchanging
+        this.cardText = "It's your birthday. Collect £10 from each player";//default card text for testing
     }
 
     /**

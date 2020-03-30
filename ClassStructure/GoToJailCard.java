@@ -6,6 +6,12 @@ package ClassStructure;
 public class GoToJailCard extends CardEffect{
 
     /**
+     * Default constructor for Jackson
+     */
+    public GoToJailCard() {
+    }
+
+    /**
      * Card that when drawn sends player to jail
      * @param cardText card text to display on activation
      */

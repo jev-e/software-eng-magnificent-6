@@ -7,6 +7,13 @@ public class PlayerPaysBank extends CardEffect{
     private int amount;
 
     /**
+     * Default constructor for Jackson
+     */
+    public PlayerPaysBank() {
+
+    }
+
+    /**
      * Player pays amount to the bank
      * @param cardText Text to be displayed on activation
      * @param amount amount to be deducted from player
@@ -27,6 +34,14 @@ public class PlayerPaysBank extends CardEffect{
             this.board.bankruptPlayer(currentPlayer);//bankrupt current player for failure to pay full amount
         }
         System.out.println(cardText);//for testing
+    }
+
+    public int getAmount() {
+        return amount;
+    }
+
+    public void setAmount(int amount) {
+        this.amount = amount;
     }
 }
 
