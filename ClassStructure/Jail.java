@@ -30,11 +30,14 @@ public class Jail extends TileEffect{
         if(currentPlayer.isInJail()) {
             if(currentPlayer.getJailTime() == 2) {
                 currentPlayer.leaveJail();//Frees the player after staying two turns in jail and resets jail time
+                System.out.println(currentPlayer.getName() + " has left jail");//Display for test version
             }else{
                 currentPlayer.serveJailTime();//Increases the jail time count
+                System.out.println(currentPlayer.getName() + "is in jail");
                 //move on with players turn they are still in jail
             }
         }
+        System.out.println("Just visiting");
         //Otherwise player is just visiting
     }
 }

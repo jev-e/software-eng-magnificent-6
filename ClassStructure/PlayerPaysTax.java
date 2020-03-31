@@ -35,6 +35,7 @@ public class PlayerPaysTax extends CardEffect {
             this.board.bankruptPlayer(currentPlayer);//bankrupt player for failure to pay full amount
         }
         this.board.taxPot += payment;//add amount to tax pot
+        System.out.println(cardText);//Display for test version
     }
 
     public int getAmount() {

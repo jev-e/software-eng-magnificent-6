@@ -27,6 +27,7 @@ public class GetOutOfJail extends CardEffect {
         currentPlayer.addAsset(this);//adds this item to players assets
         owner = currentPlayer;//keep reference the owner of the card until it is played
         //When card is drawn from deck owner will be overwritten
+        System.out.println("You get a get out of jail free card");
     }
 
     /**
@@ -35,6 +36,7 @@ public class GetOutOfJail extends CardEffect {
     public void playCard() {
         owner.leaveJail();//set player out of jail and resets jailCount
         owner.removeAsset(this);//removes this card from asset list
+        System.out.println(cardText);//Display for test version
         this.board.opportunityKnocks.addLast(this);//add this card back to the bottom of the deque
     }
 }

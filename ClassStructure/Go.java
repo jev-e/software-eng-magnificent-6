@@ -21,5 +21,6 @@ public class Go extends TileEffect {
     @Override
     public void activeEffect(Player currentPlayer) {
         //currently does nothing potential to add text prompt on landing
+        System.out.println("You are on GO");
     }
 }

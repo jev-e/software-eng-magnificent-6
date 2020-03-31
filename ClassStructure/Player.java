@@ -167,6 +167,7 @@ public class Player {
         int choice;
         boolean selected = false;
         while (!selected) {//Repeat until an option is selected
+            System.out.println(name + " " + token.getSymbol());
             System.out.println("Type the number of the option you would like to select");
             System.out.println("1. Serve Jail time\n2. Pay £50 bail");
             if(getOutOfJail != null) {
@@ -176,6 +177,7 @@ public class Player {
             switch (choice) {
                 case 1:
                     //Do nothing player serves time
+                    selected = true;
                     break;
                 case 2:
                     if(money > 50) {//If the player has the funds take the amount and remove them from jail

@@ -53,6 +53,7 @@ public class HousingRepairs extends CardEffect {
         if(payment < amount) {
             this.board.bankruptPlayer(currentPlayer);//bankrupt player for failure to pay
         }
+        System.out.println(cardText);//Display for test version
     }
     public int getHouseFine() {
         return houseFine;

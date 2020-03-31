@@ -256,7 +256,7 @@ public class Board {
             repeat = true;//tracks double rolled for player to go again
             if (count >= 3) {
                 result = die1 + die2;
-                System.out.printf("%s:%s Has Gone To Jail", currentPlayer.getName(), currentPlayer.getToken().getSymbol());
+                System.out.printf("%s:%s Has Gone To Jail\n", currentPlayer.getName(), currentPlayer.getToken().getSymbol());
                 currentPlayer.jailPlayer();//sets players status to jailed
                 currentPlayer.setCurrentPos(0);//Currently sends player to Go however must be changed to jail position
                 //In future versions the player method jailPlayer will move the player to the jail tile
@@ -265,7 +265,7 @@ public class Board {
         if(count < 3) {
             result = die1 + die2;
             int position = (currentPlayer.getCurrentPos() + result) % tiles.size();
-            System.out.printf("%s:%s Rolled |%d|%d| = %d", currentPlayer.getName(), currentPlayer.getToken().getSymbol(), die1, die2, result);
+            System.out.printf("%s:%s Rolled |%d|%d| = %d\n", currentPlayer.getName(), currentPlayer.getToken().getSymbol(), die1, die2, result);
             currentPlayer.setCurrentPos(position);
         }
         return result;
@@ -277,12 +277,13 @@ public class Board {
     public void demo() {
         displayAsString();
         String tempIn;
+        LinkedList<Player> playerPool = (LinkedList<Player>) turnOrder.clone();
         for(Player p: turnOrder) {
             System.out.println(p.getName() + " Money:" + p.getMoney());
         }
 
 
-        while (turns < 10) {
+        while (turns < 5) {
             for(Player p : turnOrder) {
                 int count = 0;
                 do{
@@ -295,7 +296,7 @@ public class Board {
                         e.printStackTrace();
                     }
                     roll(p,count);
-                    displayAsString();
+                    //displayAsString();
                     p.passGo();
                     tiles.get(p.getCurrentPos()).activeEffect(p);
                     displayAsString();
@@ -306,6 +307,10 @@ public class Board {
 
             turns++;
         }
+        for(Player player : playerPool) {
+            System.out.println(player.getName() + " ended with £" + player.getMoney());
+        }
+
     }
 
     /**

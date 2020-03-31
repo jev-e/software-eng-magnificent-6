@@ -41,6 +41,7 @@ public class PayBankTax extends TileEffect{
         if(payment < amount) {
             this.board.bankruptPlayer(currentPlayer);//bankrupt player for failure to pay full amount
         }
+        System.out.println(text);//Display for test version
     }
 
     public int getAmount() {

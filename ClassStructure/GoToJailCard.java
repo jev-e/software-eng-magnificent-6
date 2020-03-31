@@ -26,6 +26,9 @@ public class GoToJailCard extends CardEffect{
      */
     @Override
     void effect(Player currentPlayer) {
+        System.out.println(cardText);//Display for test version
         currentPlayer.jailPlayer();
+        int jailPosition = currentPlayer.getCurrentPos();
+        board.tiles.get(jailPosition).activeEffect(currentPlayer);//activate jail as the player has just been moved there
     }
 }

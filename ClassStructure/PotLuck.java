@@ -30,6 +30,7 @@ public class PotLuck extends TileEffect {
      */
     @Override
     public void activeEffect(Player currentPlayer) {
+        System.out.println(text);//Display for test version
         this.board.drawPotLuck().effect(currentPlayer);
     }
 }
