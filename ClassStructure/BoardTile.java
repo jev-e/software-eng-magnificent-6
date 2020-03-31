@@ -12,7 +12,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
         @Type(value = TileEffect.class, name = "tileEffect"),
         @Type(value = Property.class, name = "property")
 })
-
 /**
  * @author Ayman Bensreti, Calvin Boreham
  * Structure for board tile objects
@@ -53,5 +52,13 @@ public abstract class BoardTile {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public boolean isCanPurchase() {
+        return canPurchase;
+    }
+
+    public void setCanPurchase(boolean canPurchase) {
+        this.canPurchase = canPurchase;
     }
 }

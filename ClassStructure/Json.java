@@ -12,13 +12,7 @@ import java.util.*;
  */
 public class Json {
 
-    private static ObjectMapper objectMapper = getDefaultObjectMapper();
-
-    private static ObjectMapper getDefaultObjectMapper() {
-        ObjectMapper defaultObjectMapper = new ObjectMapper();
-        //Edit settings here
-        return defaultObjectMapper;
-    }
+    private static ObjectMapper objectMapper = new ObjectMapper();
 
     /**
      * Reads card data from files
@@ -26,9 +20,10 @@ public class Json {
      * @return A list which can be shuffled with collections and converted to an ArrayDeque
      * @throws IOException potential file issues
      */
-    public static List<CardEffect> fromJsonToList(File src) throws IOException {
+    public static List<CardEffect> fromJsonToList(String src) throws IOException {
+        File in = new File(src);
         List<CardEffect> out = null;
-        out = Arrays.asList(objectMapper.readValue(src, CardEffect[].class));
+        out = Arrays.asList(objectMapper.readValue(in, CardEffect[].class));
         return out;
     }
 
@@ -38,8 +33,9 @@ public class Json {
      * @return Hash map of iD: Board Tile
      * @throws IOException
      */
-    public static HashMap<Integer, BoardTile> fromJsonToTileSet(File src) throws IOException {
-        return objectMapper.readValue(src, TypeFactory.defaultInstance().constructMapType(HashMap.class, Integer.class, BoardTile.class));
+    public static HashMap<Integer, BoardTile> fromJsonToTileSet(String src) throws IOException {
+        File in = new File(src);
+        return objectMapper.readValue(in, TypeFactory.defaultInstance().constructMapType(HashMap.class, Integer.class, BoardTile.class));
     }
 
 }

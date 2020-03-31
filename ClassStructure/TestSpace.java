@@ -1,10 +1,8 @@
 package ClassStructure;
 
-import java.util.Deque;
-import java.util.ArrayDeque;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Random;
+import javax.smartcardio.Card;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * Test Space for demoing visual elements of the game
@@ -12,6 +10,8 @@ import java.util.Random;
 public class TestSpace {
     private static HashMap<Integer, BoardTile> board = new HashMap<Integer, BoardTile>();
     private static LinkedList<Player> order = new LinkedList<Player>();
+    private static List<CardEffect> oppourtunityKnocksPack;
+    private static List<CardEffect> potLuckPack;
 
     public static void main(String args[]) {
         //player creation
@@ -32,55 +32,28 @@ public class TestSpace {
         Deque<CardEffect> pot = new ArrayDeque<CardEffect>();
         Deque<CardEffect> opp = new ArrayDeque<CardEffect>();
         //add cards to decks
-        Random rand = new Random();
-        for(int i = 0; i < 10; i++) {
-            if(rand.nextInt(4) == 0) {
-                opp.addFirst(new MoveBack3());
-            }else{
-                opp.addFirst(new BankPaysPlayer("Lucky you here's £20",20));
-            }
-            pot.addFirst(new PlayerPaysBank("Butter fingers loose £20",20));
-        }
-        //construction of a test board
-        BoardTile temp;
 
-        for (int i = 0; i < 8; i++) {
-            int[] rent = { 10, 20, 30, 40};
-            if(i == 5) {
-                temp = new Property(i, "Example Street", Group.DEEP_BLUE, 10, 10, rent, 10, null);
-            }else if(i == 7) {
-                temp = new Property(i, "Test crescent", Group.DEEP_BLUE, 10, 10, rent, 10, calvin);
-                calvin.addAsset(temp);
-            }else if(i == 0) {
-                temp = new Go();
-            }else{
-                if(rand.nextInt(2) == 0) {
-                    temp = new PotLuck(i);
-                }else{
-                    temp = new OpportunityKnocks(i);
-                }
-            }
-            board.put(i, temp);
+        try{
+            board = Json.fromJsonToTileSet("BoardTileData.json");
+        }catch (IOException e){
+            e.printStackTrace();
         }
+
+        try{
+            oppourtunityKnocksPack = Json.fromJsonToList("OpportunityKnocksCardData.json");
+            potLuckPack = Json.fromJsonToList("PotLuckCardData.json");
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Collections.shuffle(oppourtunityKnocksPack);//shuffles order
+        Collections.shuffle(potLuckPack);
+
+        pot = new ArrayDeque<>(potLuckPack);//Load shuffled pack into decks
+        opp = new ArrayDeque<>(oppourtunityKnocksPack);
+
         Board b = new Board(order, board, pot, opp);
         b.demo();//run demo method shown in sprint 1 meeting
     }
 }
 
-/**
- * Dummy tile effect class for testing
- */
-class tImp extends TileEffect {
-
-    public tImp(int iD, String title, boolean canPurchase, String text) {
-        this.iD = iD;
-        this.title = title;
-        this.canPurchase = canPurchase;
-        this.text = text;
-    }
-
-    @Override
-    public void activeEffect(Player currentPlayer) {
-        System.out.println("The current player is " + currentPlayer.getName() + " their token is " + currentPlayer.getToken().getSymbol() + "\n" + text);
-    }
-}
