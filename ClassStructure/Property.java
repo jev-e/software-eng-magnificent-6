@@ -195,7 +195,7 @@ public class Property extends BoardTile{
             highestBidder.deductAmount( cost );
             owner = highestBidder;
             highestBidder.addAsset(this);
-            board.completeSetProperties(highestBidder); //purchase made, update complete set flags
+            highestBidder.completeSetProperties(); //purchase made, update complete set flags
 
         } else {
             System.out.println( "No bids were made");
@@ -266,7 +266,7 @@ public class Property extends BoardTile{
             //transfer ownership
             owner = currentPlayer;
             currentPlayer.addAsset(this);
-            board.completeSetProperties( currentPlayer ); //purchase has been made, update complete set flags
+            currentPlayer.completeSetProperties(); //purchase has been made, update complete set flags
             System.out.println("You have purchased " + title + " for £" + cost);
         } else {
             //trigger auction

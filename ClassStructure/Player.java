@@ -1,4 +1,5 @@
 package ClassStructure;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Scanner;
 
@@ -227,5 +228,134 @@ public class Player {
      */
     public boolean isInJail() {
         return inJail;
+    }
+
+    /**
+     * Updates flags for all player's properties, updates base rent amount if complete set with no properties. Should
+     * be called whenever a change to property ownership has occurred - e.g in purchase, sale, trading etc
+     *
+     */
+    public void completeSetProperties() {
+        HashMap<Group, Integer> count = new HashMap<>();
+
+        for(Object asset : assets){
+            //pull out all properties owned and form a count
+            if( asset instanceof Property){
+                int prev = 0;
+                if (count.get(((Property) asset).group) != null) {
+                    prev = count.get(((Property) asset).group);
+                }
+                count.put( ((Property) asset).group, prev + 1);
+
+            }
+        }
+        System.out.println(count.toString());
+        for(Group key : count.keySet()){
+            for( Object asset: assets){
+                if( (asset instanceof Property) && count.get(key) == key.getMemberCount() && !((Property) asset).completedSet ) {
+                    System.out.println(((Property) asset).title + " complete set updated");
+                    ((Property) asset).completedSet = true;
+                    ((Property) asset).updateRent();
+                } else if((asset instanceof Property) && count.get(key) == key.getMemberCount() && ((Property) asset).completedSet ){
+                    System.out.println(((Property) asset).title + " complete set removed");
+                    ((Property) asset).completedSet = false;
+                    ((Property) asset).updateRent();
+                }
+            }
+        }
+    }
+
+    /**
+     * Generates a text based interface to initiate the choosing of assets for trading
+     */
+    public LinkedList<Object> tradeAssetSelection() {
+        LinkedList<Object> tradeAssets = new LinkedList<>();
+        Scanner userInputScanner = new Scanner( System.in ); //scanner for user input
+        String assetChoice = null;
+        boolean goAgain = true;
+        boolean valid = false;
+        boolean cancel = false;
+
+        for( Object asset: assets ) {
+            if( asset instanceof Property ){
+                if( !((Property) asset).developed ){
+                    System.out.println(((Property) asset).title);
+                }
+            } else if( !(asset instanceof GetOutOfJail) ){
+                System.out.println(((BoardTile)asset).title);
+            }
+        }
+
+
+        while( goAgain ) {
+            while (!valid) {
+                boolean found = false; //flag for if given property found
+                System.out.println("Please enter an asset name or type cancel: ");
+                assetChoice = userInputScanner.nextLine(); //fetch user input
+
+                if( !(assetChoice.toLowerCase().equals("cancel"))){
+                    for (Object asset : assets ) {
+                        if (((BoardTile)asset).title.toLowerCase().equals(assetChoice.toLowerCase())) {
+                            System.out.println("You have selected property: " + ((BoardTile) asset).title);
+                            tradeAssets.add( asset );
+                            found = true; //user input reflects a possible property
+                        }
+                    }
+                } else {
+                    cancel = true;
+                }
+
+                if( cancel ){
+                    break;
+                } else if (found) {
+                    valid = true;
+                } else {
+                    System.out.println("Sorry, please try again, asset not found");
+                }
+            }
+
+            //reset flag
+            if( !cancel ){
+                valid = false;
+                goAgain = yesNoInput("Do you want to go again? (yes/no)");
+            } else {
+                tradeAssets = null;
+                break;
+            }
+        }
+
+        return tradeAssets;
+
+    }
+
+    /**
+     * Takes a yes no question and returns a boolean if answer is yes or no, loops until correct input is recieved
+     *
+     * @param message must have an answer of yes or no
+     */
+    private boolean yesNoInput( String message ) {
+        System.out.println( message );
+        Scanner userInputScanner = new Scanner( System.in ); //scanner for user input
+        boolean valid = false; //flag for valid input
+        boolean userDecision = false;
+
+        //ask if want to purchase
+        while(!valid){
+            String decision = userInputScanner.nextLine();
+            //normalise input
+            decision = decision.toLowerCase();
+
+            if( decision.equals( "no" )){
+                userDecision = false;
+                valid = true;
+            }else if( decision.equals( "yes" )){
+                userDecision = true;
+                valid = true;
+            }else {
+                System.out.println("Sorry, please try again (you need to type yes OR no)");
+            }
+        }
+
+        return userDecision;
     }
 }
