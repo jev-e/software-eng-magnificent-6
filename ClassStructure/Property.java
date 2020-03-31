@@ -312,16 +312,15 @@ public class Property extends BoardTile{
      * Increments housesNo, removes money from players account. A check will have already been performed to ensure
      * sufficient funds, updates rent amount
      *
-     * @param currentPlayer, the player purchasing the house
      */
-    public void purchaseHouse( Player currentPlayer) {
+    public void purchaseHouse() {
         if( housesNo <= 4) {
             housesNo++;
             if( housesNo == 1 ){
                 developed = true;
             }
             updateRent();
-            currentPlayer.deductAmount( group.getBuildingCost() );
+            owner.deductAmount( group.getBuildingCost() );
             rent += buildingRents[housesNo - 1];
             System.out.println("House purchased for " + title  + ", the new rent is: £" + rent);
         } else {
@@ -332,15 +331,13 @@ public class Property extends BoardTile{
     /**
      * Increments hotelNo, removes money from players account. A check will have already been performed to ensure
      * sufficient funds
-     *
-     * @param currentPlayer, the player purchasing the house
      */
-    public void purchaseHotel( Player currentPlayer ) {
+    public void purchaseHotel() {
         if( housesNo == 4) {
             //'sell' 4 houses
             hotelNo = 1;
             housesNo = 0;
-            currentPlayer.deductAmount( group.getBuildingCost() );
+            owner.deductAmount( group.getBuildingCost() );
             rent += hotelRent;
             System.out.println("Hotel purchased for " + title + ", the new rent is: £" + rent);
         } else if (hotelNo == 1){

@@ -1,10 +1,5 @@
 package ClassStructure;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Random;
-import java.util.Scanner;
-import java.util.ArrayList;
+import java.util.*;
 /**
  * @author Ayman Bensreti
  *	Game board and logic
@@ -300,7 +295,7 @@ public class Board {
                     tiles.get(p.getCurrentPos()).activeEffect(p);
                     displayAsString();
                 }while (repeat);
-                propertyImprovement(p);
+                p.propertyImprovement();
                 trade(p);
             }
 
@@ -317,131 +312,7 @@ public class Board {
         turnOrder.remove(target);
     }
 
-    /**
-     * Drives the interactive menu for property improvement and contains logic
-     * occurs at the end of the turn for the player
-     *
-     * @param currentPlayer, the player looking to make some improvements
-     * //TODO tidy up
-     */
-    private void propertyImprovement( Player currentPlayer ) {
 
-        ArrayList<Property> improvableProperties = new ArrayList<>();
-        Scanner userInputScanner = new Scanner( System.in );
-
-        //find all improvable properties
-        if(currentPlayer.getAssets().size() != 0){
-            System.out.println("Properties available for improvement:");
-
-            //loop through assets, finding all properties
-            for(Object asset : currentPlayer.getAssets()) {
-                if(asset instanceof Property) {
-                    //if potentially improvable (part of complete set and doesn't have a hotel built and isn't currently mortgaged)
-                    if( ((Property) asset).completedSet  && ((Property) asset).hotelNo != 1 && !((Property) asset).mortgaged) {
-                        System.out.println(((Property) asset).iD + " " + ((Property) asset).title); //print for selection
-                        improvableProperties.add((Property) asset); //add improvable properties for ease of search
-                    }
-                }
-            }
-        }
-        //check if we have any properties as this contains a lot of looping
-        if(improvableProperties.size() != 0){
-            boolean valid = false; //flag for valid input
-            boolean goAgain = true; //flag for repeating loop
-            boolean improve; //flag for if improvements desired
-            int decision = 0;
-
-            //fetch confirmation
-            improve = yesNoInput("Do you want to make an improvement? (yes/no)");
-
-            if(improve) {
-                while( goAgain ) {
-                    while(!valid){
-                        boolean found = false; //flag for if given property found
-                        System.out.println("Please enter a property ID: ");
-                        decision = userInputScanner.nextInt(); //fetch user input
-
-                        for( Property pp : improvableProperties){
-                            if(pp.iD == decision){
-                                found = true; //user input reflects a possible property
-                            }
-                        }
-
-                        //give response to user
-                        if( found ){
-                            System.out.println("You have selected property: " + decision);
-                            valid = true;
-                        }else {
-                            System.out.println("Sorry, please try again, ID not found");
-                        }
-                    }
-                    //reset flag
-                    valid = false;
-                    //fetch property chosen by user
-                    Property toBeImproved = (Property) tiles.get(decision);
-
-                    //init group store
-                    ArrayList<Property> group = new ArrayList<>();
-                    //find all houses in same group
-                    for( Property pp : improvableProperties){
-                        if(pp.group == toBeImproved.group){
-                            group.add(pp);
-                        }
-                    }
-
-                    //flag for if improvement is possible
-                    boolean validPurchase = true;
-
-
-                    //if hotel needs to be bought
-                    if((toBeImproved.getHousesNo() == 4) && (toBeImproved.hotelNo == 0)){
-                        //all other properties in group must have 4 houses as well
-                        for( Property pp: group ){
-                            if(pp.housesNo != 4){
-                                validPurchase = false;
-                                break;
-                            }
-                        }
-                        //if purchase possible and if player can afford it
-                        if( validPurchase && (currentPlayer.getMoney() > toBeImproved.group.getBuildingCost())){
-                            improve = yesNoInput("Do you want to purchase a hotel for £" + toBeImproved.group.getBuildingCost() + " (yes/no)?");
-                            if( improve) {
-                                toBeImproved.purchaseHotel( currentPlayer ); //manages transaction
-                                improvableProperties.remove( toBeImproved );
-                            }
-                        } else {
-                            System.out.println("Sorry, the property is not currently improvable");
-                        }
-
-                    } else if((toBeImproved.getHousesNo() < 4) && (toBeImproved.getHotelNo() == 0 )) { //only a house can be bought
-                        //all other properties must have the same or more than the number of houses on the property
-                        for( Property pp: group ){
-                            if( pp.housesNo < toBeImproved.getHousesNo() ){
-                                validPurchase = false;
-                                break;
-                            }
-                        }
-                        //if purchase possible and if player can afford it
-                        if( validPurchase && (currentPlayer.getMoney() > toBeImproved.group.getBuildingCost())){
-                            improve = yesNoInput("Do you want to purchase a house £" + toBeImproved.group.getBuildingCost() + " (yes/no)?");
-                            if( improve) {
-                                toBeImproved.purchaseHouse( currentPlayer ); //manages transaction
-                            }
-                        } else {
-                            System.out.println("Sorry, the property is not currently improvable");
-                        }
-
-                    }
-                    //find if any improvable properties left
-                    if(improvableProperties.size() == 0){
-                        System.out.println("No properties left to improve");
-                        break;
-                    }
-                    goAgain = yesNoInput("Do you want to go again? (yes/no)");
-                }
-            }
-        }
-    }
 
     /**
      * Takes a yes no question and returns a boolean if answer is yes or no, loops until correct input is recieved
@@ -480,18 +351,15 @@ public class Board {
      * Player trading method, called at the end of the turn for the player right now, in GUI should only be called once
      * per turn per player
      *
-     * @param currentPlayer
+     * @param currentPlayer, the player making the trade
      */
     public void trade( Player currentPlayer ) {
 
-        LinkedList<Object> tradeAssetsGive = new LinkedList<>(); //assets to be traded to currentPlayer
-        LinkedList<Object> tradeAssetsReceive = new LinkedList<>(); //assets to be traded to currentPlayer
+        LinkedList<Object> tradeAssetsGive; //assets to be traded to currentPlayer
+        LinkedList<Object> tradeAssetsReceive = null; //assets to be traded to currentPlayer
+        Player choice; //container for chosen player
+        boolean input = false; //boolean flag for if player would like to trade
 
-        Player choice = null; //container for chosen player
-
-        boolean valid = false; //flag for valid input
-        boolean input = false;
-        boolean cancel = false;
 
         //ask for confirmation
         if(currentPlayer.getAssets().size() != 0){
@@ -509,15 +377,11 @@ public class Board {
                     count++;
                 }
             }
-            //loop until valid choice
             if(count != 0){
                 //player selection
                 choice = playerSelection();
                 //if choice is null, player cancelled
                 if( choice != null ) {
-
-                    //find tradeable assets for both players
-
                     //select assets to give to chosen player
                     System.out.println(currentPlayer.getName() + ", select assets that you want to give " + choice.getName());
                     tradeAssetsGive = currentPlayer.tradeAssetSelection();
@@ -559,6 +423,12 @@ public class Board {
         }
     }
 
+    /**
+     * Text based method for choosing player with assets for trading
+     * //TODO convert to GUI compatible method
+     *
+     * @return Player, a selected player
+     */
     private Player playerSelection(){
         boolean valid = false;
         Scanner userInputScanner = new Scanner( System.in ); //scanner for user input
@@ -581,7 +451,6 @@ public class Board {
                     }
                 }
             }
-
 
             //give response to user
             if( found ){
