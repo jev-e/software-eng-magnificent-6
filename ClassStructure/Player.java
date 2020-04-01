@@ -1,5 +1,10 @@
 package ClassStructure;
+import com.sun.deploy.panel.IProperty;
+import org.w3c.dom.stylesheets.StyleSheet;
+
+import javax.rmi.CORBA.Util;
 import java.util.LinkedList;
+import java.util.Scanner;
 /**
  * @author Ayman Bensreti
  *	Player information
@@ -33,6 +38,41 @@ public class Player {
     }
 
     /**
+     * Checks to see if player owns any property, train staions or utilities.
+     * @return whether they own any properties or not.
+     */
+    public boolean ownsProperty(){
+        boolean  check = false;
+        for (int i = 0; i < assets.size(); i++){
+            if (!(assets.get(i) instanceof GetOutOfJail)){
+                check = true;
+            }
+        }
+        return(check);
+    }
+
+    /**
+     * Determines the total netwworth of a player. This incudes his money, his properties, stations, utilities and
+     * any buildings they have developed on any properties.
+     * @return The total networth of the player
+     */
+    public int networth(){
+        int value = this.money;
+        for(Object item : assets){
+            if (item instanceof Property){
+                value += ((Property) item).getValue();
+            }
+            else if(item instanceof Utility){
+                value += ((Utility) item).getCost();
+            }
+            else if(item instanceof Station){
+                value += ((Station) item).getCost();
+            }
+        }
+        return(value);
+    }
+
+    /**
      * Adds amount to players balance
      * @param amount integer amount to modify the balance by
      */
@@ -53,8 +93,12 @@ public class Player {
             return amount;
         }else{
             //check for ability to sell assets
-            if(money > amount) {
-                return amount;
+            while(this.money < amount && networth() > amount){
+                System.out.println("You do not have enough money to pay the debt. Please sell assets to pay your debt:");
+                sellAsset();
+            }
+            if (this.money < amount){
+                this.money = this.bankruptPlayer();
             }
         }
         return money;//returns what the player can pay
@@ -66,6 +110,168 @@ public class Player {
      */
     public void addAsset(Object item) {
         assets.add(item);
+    }
+
+    /**
+     *Creates a text menu to show off the available properties that the player owns.
+     */
+    public int displayProperties(){
+        int posVal = 0;
+        for(Object item : assets){
+            posVal ++;
+            if (item instanceof Property){
+                System.out.println(posVal + ": " + ((Property) item).getTitle());
+            }
+            else if(item instanceof Utility){
+                System.out.println(posVal + ": " + ((Utility) item).getTitle());
+            }
+            else if(item instanceof Station){
+                System.out.println(posVal + ": " + ((Station) item).getTitle());
+            }
+        }
+        return(posVal);
+    }
+
+    /**
+     * Allows for the selling of properties and placing the money into the player's account
+     * @param item The property that is being sold
+     * @return whether selling the property was successful or not.
+     */
+    public boolean sellProperty(Object item){
+        int amount;
+        boolean found = true;
+        if(item instanceof Property){
+            amount = ((Property) item).sellProperty();
+            if(amount != 0){
+                assets.remove(item);
+                this.money += amount;
+            }
+            else{
+                System.out.println("Property still has buildings developed. Please sell buildings first.");
+            }
+        }
+        else if (item instanceof Utility){
+            this.money += ((Utility) item).sell();
+            this.assets.remove(item);
+        }
+        else if(item instanceof Station){
+            this.money += ((Station) item).sell();
+            this.assets.remove(item);
+        }
+        else{
+            System.out.println("Invalid option.  please type in a a valid number");
+            found = false;
+        }
+        return(found);
+    }
+
+    /**
+     * Allows for mortgaging properties and placing the money into the player's account
+     * @param item
+     * @return whether mortgaging the property was successful or not.
+     */
+    public boolean mortgageProperty(Object item){
+        int amount;
+        boolean found = true;
+        if(item instanceof Property){
+            amount = ((Property) item).mortgageProperty();
+            if(amount != 0){
+                this.money += amount;
+            }
+            else{
+                System.out.println("Property still has buildings developed. Please sell buildings first.");
+            }
+        }
+        else if (item instanceof Utility){
+            this.money += ((Utility) item).mortgage();
+            this.assets.remove(item);
+        }
+        else if(item instanceof Station){
+            this.money += ((Station) item).mortgage();
+            this.assets.remove(item);
+        }
+        else{
+            System.out.println("Invalid option.  please type in a a valid number");
+            found = false;
+        }
+        return(found);
+    }
+
+    /**
+     * Allows for selling a building off a property and giving the money to the player.
+     * @param item The property that is being mortgaged
+     * @return whether selling a building was successful for or not.
+     */
+    public boolean sellBuildings(Property item){
+        boolean found =  true;
+        int amount = item.sellHouseOrHotel();
+        if(amount == 0){
+            System.out.println("This property has no buildings to sell");
+            found = false;
+        }
+        this.money += amount;
+        return(found);
+    }
+
+    /**
+     *
+     * @param item
+     * @return
+     */
+    public void propertyManegment(Object item){
+        Scanner scan = new Scanner(System.in);
+        System.out.println("1: Sell\n2: mortgage");
+        if(item instanceof Property ){
+            System.out.println("3: sell buildings");
+        }
+        boolean found = false;
+        while(!found){
+            String choice = scan.next();
+            if (choice.equals("1")){
+                found = sellProperty(item);
+            }
+            else if(choice.equals("2")){
+                found = mortgageProperty(item);
+            }
+            else if(choice.equals("3") && item instanceof Property){
+                found = sellBuildings((Property) item);
+            }
+            else{
+                System.out.print("Invalid Option. Please try again");
+            }
+        }
+    }
+
+
+    /**
+     *
+     */
+    public void sellAsset(){
+        Scanner scan = new Scanner(System.in);
+        int pos = 0;
+        displayProperties();
+        boolean found = false;
+        while(!found){
+            try{
+                pos = Integer.parseInt(scan.next());
+                if (pos > assets.size() || pos < 1){
+                    if (assets.get(pos-1) instanceof GetOutOfJail){
+                        System.out.println("Invalid option.  please type in a a valid number");
+                    }
+                    else{
+                        propertyManegment(assets.get(pos-1));
+                        found = true;
+                    }
+                }
+                else{
+                    System.out.println("Invalid option.  please type in a a valid number");
+                }
+            }
+            catch (Exception e){
+                System.out.println("Invalid option. please type in a a valid number");
+                scan.next();
+            }
+        }
     }
 
     /**
@@ -178,5 +384,30 @@ public class Player {
     public void leaveJail() {
         inJail = false;
         jailTime = 0;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public int bankruptPlayer() {
+        int amount = this.networth();
+        this.money = 0;
+        for(Object item : this.assets){
+            if(item instanceof Property){
+                ((Property) item).returnToBank();
+            }
+            else if(item instanceof Utility){
+                ((Utility) item).returnToBank();
+            }
+            else if(item instanceof Station){
+                ((Station) item).returnToBank();
+            }
+            else if(item instanceof GetOutOfJail){
+                ((GetOutOfJail) item).returnCard();
+            }
+        }
+        assets = null;
+        return(amount);
     }
 }
