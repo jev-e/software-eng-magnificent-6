@@ -1,66 +1,94 @@
 package ClassStructure;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 
-/**
- * Station tile events
- */
 public class Station extends TileEffect {
+    private int cost = 200;
+    private Player owner = null;
+    private boolean mortgaged;
 
-    private int cost;
-    private Player owner;
-
-    /**
-     * Creates a new station tile
-     * @param iD board position for station
-     * @param title name of the station
-     */
     public Station(int iD, String title) {
-        this.owner = null;
-        this.cost = 200;//all stations cost 200
         this.iD = iD;
         this.title = title;
         this.canPurchase = true;
     }
 
-    /**
-     * On land on options to purchase if the station is unowned
-     * If station is owned a count for the number stations owned by the owner is done
-     * Player that lands on tiles pays differing amounts depending on number of stations
-     * @param currentPlayer player to have amount deducted from
-     */
-    @Override
+    public String getTitle() {
+        return this.title;
+    }
+
+    public int getCost() {
+        return this.cost;
+    }
+
+    public void returnToBank() {
+        this.owner = null;
+    }
+
+    public void setOwner(Player owner) {
+        this.owner = owner;
+    }
+
+    public Player getOwner() {
+        return this.owner;
+    }
+
     public void activeEffect(Player currentPlayer) {
         int stationCount = 0;
         int amount = 0;
-        if (owner != null) {
-           LinkedList<Object> assets = owner.getAssets();
-           for(Object item : assets) {
-               if(item instanceof Station) {
-                   stationCount++;//count number of stations owned by this tiles owner
-               }
-               switch (stationCount) {//selects the amount based on how many station owned
-                   case 1:
-                       amount = 25;
-                       break;
-                   case 2:
-                       amount = 50;
-                       break;
-                   case 3:
-                       amount = 100;
-                       break;
-                   case 4:
-                       amount = 200;
-                       break;
-               }
-               int payment = currentPlayer.deductAmount(amount);//take from current player
-               owner.payPlayerAmount(payment);// gives the amount the player was able to pay
-               if(payment < amount) {//if the player couldn't pay the full amount
-                   this.board.bankruptPlayer(currentPlayer);//bankrupt player
-               }
-           }
-        }else{
-            //purchase logic
+        if (this.owner != null) {
+            LinkedList<Object> assets = this.owner.getAssets();
+            Iterator var5 = assets.iterator();
+
+            while(var5.hasNext()) {
+                Object item = var5.next();
+                if (item instanceof Station) {
+                    ++stationCount;
+                }
+
+                switch(stationCount) {
+                    case 1:
+                        amount = 25;
+                        break;
+                    case 2:
+                        amount = 50;
+                        break;
+                    case 3:
+                        amount = 100;
+                        break;
+                    case 4:
+                        amount = 200;
+                }
+
+                int payment = currentPlayer.deductAmount(amount);
+                this.owner.payPlayerAmount(payment);
+                if (payment < amount) {
+                    this.board.bankruptPlayer(currentPlayer);
+                }
+            }
+        }
+
+    }
+
+    public int mortgage() {
+        if (this.mortgaged) {
+            return 0;
+        } else {
+            this.mortgaged = true;
+            return this.cost / 2;
+        }
+    }
+
+    public int sell() {
+        if (this.mortgaged) {
+            this.returnToBank();
+            this.mortgaged = false;
+            return this.cost / 2;
+        } else {
+            this.returnToBank();
+            return this.cost;
         }
     }
 }
+

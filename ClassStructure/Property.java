@@ -62,6 +62,10 @@ public class Property extends BoardTile{
         return housesNo;
     }
 
+    public int getValue () { return (this.cost + ((hotelNo + housesNo) * this.group.getBuildingCost()));}
+
+    public String getTitle() { return title;}
+
     public int getHotelNo() {
         return hotelNo;
     }
@@ -84,7 +88,7 @@ public class Property extends BoardTile{
 
     /**
      * Clears the owner
-     */
+     *///
     public void returnToBank() {
         owner = null;
     }

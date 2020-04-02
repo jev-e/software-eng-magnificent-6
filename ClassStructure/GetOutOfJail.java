@@ -30,4 +30,8 @@ public class GetOutOfJail extends CardEffect {
         owner.removeAsset(this);//removes this card from asset list
         this.board.opportunityKnocks.addLast(this);//add this card back to the bottom of the deque
     }
+
+    public void returnCard(){
+        this.board.opportunityKnocks.addLast(this);
+    }
 }
