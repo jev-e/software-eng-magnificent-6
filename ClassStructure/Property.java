@@ -60,7 +60,7 @@ public class Property extends BoardTile{
          */
         //is there an owner?
         if( owner != null && owner != currentPlayer && !mortgaged && !owner.isInJail()){
-            //there is an owner, collect rent
+            //there is an owner that is allowed to collect rent,so collect rent
             collectRent( currentPlayer );
         } else if( owner != currentPlayer ){
             //no owner, can possibly purchase property
