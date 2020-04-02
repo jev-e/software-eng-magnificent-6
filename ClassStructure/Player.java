@@ -1,9 +1,11 @@
 package ClassStructure;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Scanner;
 
 /**
- * @author Ayman Bensreti
+ * @author Ayman Bensreti, Calvin Boreham
  *	Player information
  */
 public class Player {
@@ -229,5 +231,292 @@ public class Player {
      */
     public boolean isInJail() {
         return inJail;
+    }
+
+    /**
+     * Updates flags for all player's properties, updates base rent amount if complete set with no properties. Should
+     * be called whenever a change to property ownership has occurred - e.g in purchase, sale, trading etc
+     *
+     */
+    public void completeSetProperties() {
+        HashMap<Group, Integer> count = new HashMap<>();
+
+        for(Object asset : assets){
+            //pull out all properties owned and form a count
+            if( asset instanceof Property){
+                int prev = 0;
+                if (count.get(((Property) asset).group) != null) {
+                    prev = count.get(((Property) asset).group);
+                }
+                count.put( ((Property) asset).group, prev + 1);
+
+            }
+        }
+        System.out.println(count.toString());
+        for(Group key : count.keySet()){
+            for( Object asset: assets){
+                if( (asset instanceof Property) && count.get(key) == key.getMemberCount() && !((Property) asset).completedSet ) {
+                    System.out.println(((Property) asset).title + " complete set updated");
+                    ((Property) asset).completedSet = true;
+                    ((Property) asset).updateRent();
+                } else if((asset instanceof Property) && count.get(key) == key.getMemberCount() && ((Property) asset).completedSet ){
+                    System.out.println(((Property) asset).title + " complete set removed");
+                    ((Property) asset).completedSet = false;
+                    ((Property) asset).updateRent();
+                }
+            }
+        }
+    }
+
+    /**
+     * Generates a text based interface to initiate the choosing of assets for trading
+     */
+    public LinkedList<Object> tradeAssetSelection() {
+        LinkedList<Object> tradeAssets = new LinkedList<>();
+        Scanner userInputScanner = new Scanner( System.in ); //scanner for user input
+        String assetChoice = null;
+        boolean goAgain = true;
+        boolean valid = false;
+        boolean cancel = false;
+
+        for( Object asset: assets ) {
+            if( asset instanceof Property ){
+                if( !((Property) asset).developed ){
+                    System.out.println(((Property) asset).title);
+                }
+            } else if( !(asset instanceof GetOutOfJail) ){
+                System.out.println(((BoardTile)asset).title);
+            }
+        }
+
+
+        while( goAgain ) {
+            while (!valid) {
+                boolean found = false; //flag for if given property found
+                System.out.println("Please enter an asset name or type cancel: ");
+                assetChoice = userInputScanner.nextLine(); //fetch user input
+
+                if( !(assetChoice.toLowerCase().equals("cancel"))){
+                    for (Object asset : assets ) {
+                        if (((BoardTile)asset).title.toLowerCase().equals(assetChoice.toLowerCase())) {
+                            System.out.println("You have selected property: " + ((BoardTile) asset).title);
+                            tradeAssets.add( asset );
+                            found = true; //user input reflects a possible property
+                        }
+                    }
+                } else {
+                    cancel = true;
+                }
+
+                if( cancel ){
+                    break;
+                } else if (found) {
+                    valid = true;
+                } else {
+                    System.out.println("Sorry, please try again, asset not found");
+                }
+            }
+
+            //reset flag
+            if( !cancel ){
+                valid = false;
+                goAgain = yesNoInput("Do you want to go again? (yes/no)");
+            } else {
+                tradeAssets = null;
+                break;
+            }
+        }
+
+        return tradeAssets;
+
+    }
+
+    /**
+     * Takes a yes no question and returns a boolean if answer is yes or no, loops until correct input is recieved
+     *
+     * @param message must have an answer of yes or no
+     */
+    private boolean yesNoInput( String message ) {
+        System.out.println( message );
+        Scanner userInputScanner = new Scanner( System.in ); //scanner for user input
+        boolean valid = false; //flag for valid input
+        boolean userDecision = false;
+
+        //ask if want to purchase
+        while(!valid){
+            String decision = userInputScanner.nextLine();
+            //normalise input
+            decision = decision.toLowerCase();
+
+            if( decision.equals( "no" )){
+                userDecision = false;
+                valid = true;
+            }else if( decision.equals( "yes" )){
+                userDecision = true;
+                valid = true;
+            }else {
+                System.out.println("Sorry, please try again (you need to type yes OR no)");
+            }
+        }
+
+        return userDecision;
+    }
+
+    /**
+     * Drives the interactive menu for property improvement and contains logic
+     * occurs at the end of the turn for the player
+     */
+    public void propertyImprovement() {
+
+        //ArrayList<Property> improvableProperties = new ArrayList<>();
+        Scanner userInputScanner = new Scanner( System.in );
+        int count = improvableProperties();
+
+        //check if we have any properties as this contains a lot of looping
+        if(count != 0){
+            boolean valid = false; //flag for valid input
+            boolean goAgain = true; //flag for repeating loop
+            boolean improve; //flag for if improvements desired
+            int decision = 0;
+
+            //fetch confirmation
+            improve = yesNoInput("Do you want to make an improvement? (yes/no)");
+
+            if(improve) {
+                while( goAgain ) {
+                    //property selection
+                    Property toBeImproved = selectProperty();
+
+                    //init group store
+                    ArrayList<Property> group = new ArrayList<>();
+                    //find all houses in same group
+                    for( Object asset : assets ) {
+                        if (asset instanceof Property) {
+                            if (((Property) asset).group == toBeImproved.group) {
+                                group.add((Property) asset);
+                            }
+                        }
+                    }
+
+                    //flag for if improvement is possible
+                    boolean validPurchase = true;
+
+                    //if hotel needs to be bought
+                    if((toBeImproved.getHousesNo() == 4) && (toBeImproved.hotelNo == 0)){
+                        //all other properties in group must have 4 houses as well
+                        for( Property pp: group ){
+                            if(pp.housesNo != 4){
+                                validPurchase = false;
+                                break;
+                            }
+                        }
+                        //if purchase possible and if player can afford it
+                        if( validPurchase && (money > toBeImproved.group.getBuildingCost())){
+                            improve = yesNoInput("Do you want to purchase a hotel for £" + toBeImproved.group.getBuildingCost() + " (yes/no)?");
+                            if( improve) {
+                                toBeImproved.purchaseHotel(); //manages transaction
+                            }
+                        } else {
+                            System.out.println("Sorry, the property is not currently improvable");
+                        }
+
+                    } else if((toBeImproved.getHousesNo() < 4) && (toBeImproved.getHotelNo() == 0 )) { //only a house can be bought
+                        //all other properties must have the same or more than the number of houses on the property
+                        for( Property pp: group ){
+                            if( pp.housesNo < toBeImproved.getHousesNo() ){
+                                validPurchase = false;
+                                break;
+                            }
+                        }
+                        //if purchase possible and if player can afford it
+                        if( validPurchase && (money > toBeImproved.group.getBuildingCost())){
+                            improve = yesNoInput("Do you want to purchase a house £" + toBeImproved.group.getBuildingCost() + " (yes/no)?");
+                            if( improve) {
+                                toBeImproved.purchaseHouse(); //manages transaction
+                            }
+                        } else {
+                            System.out.println("Sorry, the property is not currently improvable");
+                        }
+
+                    }
+
+                    boolean possible = false;
+                    //check if any more improvements possible
+                    for( Object asset : assets ){
+                        if( asset instanceof Property ){
+                            if( ((Property) asset).hotelNo == 0  && ((Property) asset).completedSet){
+                                possible = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if(possible){
+                        goAgain = yesNoInput("Do you want to go again? (yes/no)");
+                    } else {
+                        System.out.println("No properties left to improve");
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Text based method for displaying improvable property choices to the user
+     * //TODO convert into GUI method to only show improvable properties to user
+     */
+    private int improvableProperties() {
+        int count = 0;
+        System.out.println("Properties available for improvement:");
+        //loop through assets, finding all properties
+        for(Object asset : assets) {
+            if(asset instanceof Property) {
+                //if potentially improvable (part of complete set and doesn't have a hotel built and isn't currently mortgaged)
+                if( ((Property) asset).completedSet  && ((Property) asset).hotelNo != 1 && !((Property) asset).mortgaged) {
+                    System.out.println(((Property) asset).iD + " " + ((Property) asset).title); //print for selection
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
+    /**
+     * Method to allow a user to select a property from the asset list. It is assumed the user has already been shown
+     * a list of appropriate options
+     * //TODO convert into GUI method
+     * @return the user property choice
+     */
+    private Property selectProperty() {
+        Scanner userInputScanner = new Scanner( System.in ); //scanner for user input
+        Property choice = null;
+        boolean valid = false;
+        int decision;
+
+        while(!valid){
+            boolean found = false; //flag for if given property found
+            System.out.println("Please enter a property ID: ");
+            decision = userInputScanner.nextInt(); //fetch user input
+
+            for( Object asset : assets ){
+                if(asset instanceof  Property){
+                    if( ((Property) asset).iD == decision){
+                        found = true; //user input reflects a possible property
+                        choice = (Property) asset;
+                    }
+                }
+            }
+
+            //give response to user
+            if( found ){
+                System.out.println("You have selected property: " + decision);
+                valid = true;
+            }else {
+                System.out.println("Sorry, please try again, ID not found");
+            }
+        }
+
+        return choice;
     }
 }

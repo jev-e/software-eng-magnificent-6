@@ -3,7 +3,7 @@ package ClassStructure;
 import java.util.Scanner;
 
 /**
- * @author Ayman Bensreti
+ * @author Ayman Bensreti, Calvin Boreham
  * Structure for property objects
  */
 public class Property extends BoardTile{
@@ -71,8 +71,8 @@ public class Property extends BoardTile{
          * purchase functionality if not owned
          */
         //is there an owner?
-        if( owner != null && owner != currentPlayer && !mortgaged){
-            //there is an owner, collect rent
+        if( owner != null && owner != currentPlayer && !mortgaged && !owner.isInJail()){
+            //there is an owner that is allowed to collect rent,so collect rent
             collectRent( currentPlayer );
         } else if( owner != currentPlayer ){
             //no owner, can possibly purchase property
@@ -207,7 +207,7 @@ public class Property extends BoardTile{
             highestBidder.deductAmount( cost );
             owner = highestBidder;
             highestBidder.addAsset(this);
-            board.completeSetProperties(highestBidder); //purchase made, update complete set flags
+            highestBidder.completeSetProperties(); //purchase made, update complete set flags
 
         } else {
             System.out.println( "No bids were made");
@@ -278,7 +278,7 @@ public class Property extends BoardTile{
             //transfer ownership
             owner = currentPlayer;
             currentPlayer.addAsset(this);
-            board.completeSetProperties( currentPlayer ); //purchase has been made, update complete set flags
+            currentPlayer.completeSetProperties(); //purchase has been made, update complete set flags
             System.out.println("You have purchased " + title + " for £" + cost);
         } else {
             //trigger auction
@@ -324,16 +324,15 @@ public class Property extends BoardTile{
      * Increments housesNo, removes money from players account. A check will have already been performed to ensure
      * sufficient funds, updates rent amount
      *
-     * @param currentPlayer, the player purchasing the house
      */
-    public void purchaseHouse( Player currentPlayer) {
+    public void purchaseHouse() {
         if( housesNo <= 4) {
             housesNo++;
             if( housesNo == 1 ){
                 developed = true;
             }
             updateRent();
-            currentPlayer.deductAmount( group.getBuildingCost() );
+            owner.deductAmount( group.getBuildingCost() );
             rent += buildingRents[housesNo - 1];
             System.out.println("House purchased for " + title  + ", the new rent is: £" + rent);
         } else {
@@ -344,15 +343,13 @@ public class Property extends BoardTile{
     /**
      * Increments hotelNo, removes money from players account. A check will have already been performed to ensure
      * sufficient funds
-     *
-     * @param currentPlayer, the player purchasing the house
      */
-    public void purchaseHotel( Player currentPlayer ) {
+    public void purchaseHotel() {
         if( housesNo == 4) {
             //'sell' 4 houses
             hotelNo = 1;
             housesNo = 0;
-            currentPlayer.deductAmount( group.getBuildingCost() );
+            owner.deductAmount( group.getBuildingCost() );
             rent += hotelRent;
             System.out.println("Hotel purchased for " + title + ", the new rent is: £" + rent);
         } else if (hotelNo == 1){

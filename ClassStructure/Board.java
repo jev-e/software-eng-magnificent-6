@@ -1,12 +1,7 @@
 package ClassStructure;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Random;
-import java.util.Scanner;
-import java.util.ArrayList;
+import java.util.*;
 /**
- * @author Ayman Bensreti
+ * @author Ayman Bensreti, Calvin Boreham
  *	Game board and logic
  */
 public class Board {
@@ -301,7 +296,7 @@ public class Board {
                     tiles.get(p.getCurrentPos()).activeEffect(p);
                     displayAsString();
                 }while (repeat);
-                propertyImprovement(p);
+                p.propertyImprovement();
                 trade(p);
             }
 
@@ -322,137 +317,7 @@ public class Board {
         turnOrder.remove(target);
     }
 
-    /**
-     * Drives the interactive menu for property improvement and contains logic
-     * occurs at the end of the turn for the player
-     *
-     * @param currentPlayer, the player looking to make some improvements
-     */
-    private void propertyImprovement( Player currentPlayer ) {
-        ArrayList<Property> improvableProperties = new ArrayList<>();
-        Scanner userInputScanner = new Scanner( System.in );
 
-        //find all improvable properties
-        if(currentPlayer.getAssets().size() != 0){
-            System.out.println("Properties available for improvement:");
-            //update complete set flags for all assets of player
-            //completeSetProperties( currentPlayer ); //TODO is this necessary
-            //loop through assets, finding all properties
-            for(Object asset : currentPlayer.getAssets()) {
-                if(asset instanceof Property) {
-                    //if potentially improvable (part of complete set and doesn't have a hotel built and isn't currently mortgaged)
-                    if( ((Property) asset).completedSet  && ((Property) asset).hotelNo != 1 && !((Property) asset).mortgaged) {
-                        System.out.println(((Property) asset).iD + " " + ((Property) asset).title); //print for selection
-                        improvableProperties.add((Property) asset); //add improvable properties for ease of search
-                    }
-                }
-            }
-        }
-        //check if we have any properties as this contains a lot of looping
-        if(improvableProperties.size() != 0){
-            boolean valid = false; //flag for valid input
-            boolean goAgain = true; //flag for repeating loop
-            boolean improve; //flag for if improvements desired
-            int decision = 0;
-
-            //fetch confirmation
-            improve = yesNoInput("Do you want to make an improvement? (yes/no)");
-
-            if(improve) {
-                while( goAgain ) {
-                    while(!valid){
-                        boolean found = false; //flag for if given property found
-                        System.out.println("Please enter a property ID: ");
-                        decision = userInputScanner.nextInt(); //fetch user input
-
-                        for( Property pp : improvableProperties){
-                            if(pp.iD == decision){
-                                found = true; //user input reflects a possible property
-                            }
-                        }
-
-                        //give response to user
-                        if( found ){
-                            System.out.println("You have selected property: " + decision);
-                            valid = true;
-                        }else {
-                            System.out.println("Sorry, please try again, ID not found");
-                        }
-                    }
-                    //reset flag
-                    valid = false;
-                    //fetch property chosen by user
-                    Property toBeImproved = (Property) tiles.get(decision);
-
-                    //init group store
-                    ArrayList<Property> group = new ArrayList<>();
-                    //find all houses in same group
-                    for( Property pp : improvableProperties){
-                        if(pp.group == toBeImproved.group){
-                            group.add(pp);
-                        }
-                    }
-
-                    //flag for if improvement is possible
-                    boolean validPurchase = true;
-
-
-                    //if hotel needs to be bought
-                    if((toBeImproved.getHousesNo() == 4) && (toBeImproved.hotelNo == 0)){
-                        //all other properties in group must have 4 houses as well
-                        for( Property pp: group ){
-                            if(pp.housesNo != 4){
-                                validPurchase = false;
-                                break;
-                            }
-                        }
-                        //if purchase possible and if player can afford it
-                        if( validPurchase && (currentPlayer.getMoney() > toBeImproved.group.getBuildingCost())){
-                            improve = yesNoInput("Do you want to purchase a hotel for £" + toBeImproved.group.getBuildingCost() + " (yes/no)?");
-                            if( improve) {
-                                toBeImproved.purchaseHotel( currentPlayer ); //manages transaction
-                                improvableProperties.remove( toBeImproved );
-                            }
-                        } else {
-                            System.out.println("Sorry, the property is not currently improvable");
-                        }
-
-                    } else if((toBeImproved.getHousesNo() < 4) && (toBeImproved.getHotelNo() == 0 )) { //only a house can be bought
-                        //all other properties must have the same or more than the number of houses on the property
-                        for( Property pp: group ){
-                            if( pp.housesNo < toBeImproved.getHousesNo() ){
-                                validPurchase = false;
-                                break;
-                            }
-                        }
-                        //if purchase possible and if player can afford it
-                        if( validPurchase && (currentPlayer.getMoney() > toBeImproved.group.getBuildingCost())){
-                            improve = yesNoInput("Do you want to purchase a house £" + toBeImproved.group.getBuildingCost() + " (yes/no)?");
-                            if( improve) {
-                                toBeImproved.purchaseHouse( currentPlayer ); //manages transaction
-                            }
-                        } else {
-                            System.out.println("Sorry, the property is not currently improvable");
-                        }
-
-                    }
-                    //find if any improvable properties left
-                    if(improvableProperties.size() == 0){
-                        System.out.println("No properties left to improve");
-                        break;
-                    }
-                    goAgain = yesNoInput("Do you want to go again? (yes/no)");
-                }
-            }
-
-
-
-        }
-
-
-
-
-    }
 
     /**
      * Takes a yes no question and returns a boolean if answer is yes or no, loops until correct input is recieved
@@ -485,61 +350,21 @@ public class Board {
         return userDecision;
     }
 
-    /**
-     * Updates flags for all player's properties, updates base rent amount if complete set with no properties. Should
-     * be called whenever a change to property ownership has occurred - e.g in purchase, sale, trading etc
-     *
-     * @param currentPlayer player to check status of their property sets
-     */
-    public void completeSetProperties( Player currentPlayer ) {
-        HashMap<Group, Integer> count = new HashMap<>();
 
-        for(Object asset : currentPlayer.getAssets()){
-            //pull out all properties owned and form a count
-            if( asset instanceof Property){
-                int prev = 0;
-                if (count.get(((Property) asset).group) != null) {
-                    prev = count.get(((Property) asset).group);
-                }
-                count.put( ((Property) asset).group, prev + 1);
-
-            }
-        }
-        System.out.println(count.toString());
-        for(Group key : count.keySet()){
-            for( Object asset: currentPlayer.getAssets()){
-                if( (asset instanceof Property) && count.get(key) == key.getMemberCount() && !((Property) asset).completedSet ) {
-                    System.out.println(((Property) asset).title + " complete set updated");
-                    ((Property) asset).completedSet = true;
-                    ((Property) asset).updateRent();
-                } else if((asset instanceof Property) && count.get(key) == key.getMemberCount() && ((Property) asset).completedSet ){
-                    System.out.println(((Property) asset).title + " complete set removed");
-                    ((Property) asset).completedSet = false;
-                    ((Property) asset).updateRent();
-                }
-            }
-        }
-    }
 
     /**
      * Player trading method, called at the end of the turn for the player right now, in GUI should only be called once
      * per turn per player
      *
-     * @param currentPlayer
+     * @param currentPlayer, the player making the trade
      */
     public void trade( Player currentPlayer ) {
 
-        LinkedList<Object> tradeableAssetsReceive = new LinkedList<>(); //assets to be traded from currentPlayer
-        LinkedList<Object> tradeableAssetsGive = new LinkedList<>(); //assets to be traded to currentPlayer
-        LinkedList<Object> tradeAssetsGive = new LinkedList<>(); //assets to be traded to currentPlayer
-        LinkedList<Object> tradeAssetsReceive = new LinkedList<>(); //assets to be traded to currentPlayer
+        LinkedList<Object> tradeAssetsGive; //assets to be traded to currentPlayer
+        LinkedList<Object> tradeAssetsReceive = null; //assets to be traded to currentPlayer
+        Player choice; //container for chosen player
+        boolean input = false; //boolean flag for if player would like to trade
 
-        Player choice = null; //container for chosen player
-        Scanner userInputScanner = new Scanner( System.in ); //scanner for user input
-        boolean valid = false; //flag for valid input
-        boolean goAgain = true; //flag for repeating input
-        boolean input = false;
-        boolean cancel = false;
 
         //ask for confirmation
         if(currentPlayer.getAssets().size() != 0){
@@ -557,169 +382,91 @@ public class Board {
                     count++;
                 }
             }
-            //loop until valid choice
             if(count != 0){
-
-            }
-            while(!valid ){
-                String decision = null;
-                boolean found = false; //flag for if given player found
-                System.out.println("Please enter a player name or type cancel: ");
-                decision = userInputScanner.nextLine(); //fetch user input
-                if( decision.toLowerCase().equals("cancel")){
-                    cancel = true;
-                    break;
-                }else {
-                    for( Player player : turnOrder) {
-                        if(player.getName().toLowerCase().equals(decision.toLowerCase())){
-                            found = true; //user input reflects a possible property
-                            choice = player; //assign chosen player to allow for trading
-                            break;
-                        }
+                //player selection
+                choice = playerSelection();
+                //if choice is null, player cancelled
+                if( choice != null ) {
+                    //select assets to give to chosen player
+                    System.out.println(currentPlayer.getName() + ", select assets that you want to give " + choice.getName());
+                    tradeAssetsGive = currentPlayer.tradeAssetSelection();
+                    if (tradeAssetsGive != null) {
+                        //select assets to be received from chosen player
+                        System.out.println(currentPlayer.getName() + ", select " + choice.getName() + "'s assets that you want in return");
+                        tradeAssetsReceive = choice.tradeAssetSelection();
                     }
-                }
 
-
-                //give response to user
-                if( found ){
-                    System.out.println("You have selected " + choice.getName());
-                    valid = true;
-                }else {
-                    System.out.println("Sorry, please try again, ID not found");
-                }
-            }
-
-            if( !cancel ){
-                valid = false;
-
-                //find tradeable assets for both players
-
-                //select assets to give to chosen player
-                System.out.println(currentPlayer + ", select assets that you want to give " + choice.getName());
-
-                //current player
-                for( Object asset: currentPlayer.getAssets() ) {
-                    if( asset instanceof Property ){
-                        if( !((Property) asset).developed ){
-                            System.out.println(((Property) asset).title);
-                            tradeableAssetsGive.add(asset);
-                        }
-                    } else if( !(asset instanceof GetOutOfJail) ){
-                        System.out.println(((BoardTile)asset).title);
-                        tradeableAssetsGive.add(asset);
-                    }
-                }
-
-                String assetChoice = null;
-                while( goAgain ) {
-                    while (!valid) {
-                        boolean found = false; //flag for if given property found
-                        System.out.println("Please enter an asset name: ");
-                        assetChoice = userInputScanner.nextLine(); //fetch user input
-
-
-                        for (Object asset : tradeableAssetsGive ) {
-                            if (((BoardTile)asset).title.toLowerCase().equals(assetChoice.toLowerCase())) {
-                                System.out.println("You have selected property: " + ((BoardTile) asset).title);
-                                tradeAssetsGive.add( asset );
-                                found = true; //user input reflects a possible property
+                    if (tradeAssetsGive != null && tradeAssetsReceive != null) {
+                        //print selections
+                        System.out.println("Your Choices:");
+                        System.out.println("Give:");
+                        System.out.println(tradeAssetsGive.toString());
+                        System.out.println("Receive:");
+                        System.out.println(tradeAssetsReceive.toString());
+                        //get confirmation from the other player
+                        boolean confirm = yesNoInput(choice.getName() + ", do you accept the offer (yes/no)?");
+                        //perform transfers
+                        if (confirm) {
+                            for (Object asset : tradeAssetsGive) {
+                                currentPlayer.getAssets().remove(asset);
+                                choice.getAssets().add(asset);
                             }
-                        }
-
-                        //give response to user
-                        if (found) {
-
-                            valid = true;
-                        } else {
-                            System.out.println("Sorry, please try again, asset not found");
-                        }
-                    }
-
-                    //reset flag
-                    valid = false;
-                    //find if any improvable properties left
-                    if(tradeableAssetsGive.size() == tradeAssetsGive.size()){
-                        System.out.println("No assets left to choose");
-                        break;
-                    }
-                    goAgain = yesNoInput("Do you want to go again? (yes/no)");
-                }
-
-                System.out.println(currentPlayer.getName() + ", select " + choice.getName() + "'s assets that you want in return");
-                //player being traded with
-                for( Object asset: choice.getAssets() ) {
-                    if( asset instanceof Property ){
-                        if( !((Property) asset).developed ){
-                            System.out.println(((Property) asset).title);
-                            tradeableAssetsReceive.add(asset);
-                        }
-                    } else if( !(asset instanceof GetOutOfJail) ){
-                        System.out.println(((BoardTile)asset).title);
-                        tradeableAssetsReceive.add(asset);
-                    }
-                }
-
-                assetChoice = null;
-                while( goAgain ) {
-                    while (!valid) {
-                        boolean found = false; //flag for if given property found
-                        System.out.println("Please enter an asset name: ");
-                        assetChoice = userInputScanner.nextLine(); //fetch user input
-
-
-                        for (Object asset : tradeableAssetsReceive ) {
-                            if (((BoardTile)asset).title.toLowerCase().equals(assetChoice.toLowerCase())) {
-                                System.out.println("You have selected property: " + ((BoardTile) asset).title);
-                                tradeAssetsReceive.add( asset );
-                                found = true; //user input reflects a possible property
+                            for (Object asset : tradeAssetsReceive) {
+                                choice.getAssets().remove(asset);
+                                currentPlayer.getAssets().add(asset);
                             }
-                        }
-
-                        //give response to user
-                        if (found) {
-                            valid = true;
+                            System.out.println("Trade Complete");
+                            //check for complete set
+                            currentPlayer.completeSetProperties();
+                            choice.completeSetProperties();
                         } else {
-                            System.out.println("Sorry, please try again, asset not found");
+                            System.out.println("Trade Rejected");
                         }
                     }
-
-                    //reset flag
-                    valid = false;
-                    //find if any improvable properties left
-                    if(tradeableAssetsReceive.size() == tradeAssetsReceive.size()){
-                        System.out.println("No assets left to choose");
-                        break;
-                    }
-                    goAgain = yesNoInput("Do you want to go again? (yes/no)");
                 }
-                //print selections
-                System.out.println("Your Choices:");
-                System.out.println("Give:");
-                System.out.println(tradeAssetsGive.toString());
-                System.out.println("Receive:");
-                System.out.println(tradeAssetsReceive.toString());
-                //get confirmation from the other player
-                boolean confirm = yesNoInput( choice.getName() + ", do you accept the offer (yes/no)?");
-                //perform transfers
-                if(confirm) {
-                    for( Object asset : tradeAssetsGive ){
-                        currentPlayer.getAssets().remove( asset );
-                        choice.getAssets().add( asset );
-                    }
-                    for( Object asset : tradeAssetsReceive ){
-                        choice.getAssets().remove( asset );
-                        currentPlayer.getAssets().add( asset );
-                    }
-                    System.out.println("Trade Complete");
-                    //check for complete set
-                    completeSetProperties( currentPlayer );
-                    completeSetProperties( choice );
-                } else {
-                    System.out.println("Trade Rejected");
-                }
-
             }
         }
     }
+
+    /**
+     * Text based method for choosing player with assets for trading
+     * //TODO convert to GUI compatible method
+     *
+     * @return Player, a selected player
+     */
+    private Player playerSelection(){
+        boolean valid = false;
+        Scanner userInputScanner = new Scanner( System.in ); //scanner for user input
+        Player choice = null;
+
+        while(!valid ){
+            String decision = null;
+            boolean found = false; //flag for if given player found
+            System.out.println("Please enter a player name or type cancel: ");
+            decision = userInputScanner.nextLine(); //fetch user input
+            if( decision.toLowerCase().equals("cancel")){
+                choice = null;
+                break;
+            }else {
+                for( Player player : turnOrder) {
+                    if(player.getName().toLowerCase().equals(decision.toLowerCase())){
+                        found = true; //user input reflects a possible property
+                        choice = player; //assign chosen player to allow for trading
+                        break;
+                    }
+                }
+            }
+
+            //give response to user
+            if( found ){
+                System.out.println("You have selected " + choice.getName());
+                valid = true;
+            }else {
+                System.out.println("Sorry, please try again, ID not found");
+            }
+        }
+        return choice;
+    }
+
 
 }
