@@ -43,7 +43,7 @@ public class Property extends BoardTile{
         this.mortgaged = false;
         this.completedSet = false;
         this.rentDoubled = false;
-        this.housesNo = 0;
+        this.housesNo = 0;//
         this.hotelNo = 0;
     }
 
