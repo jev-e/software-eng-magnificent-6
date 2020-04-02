@@ -14,5 +14,5 @@
 	{"type": "movePlayerPassGo", "cardText": "Advance to Skywalker Drive. If you pass GO collect £200", "destination": 11},
 	{"type": "goToJailCard", "cardText":"Go to jail. Do not pass GO, do not collect £200"},
 	{"type": "playerPaysTax", "cardText" : "Drunk in charge of skateboard. Fine £20", "amount": 20},
-	{"type": "getOutOfJail", "cardText": "Get out of jail free"}
+	{"type": "getOutOfJail", "cardText": "Get out of jail free", "deck": "opportunity"}
 ]

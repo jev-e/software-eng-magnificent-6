@@ -1,6 +1,10 @@
 package ClassStructure;
 
+import com.sun.org.apache.bcel.internal.generic.GETFIELD;
 import org.junit.jupiter.api.*;
+
+import javax.smartcardio.Card;
+import java.io.IOException;
 import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -65,10 +69,16 @@ class GameTest {
         opp.add(new MoveBack3());//firstCard
         opp.add(new PlayerPaysBank("Test1",20));//secondCard
         opp.add(new Birthday());//thirdCard
-        opp.add(new GetOutOfJail("Eh lad yahrr free t'go"));
+        GetOutOfJail jailCard = new GetOutOfJail("Eh lad yahrr free t'go");
+        jailCard.setDeck("opportunity");
+        opp.add(jailCard);
+        jailCard = new GetOutOfJail("ur out feller");
+        jailCard.setDeck("pot");
+        pot.add(jailCard);
         pot.add(new MoveBack3());
         pot.add(new PlayerPaysBank("Test1",20));
         pot.add(new Birthday());
+
 
         board = new Board(order, tileSet, pot, opp);//create board with current card setup
         CardEffect firstCard = board.drawOpportunityKnocks();
@@ -80,9 +90,14 @@ class GameTest {
         CardEffect fourthCard = board.drawOpportunityKnocks();
         fourthCard.effect(board.turnOrder.getFirst());
         assertNotEquals(fourthCard,board.opportunityKnocks.peekLast());//checks classStructure.GetOutOfJail card has not been added to deck
-        ((GetOutOfJail)fourthCard).playCard();
+        ((GetOutOfJail)fourthCard).returnCard();
         assertTrue(board.opportunityKnocks.peekLast() instanceof GetOutOfJail);//Checks that once the card is played
         assertEquals(board.opportunityKnocks.peekLast(),fourthCard);//It is returned to the bottom of deck
+
+        CardEffect potFirst = board.drawPotLuck();
+        assertTrue(potFirst instanceof GetOutOfJail);//check card retrieved correctly
+        ((GetOutOfJail)potFirst).returnCard();
+        assertEquals(board.potLuck.peekLast(), potFirst);//check card retrieved correctly
     }
 
     /**
@@ -129,19 +144,29 @@ class GameTest {
      * Additionally tests that player correctly receives money when they pass go
      */
     @Test
-    public void movePlayer() {
-        pot.add(new MovePlayerNoPassGo("classStructure.Go here",2));
+    public void movePlayer() throws IOException {
+        tileSet = Json.fromJsonToTileSet("BoardTileData.json");
+        MovePlayerNoPassGo c1 = new MovePlayerNoPassGo("Go here",2);//move player to trigger pot luck
+        pot.add(c1);
         pot.add(new MoveBack3());
-        pot.add(new MovePlayerPassGo("Move here",2));
+        pot.add(new MovePlayerPassGo("go to income Tax",4));
+        pot.add(new MovePlayerNoPassGo("go to pot luck",2));
+        pot.add(new Birthday());
+        opp.add(new MoveBack3());
+        opp.add(new Birthday());
+
         board = new Board(order,tileSet,pot,opp);
-        assertEquals(0,board.turnOrder.getFirst().getCurrentPos());
-        board.drawPotLuck().effect(board.turnOrder.getFirst());
-        assertEquals(2,board.turnOrder.getFirst().getCurrentPos());
-        board.drawPotLuck().effect(board.turnOrder.getFirst());
-        assertEquals(7,board.turnOrder.getFirst().getCurrentPos());
-        board.drawPotLuck().effect(board.turnOrder.getFirst());
-        assertEquals(2,board.turnOrder.getFirst().getCurrentPos());
-        assertEquals(1700,board.turnOrder.getFirst().getMoney());//checks that player received money for passGO
+        Player currentPlayer = board.turnOrder.getFirst();
+        assertEquals(0,currentPlayer.getCurrentPos());
+        c1.effect(currentPlayer);//move to pot luck and draws move back 3
+        assertEquals(39,currentPlayer.getCurrentPos());//check player has been moved correctly
+        assertEquals(currentPlayer.getMoney(),1500);
+        board.drawPotLuck().effect(currentPlayer);
+        assertEquals(currentPlayer.getMoney(),1500);//player is given 200 for passing go but loses 200 from income tax
+        assertEquals(4,currentPlayer.getCurrentPos());//check player is on income tax
+        board.drawPotLuck().effect(currentPlayer);
+        assertEquals(2,currentPlayer.getCurrentPos());//check player is on pot luck
+        assertEquals(currentPlayer.getMoney(),1550);//check player did not receive money for passing go but received birthday money
     }
 
     /**

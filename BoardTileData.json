@@ -29,7 +29,7 @@
 "27": {"type": "property", "iD": 27, "title": "Picard Avenue", "group": "Yellow", "cost": 260, "rent": 22, "buildingRents": [110,330,800,975], "hotelRent": 1150},
 "28": {"type": "utility", "iD": 28, "title": "Edison Water", "cost": 150},
 "29": {"type": "property", "iD": 29, "title": "Crusher Creek", "group": "Yellow", "cost": 280, "rent": 22, "buildingRents": [120,360,850,1025], "hotelRent": 1200},
-"30": {"type": "goToJail", "iD": 30, "title": "goToJail"},
+"30": {"type": "goToJail", "iD": 30, "title": "Go to Jail", "text":  "You go to Jail"},
 "31": {"type": "property", "iD": 31, "title": "Sirat Mews", "group": "Green", "cost": 300, "rent": 26, "buildingRents": [130,390,900,1100], "hotelRent": 1275},
 "32": {"type": "property", "iD": 32, "title": "Ghengis Crescent", "group": "Green", "cost": 300, "rent": 26, "buildingRents": [130,390,900,1100], "hotelRent": 1275},
 "33": {"type": "potLuck", "iD": 33},

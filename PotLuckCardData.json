@@ -14,5 +14,5 @@
 	{"type": "goToJailCard", "cardText": "Go to jail. Do not pass GO, do not collect £200"},
 	{"type": "bankPaysPlayer", "cardText": "Received interst on shares of £25", "amount": 25},
 	{"type": "birthday", "cardText": "It's your birthday. Collect £10 from each player"},
-	{"type": "getOutOfJail", "cardText": "Get out of jail free"}
+	{"type": "getOutOfJail", "cardText": "Get out of jail free", "deck" : "pot"}
 ]

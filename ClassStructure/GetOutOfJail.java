@@ -6,6 +6,7 @@ package ClassStructure;
 public class GetOutOfJail extends CardEffect {
 
     private Player owner;//Reference to player who currently owns this card
+    private String deck;//indicator to which deck this card belongs to
 
     /**
      * Default constructor for Jackson
@@ -37,6 +38,26 @@ public class GetOutOfJail extends CardEffect {
         owner.leaveJail();//set player out of jail and resets jailCount
         owner.removeAsset(this);//removes this card from asset list
         System.out.println(cardText);//Display for test version
-        this.board.opportunityKnocks.addLast(this);//add this card back to the bottom of the deque
+        if(deck == "pot") {
+            this.board.potLuck.addLast(this);//returns to pot luck deck
+        }else{
+            this.board.opportunityKnocks.addLast(this);//returns to opportunity knocks deck
+        }
+    }
+
+    public void returnCard() {
+        if(deck == "pot") {
+            this.board.potLuck.addLast(this);//returns to pot luck deck
+        }else{
+            this.board.opportunityKnocks.addLast(this);//returns to opportunity knocks deck
+        }
+    }
+
+    public String getDeck() {
+        return deck;
+    }
+
+    public void setDeck(String deck) {
+        this.deck = deck;
     }
 }
