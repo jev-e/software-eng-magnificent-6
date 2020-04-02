@@ -1,9 +1,8 @@
 package ClassStructure;
 
-import com.sun.org.apache.bcel.internal.generic.GETFIELD;
+
 import org.junit.jupiter.api.*;
 
-import javax.smartcardio.Card;
 import java.io.IOException;
 import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;

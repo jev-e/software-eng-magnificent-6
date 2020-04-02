@@ -271,7 +271,6 @@ public class Board {
      */
     public void demo() {
         displayAsString();
-        String tempIn;
         LinkedList<Player> playerPool = (LinkedList<Player>) turnOrder.clone();
         for(Player p: turnOrder) {
             System.out.println(p.getName() + " Money:" + p.getMoney());
@@ -280,24 +279,28 @@ public class Board {
 
         while (turns < 5) {
             for(Player p : turnOrder) {
-                int count = 0;
-                do{
-                    count++;//keep track of number of repeat turns player has had
-                    repeat = false;
-                    System.out.println("Press Enter to continue");
-                    try {
-                        System.in.read();
-                    }catch(Exception e) {
-                        e.printStackTrace();
-                    }
-                    roll(p,count);
-                    //displayAsString();
-                    p.passGo();
-                    tiles.get(p.getCurrentPos()).activeEffect(p);
-                    displayAsString();
-                }while (repeat);
-                p.propertyImprovement();
-                trade(p);
+                if (!p.isInJail()) {
+                    int count = 0;
+                    do {
+                        count++;//keep track of number of repeat turns player has had
+                        repeat = false;
+                        System.out.println("Press Enter to continue");
+                        try {
+                            System.in.read();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        roll(p, count);
+                        //displayAsString();
+                        p.passGo();
+                        tiles.get(p.getCurrentPos()).activeEffect(p);
+                        displayAsString();
+                    } while (repeat);
+                    p.propertyImprovement();
+                    trade(p);
+                } else {
+                    tiles.get(p.getCurrentPos()).activeEffect(p);//Activate the jail tile to serve time
+                }
             }
 
             turns++;

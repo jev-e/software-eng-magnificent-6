@@ -38,17 +38,17 @@ public class GetOutOfJail extends CardEffect {
         owner.leaveJail();//set player out of jail and resets jailCount
         owner.removeAsset(this);//removes this card from asset list
         System.out.println(cardText);//Display for test version
-        if(deck == "pot") {
+        if (deck.equals("pot")) {
             this.board.potLuck.addLast(this);//returns to pot luck deck
-        }else{
+        } else {
             this.board.opportunityKnocks.addLast(this);//returns to opportunity knocks deck
         }
     }
 
     public void returnCard() {
-        if(deck == "pot") {
+        if (deck.equals("pot")) {
             this.board.potLuck.addLast(this);//returns to pot luck deck
-        }else{
+        } else {
             this.board.opportunityKnocks.addLast(this);//returns to opportunity knocks deck
         }
     }
@@ -60,4 +60,5 @@ public class GetOutOfJail extends CardEffect {
     public void setDeck(String deck) {
         this.deck = deck;
     }
+
 }

@@ -27,17 +27,19 @@ public class Jail extends TileEffect{
 
     @Override
     public void activeEffect(Player currentPlayer) {
-        if(currentPlayer.isInJail()) {
-            if(currentPlayer.getJailTime() == 2) {
+        if (currentPlayer.isInJail()) {
+            if (currentPlayer.getJailTime() == 2) {
                 currentPlayer.leaveJail();//Frees the player after staying two turns in jail and resets jail time
                 System.out.println(currentPlayer.getName() + " has left jail");//Display for test version
-            }else{
+            } else {
                 currentPlayer.serveJailTime();//Increases the jail time count
                 System.out.println(currentPlayer.getName() + "is in jail");
                 //move on with players turn they are still in jail
             }
+        } else {
+            System.out.println("Just visiting");
+            //Otherwise player is just visiting
         }
-        System.out.println("Just visiting");
-        //Otherwise player is just visiting
+
     }
 }
