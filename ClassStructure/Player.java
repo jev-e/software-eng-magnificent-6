@@ -5,7 +5,7 @@ import java.util.LinkedList;
 import java.util.Scanner;
 
 /**
- * @author Ayman Bensreti
+ * @author Ayman Bensreti, Calvin Boreham
  *	Player information
  */
 public class Player {
@@ -363,7 +363,6 @@ public class Player {
     /**
      * Drives the interactive menu for property improvement and contains logic
      * occurs at the end of the turn for the player
-     *
      */
     public void propertyImprovement() {
 

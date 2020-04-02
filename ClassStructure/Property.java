@@ -3,7 +3,7 @@ package ClassStructure;
 import java.util.Scanner;
 
 /**
- * @author Ayman Bensreti
+ * @author Ayman Bensreti, Calvin Boreham
  * Structure for property objects
  */
 public class Property extends BoardTile{

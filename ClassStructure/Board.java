@@ -1,7 +1,7 @@
 package ClassStructure;
 import java.util.*;
 /**
- * @author Ayman Bensreti
+ * @author Ayman Bensreti, Calvin Boreham
  *	Game board and logic
  */
 public class Board {
