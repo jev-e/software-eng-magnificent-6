@@ -1,6 +1,5 @@
 package ClassStructure;
 
-import javax.smartcardio.Card;
 import java.io.IOException;
 import java.util.*;
 
