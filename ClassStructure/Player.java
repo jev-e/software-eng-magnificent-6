@@ -274,7 +274,7 @@ public class Player {
         System.out.println(count.toString());
         for(Group key : count.keySet()){
             for( Object asset: assets){
-                if( (asset instanceof Property) && count.get(key) == key.getMemberCount() && !((Property) asset).completedSet ) {
+                if( (asset instanceof Property) && count.get(key) == key.getMemberCount() && !((Property) asset).completedSet && ((Property) asset).group == key) {
                     System.out.println(((Property) asset).title + " complete set updated");
                     ((Property) asset).completedSet = true;
                     ((Property) asset).updateRent();
@@ -405,67 +405,72 @@ public class Player {
                 while( goAgain ) {
                     //property selection
                     Property toBeImproved = selectProperty();
-                    //find all houses in same group
-                    ArrayList<Property> group = findGroups( toBeImproved );
+                    if( toBeImproved.completedSet ){
+                        //find all houses in same group
+                        ArrayList<Property> group = findGroups( toBeImproved );
 
-                    //flag for if improvement is possible
-                    boolean validPurchase = true;
+                        //flag for if improvement is possible
+                        boolean validPurchase = true;
 
-                    //if hotel needs to be bought
-                    if((toBeImproved.getHousesNo() == 4) && (toBeImproved.hotelNo == 0)){
-                        //all other properties in group must have 4 houses as well
-                        for( Property pp: group ){
-                            if(pp.housesNo != 4){
-                                validPurchase = false;
-                                break;
+                        //if hotel needs to be bought
+                        if((toBeImproved.getHousesNo() == 4) && (toBeImproved.hotelNo == 0)){
+                            //all other properties in group must have 4 houses as well
+                            for( Property pp: group ){
+                                if(pp.housesNo != 4){
+                                    validPurchase = false;
+                                    break;
+                                }
+                            }
+                            //if purchase possible and if player can afford it
+                            if( validPurchase && (money > toBeImproved.group.getBuildingCost())){
+                                improve = yesNoInput("Do you want to purchase a hotel for £" + toBeImproved.group.getBuildingCost() + " (yes/no)?");
+                                if( improve) {
+                                    toBeImproved.purchaseHotel(); //manages transaction
+                                }
+                            } else {
+                                System.out.println("Sorry, the property is not currently improvable");
+                            }
+
+                        } else if((toBeImproved.getHousesNo() < 4) && (toBeImproved.getHotelNo() == 0 )) { //only a house can be bought
+                            //all other properties must have the same or more than the number of houses on the property
+                            for( Property pp: group ){
+                                if( pp.housesNo < toBeImproved.getHousesNo() ){
+                                    validPurchase = false;
+                                    break;
+                                }
+                            }
+                            //if purchase possible and if player can afford it
+                            if( validPurchase && (money > toBeImproved.group.getBuildingCost())){
+                                improve = yesNoInput("Do you want to purchase a house £" + toBeImproved.group.getBuildingCost() + " (yes/no)?");
+                                if( improve) {
+                                    toBeImproved.purchaseHouse(); //manages transaction
+                                }
+                            } else {
+                                System.out.println("Sorry, the property is not currently improvable");
+                            }
+
+                        }
+
+                        boolean possible = false;
+                        //check if any more improvements possible
+                        for( Object asset : assets ){
+                            if( asset instanceof Property ){
+                                if( ((Property) asset).hotelNo == 0  && ((Property) asset).completedSet){
+                                    possible = true;
+                                    break;
+                                }
                             }
                         }
-                        //if purchase possible and if player can afford it
-                        if( validPurchase && (money > toBeImproved.group.getBuildingCost())){
-                            improve = yesNoInput("Do you want to purchase a hotel for £" + toBeImproved.group.getBuildingCost() + " (yes/no)?");
-                            if( improve) {
-                                toBeImproved.purchaseHotel(); //manages transaction
-                            }
+
+                        if(possible){
+                            goAgain = yesNoInput("Do you want to go again? (yes/no)");
                         } else {
-                            System.out.println("Sorry, the property is not currently improvable");
+                            System.out.println("No properties left to improve");
+                            break;
                         }
-
-                    } else if((toBeImproved.getHousesNo() < 4) && (toBeImproved.getHotelNo() == 0 )) { //only a house can be bought
-                        //all other properties must have the same or more than the number of houses on the property
-                        for( Property pp: group ){
-                            if( pp.housesNo < toBeImproved.getHousesNo() ){
-                                validPurchase = false;
-                                break;
-                            }
-                        }
-                        //if purchase possible and if player can afford it
-                        if( validPurchase && (money > toBeImproved.group.getBuildingCost())){
-                            improve = yesNoInput("Do you want to purchase a house £" + toBeImproved.group.getBuildingCost() + " (yes/no)?");
-                            if( improve) {
-                                toBeImproved.purchaseHouse(); //manages transaction
-                            }
-                        } else {
-                            System.out.println("Sorry, the property is not currently improvable");
-                        }
-
-                    }
-
-                    boolean possible = false;
-                    //check if any more improvements possible
-                    for( Object asset : assets ){
-                        if( asset instanceof Property ){
-                            if( ((Property) asset).hotelNo == 0  && ((Property) asset).completedSet){
-                                possible = true;
-                                break;
-                            }
-                        }
-                    }
-
-                    if(possible){
-                        goAgain = yesNoInput("Do you want to go again? (yes/no)");
                     } else {
-                        System.out.println("No properties left to improve");
-                        break;
+                        System.out.println("Sorry, property not improvable");
+                        goAgain = yesNoInput("Do you want to go again? (yes/no)");
                     }
                 }
             }
