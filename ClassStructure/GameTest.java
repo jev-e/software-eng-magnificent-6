@@ -17,13 +17,14 @@ class GameTest {
 
     @BeforeEach
     public  void setup() {
+
         //player creation
-        Player ayman = new Player("Ayman", Token.HATSTAND);
-        Player danny = new Player("Danny", Token.CAT);
-        Player jacob = new Player("Jacob", Token.BOOT);
-        Player calvin = new Player("Calvin", Token.SMARTPHONE);
-        Player callum = new Player("Callum", Token.SPOON);
-        Player tom = new Player("Tom", Token.GOBLET);
+        Player ayman = new Player("Ayman", Token.HATSTAND, null);
+        Player danny = new Player("Danny", Token.CAT, null);
+        Player jacob = new Player("Jacob", Token.BOOT, null);
+        Player calvin = new Player("Calvin", Token.SMARTPHONE, null);
+        Player callum = new Player("Callum", Token.SPOON, null);
+        Player tom = new Player("Tom", Token.GOBLET, null);
         //load players into turn order
         order = new LinkedList<Player>();
         order.add(ayman);
@@ -57,6 +58,12 @@ class GameTest {
             tileSet.put(i, temp);
         }
         board = new Board(order, tileSet, pot, opp);
+
+        for( Player pp : board.turnOrder ){
+            pp.setBoard( board );
+        }
+
+
     }
 
     /**

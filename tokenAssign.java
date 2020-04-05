@@ -34,7 +34,7 @@ public class tokenAssign {
         String tokenChoice = playerChoice.toUpperCase();
         Player newPlayer;
         try {
-            newPlayer = new Player(name, Token.valueOf(tokenChoice));
+            //newPlayer = new Player(name, Token.valueOf(tokenChoice));
         } catch (IllegalArgumentException e) {
             // Do some error handling, player didn't choose any tokens
             // Maybe a do .. while()
@@ -42,6 +42,6 @@ public class tokenAssign {
         }
         System.out.println("You have chosen the " + tokenChoice + " token.");
 
-        return newPlayer;
+        return null;
     }
 }

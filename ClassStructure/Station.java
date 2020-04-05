@@ -190,19 +190,31 @@ public class Station extends TileEffect {
                 //no purchase can be made, trigger auction
                 System.out.println("Sorry, you can't afford this");
                 auction(currentPlayer);
+            } else {
+                //deduct purchase cost from player
+                currentPlayer.deductAmount(cost);
+                //transfer ownership
+                owner = currentPlayer;
+                currentPlayer.addAsset(this);
+                System.out.println("You have purchased " + title + " for £" + cost);
             }
-            //deduct purchase cost from player
-            currentPlayer.deductAmount(cost);
-            //transfer ownership
-            owner = currentPlayer;
-            currentPlayer.addAsset(this);
-            System.out.println("You have purchased " + title + " for £" + cost);
         } else {
             //trigger auction
             auction(currentPlayer);
         }
 
     }
+
+    /**
+     * "sells" the asset, sets owner to null and removes asset from owners asset tree
+     * @return cost
+     */
+    public int sellStation() {
+        owner.getAssets().remove(this);
+        owner = null;
+        return cost;
+    }
+
 
     public int getCost() {
         return cost;

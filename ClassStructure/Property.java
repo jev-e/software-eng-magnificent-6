@@ -14,11 +14,12 @@ public class Property extends BoardTile{
     int housesNo;
     int hotelNo;
     int hotelRent;//A given property may have only one hotel this functions the same as building rent
-    Player owner;
+    private Player owner;
     boolean mortgaged;//if property is mortgaged no rent is deducted. Can be restored by paying half the cost to the bank
     boolean completedSet;//If a single player owns all properties in group this is true and false otherwise
     boolean rentDoubled; //Flag representing whether the rent on this property has been doubled
     boolean developed; //flag for if property improved
+    boolean sellable; //used in temporary selling of houses menu
 
     /**
      * Default constructor for Jackson
@@ -90,18 +91,10 @@ public class Property extends BoardTile{
         return hotelNo;
     }
 
-    public Player getOwner(){
-        return owner;
-    }
+    public Player getOwner() { return owner; }
 
     public boolean getDeveloped() { return developed; }
 
-    /**
-     * Clears the owner
-     */
-    public void returnToBank() {
-        owner = null;
-    }
 
     /**
      * Function to sell houses and hotels on a property.
@@ -109,10 +102,16 @@ public class Property extends BoardTile{
      */
     public int sellHouseOrHotel(){
         if( hotelNo == 1 ){
-            hotelNo -= 1;
-            return( 5 * group.getBuildingCost() );
+            hotelNo = 0;
+            housesNo = 4;
+            rent -= hotelRent;
+            return( group.getBuildingCost() );
         } else if( housesNo > 0 ){
-            this.housesNo -= 1;
+            rent -= buildingRents[housesNo -1];
+            housesNo -= 1;
+            if( housesNo == 0 ){
+                developed = false;
+            }
             return( group.getBuildingCost() );
         } else{
             return( 0 );
@@ -151,9 +150,8 @@ public class Property extends BoardTile{
         } else {
             owner.getAssets().remove( this );
             owner = null;
-            returnToBank();
             return (this.cost);
-        }
+    }
     }
 
     /**
@@ -168,7 +166,7 @@ public class Property extends BoardTile{
         Player highestBidder = null;
         int highestBid = 0;
         //for each player that isn't the current player
-        for( Player bidder: super.board.turnOrder ) {
+        for( Player bidder: board.turnOrder ) {
             if( bidder != currentPlayer && bidder.CanBuy() ){
                 int bid = 0;
                 boolean wishToBid = false;
@@ -204,7 +202,7 @@ public class Property extends BoardTile{
         //auction complete, if we have any valid bids need to make the purchase
         if( highestBidder != null ){
             System.out.println( highestBidder.getName() + " has won the auction for " + title + " with a bid of £" + highestBid );
-            highestBidder.deductAmount( cost );
+            highestBidder.deductAmount( highestBid );
             owner = highestBidder;
             highestBidder.addAsset(this);
             highestBidder.completeSetProperties(); //purchase made, update complete set flags
@@ -216,10 +214,6 @@ public class Property extends BoardTile{
         System.out.println("==========================================================================================");
         System.out.println("====================================AUCTION ENDS==========================================");
         System.out.println("==========================================================================================");
-
-
-
-
     }
 
     /**
@@ -266,20 +260,23 @@ public class Property extends BoardTile{
         String message = currentPlayer.getName() + ", do you want to make a purchase (yes/no)?";
 
         wishToPurchase = yesNoInput( message );
-
+        System.out.println(wishToPurchase);
         if( wishToPurchase ){
             if( cost > currentPlayer.getMoney() ){
                 //no purchase can be made, trigger auction
                 System.out.println("Sorry, you can't afford this");
                 auction( currentPlayer );
+                System.out.println("Auction ended, can;t affird");
+            } else {
+                //deduct purchase cost from player
+                currentPlayer.deductAmount( cost );
+                //transfer ownership
+                owner = currentPlayer;
+                currentPlayer.addAsset(this);
+                currentPlayer.completeSetProperties(); //purchase has been made, update complete set flags
+                System.out.println("You have purchased " + title + " for £" + cost);
             }
-            //deduct purchase cost from player
-            currentPlayer.deductAmount( cost );
-            //transfer ownership
-            owner = currentPlayer;
-            currentPlayer.addAsset(this);
-            currentPlayer.completeSetProperties(); //purchase has been made, update complete set flags
-            System.out.println("You have purchased " + title + " for £" + cost);
+
         } else {
             //trigger auction
             auction( currentPlayer );
@@ -315,9 +312,9 @@ public class Property extends BoardTile{
     private void collectRent( Player currentPlayer) {
         System.out.println( currentPlayer.getName() + " pays rent to " + owner.getName());
         //deduct rent from current player
-        currentPlayer.deductAmount( rent );
+        int amountPayed = currentPlayer.deductAmount( rent ); //deduct amount from player
         //give owner rent
-        owner.payPlayerAmount( rent );
+        owner.payPlayerAmount( amountPayed ); //gives owner amount renter was able to pay (e.g. if bankrupt)
     }
 
     /**
@@ -330,8 +327,8 @@ public class Property extends BoardTile{
             housesNo++;
             if( housesNo == 1 ){
                 developed = true;
+                updateRent();
             }
-            updateRent();
             owner.deductAmount( group.getBuildingCost() );
             rent += buildingRents[housesNo - 1];
             System.out.println("House purchased for " + title  + ", the new rent is: £" + rent);

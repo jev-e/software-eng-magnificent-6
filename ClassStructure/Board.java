@@ -278,7 +278,9 @@ public class Board {
 
 
         while (turns < 5) {
-            for(Player p : turnOrder) {
+            System.out.println(turnOrder.toString());
+            for( int ii = 0; ii < turnOrder.size(); ii++ ){
+                Player p = turnOrder.get(ii);
                 if (!p.isInJail()) {
                     int count = 0;
                     do {
@@ -296,13 +298,15 @@ public class Board {
                         tiles.get(p.getCurrentPos()).activeEffect(p);
                         displayAsString();
                     } while (repeat);
-                    p.propertyImprovement();
-                    trade(p);
+                    if( turnOrder.contains( p )){
+                        p.propertyImprovement();
+                        trade(p);
+                    }
+
                 } else {
                     tiles.get(p.getCurrentPos()).activeEffect(p);//Activate the jail tile to serve time
                 }
             }
-
             turns++;
         }
         for(Player player : playerPool) {

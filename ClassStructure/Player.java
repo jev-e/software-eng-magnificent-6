@@ -1,8 +1,5 @@
 package ClassStructure;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Scanner;
+import java.util.*;
 
 /**
  * @author Ayman Bensreti, Calvin Boreham
@@ -18,22 +15,24 @@ public class Player {
     private boolean canBuy;
     private boolean inJail;//indicator to differ between players who are jailed or just visiting
     private int jailTime;//counter to indicate how many turns a player has spent in jail
+    private Board board;
 
     /**
      * Sets players name and token and initialises the players starting assets
      * @param name player name
      * @param token one of token enum
      */
-    public Player(String name, Token token) {
+    public Player(String name, Token token, Board board) {
         this.name = name;
         this.token = token;
         currentPos = 0;
         previousPos = 0;
-        money = 1500;//All references to money is in £'s
+        money = 10;//All references to money is in £'s
         assets = new LinkedList<>();
         canBuy = false;
         inJail = false;
         this.jailTime = 0;
+        this.board = board;
     }
 
     /**
@@ -48,20 +47,36 @@ public class Player {
      * Deducts amount from players money if they can pay returning the amount
      * if they cannot pay assets can be sold
      * if assets will not cover payment the player is bankrupt
+     * it is imperative that it is checked that the player has enough money to purchase items such as houses before
+     * this method is called
      * @param amount amount to be deducted
      * @return the amount of money the player was able to pay
      */
     public int deductAmount(int amount) {
-        if(money > amount) {
+        System.out.print(name + ":" + money + ":" + amount);
+        int payableAmount = 0;
+        if(money >= amount) {
             payPlayerAmount(-amount);
-            return amount;
+            payableAmount = amount;
         }else{
-            //check for ability to sell assets
-            if(money > amount) {
-                return amount;
+            //find player net worth
+            int netWorth = netWorth();
+            if( netWorth >= amount){
+                //can pay after asset selling, trigger it
+                //owner money will be updated
+                assetSelling( amount - money );
+                //pay amount
+                payPlayerAmount(-amount);
+                payableAmount = amount;
+            }else{
+                //no point asset selling, bankrupt player
+                System.out.println("BANKRUPT");
+                bankrupt();
+                //return the amount they could have played
+                payableAmount = netWorth;
             }
         }
-        return money;//returns what the player can pay
+        return payableAmount;//returns what the player can pay
     }
 
     /**
@@ -116,6 +131,10 @@ public class Player {
     public int getMoney() {
         return money;
     }
+
+    public Board getBoard() { return board; }
+
+    public void setBoard(Board board) { this.board = board; }
 
 
     /**
@@ -518,5 +537,311 @@ public class Player {
         }
 
         return choice;
+    }
+
+    /**
+     * Finds the net worth of the player by adding resell value of all assets to current money
+     *
+     * @return net worth
+     */
+    public int netWorth() {
+        int netWorth = 0;
+        //loop through assets
+        for( Object asset : assets ){
+            //property
+            if( asset instanceof Property ){
+                //mortgaged?
+                if( ((Property) asset).mortgaged ){
+                    netWorth += (((Property) asset).cost/2);
+                } else {
+                    if( ((Property) asset).developed ){
+                        //add resell value of all properties
+                        if( ((Property) asset).housesNo >= 1){
+                            netWorth += (((Property) asset).housesNo * ((Property) asset).group.getBuildingCost());
+                        } else if( ((Property) asset).hotelNo == 1){
+                            netWorth += (((Property) asset).group.getBuildingCost() * 5);
+                        }
+                    }
+                    //property worth
+                    netWorth += ((Property) asset).cost;
+                }
+            } else if( asset instanceof Station ){
+                netWorth += ((Station) asset).getCost();
+            } else if( asset instanceof Utility ){
+                netWorth += ((Utility) asset).getCost();
+            }
+        }
+
+        return netWorth + money;
+    }
+
+    /**
+     * Removes player from turnorder and transfers all assets to bank ownership
+     */
+    private void bankrupt() {
+        System.out.println(name);
+        //remove player from turnorder
+        System.out.println("Before removal");
+        board.turnOrder.remove( this );
+        System.out.println("After removal");
+        //transfer all assets to bank ownership
+        for( Object asset : assets ){
+            System.out.println("Assets removed");
+            if( asset instanceof GetOutOfJail ){
+                ((GetOutOfJail) asset).returnCard();
+            } else if( asset instanceof Property){
+                ((Property) asset).setOwner( null );
+            } else if( asset instanceof Station){
+                ((Station) asset).setOwner( null );
+            } else if( asset instanceof Utility){
+                ((Utility) asset).setOwner( null );
+            }
+            assets.remove( asset );
+            System.out.println("Assets removed success");
+        }
+        System.out.println("After assets");
+    }
+
+    /**
+     * loops through assets giving options to sell assets until amount is reached
+     * it is assumed amount can be reached
+     *
+     * @param amount, the money amount that must be raised
+     */
+    private void assetSelling( int amount ) {
+        int choice;
+        Property tempProperty;
+        boolean confirm;
+        boolean restart = true;
+        int sale;
+        HashMap<Integer, Integer> saleIds = new HashMap<>(); //id of property sold, property cost
+        HashMap<Integer, Integer> houseSaleIds = new HashMap<>(); //id of property, houses sold
+        HashMap<Integer, Integer> hotelSaleIds = new HashMap<>(); //id of property, houses sold
+
+        while( restart ){
+            sale = 0;
+            boolean yesNo;
+            while( sale < amount ) {
+                boolean improvements = yesNoInput("Sell improvements?");
+                if(improvements){
+                    boolean goAgain = true;
+                    while( goAgain ){
+                        //select property
+                        int count = printDevelopedProperties(houseSaleIds, hotelSaleIds);
+                        if( count > 0 ) {
+                            System.out.println("Choose a property to sell improvements on");
+                            tempProperty = selectProperty();
+                            //sell improvements on chosen property
+                            sale += sellImprovement( houseSaleIds, hotelSaleIds, tempProperty);
+                            goAgain = yesNoInput("Select more improvements (yes/no)?");
+                        } else {
+                            System.out.println("No developed properties");
+                            goAgain = false;
+                        }
+                    }
+                }
+                boolean tiles = yesNoInput("Sell tiles?");
+                if(tiles){
+                    //sell properties
+                    System.out.println("Choose an asset to sell:");
+                    choice = printChooseAsset(saleIds, houseSaleIds);
+                    confirm = yesNoInput("Are you sure (yes/no)?");
+                    if( confirm ){
+                        sale += saleIds.get(choice);
+                    }
+                }
+            }
+            System.out.println("Selected improvements to sell:");
+            System.out.println("Hotels:");
+            System.out.println(hotelSaleIds.toString());
+            System.out.println("Houses");
+            System.out.println(houseSaleIds.toString());
+            System.out.println("Board Tiles");
+            System.out.println(saleIds.toString());
+            yesNo = yesNoInput("Finalise selection? (no will start process again)");
+            if( yesNo ){
+                //selection finalised
+                //sell improvement
+                for(int ii = 0; ii < assets.size(); ii++){
+                    Object asset = assets.get(ii);
+                    if( asset instanceof Property){
+                        if( hotelSaleIds.containsKey(((Property) asset).iD)) {
+                            payPlayerAmount(((Property) asset).sellHouseOrHotel());
+                        }
+                        if( houseSaleIds.containsKey(((Property)asset).iD) ) {
+                            //sell appropriate number of houses
+                            for( int jj = 0; jj < houseSaleIds.get(((Property) asset).iD); jj++){
+                                payPlayerAmount(((Property) asset).sellHouseOrHotel());
+                            }
+                            payPlayerAmount(((Property) asset).sellHouseOrHotel());
+                        }
+
+                    }
+                }
+                //sell assets and improvements
+                for(int ii = 0; ii < assets.size(); ii++){
+                    Object asset = assets.get(ii);
+                    if( !( asset instanceof GetOutOfJail)){
+                        if( saleIds.containsKey(((BoardTile)asset).iD) ) {
+                            if (asset instanceof Property) {
+                                payPlayerAmount(((Property) asset).sellProperty());
+                            } else if (asset instanceof Station) {
+                                payPlayerAmount(((Station) asset).sellStation());
+                            } else if (asset instanceof Utility) {
+                                payPlayerAmount(((Utility) asset).sellUtility());
+                            }
+                        }
+                    }
+                }
+                //update flags and rent values
+                completeSetProperties();
+                restart = false;
+            }
+        }
+    }
+
+    /**
+     * It is vital this method is passed a property where a sale is possible
+     * @param houseSaleIds, temporary sale store
+     * @param property, a developed property
+     * @return
+     */
+    private int sellImprovement( HashMap<Integer, Integer> houseSaleIds, HashMap<Integer, Integer> hotelSaleIds, Property property ) {
+        if( !property.getDeveloped()){
+            throw new IllegalArgumentException();
+        }
+        int cost = 0;
+        //find property group
+        ArrayList<Property> group = findGroups( property );
+
+        boolean houseSalePossible = true;
+        int houseNo =  property.housesNo - houseSaleIds.get(property.iD);
+        int hotelNo = property.hotelNo - hotelSaleIds.get(property.iD);
+
+        if( houseNo != 0){
+            //is house sale possible?
+            for( Property pp : group){
+                //find house number for properties in group
+                if( (pp.housesNo - houseSaleIds.get(pp.iD)) > houseNo ){
+                    //a property in the group has a theoretical higher house number than the current property
+                    //improvements cannot be sold as this would create an imbalance
+                    houseSalePossible = false;
+                    break;
+                }
+            }
+        }
+
+        if(houseSalePossible){
+            Integer tempCount = houseSaleIds.get( property.iD );
+            if (tempCount == null) {
+                houseSaleIds.put(property.iD, 1);
+            } else {
+                houseSaleIds.put(property.iD, tempCount++);
+            }
+            cost = property.group.getBuildingCost();
+        } else if( hotelNo == 1){
+            hotelSaleIds.put(property.iD, 1);
+            cost = property.group.getBuildingCost();
+        } else {
+            System.out.println("Improvement cannot be sold on this property");
+        }
+        //return value
+        return cost;
+    }
+
+    /**
+     *
+     */
+    private ArrayList<Property> findGroups( Property property ) {
+        ArrayList<Property> group = new ArrayList<>();
+        //find property group
+        for( Object asset: assets){
+            if(asset instanceof Property){
+                if(((Property) asset).group == property.group){
+                    group.add((Property) asset);
+                }
+            }
+        }
+
+        return group;
+    }
+
+
+    /**
+     * Text based method for displaying developed property choices to the user where it is possible to sell more houses
+     * or hotels
+     */
+    private int printDevelopedProperties( HashMap<Integer, Integer> houseSaleIds, HashMap<Integer, Integer> hotelSaleIds ) {
+        int count = 0;
+        System.out.println("Developed Properties:");
+        //loop through assets, finding all properties that are developed
+        for(Object asset : assets) {
+            if(asset instanceof Property) {
+                if( ((Property) asset).getDeveloped()){
+                    if( ((Property) asset).housesNo != houseSaleIds.get(((Property) asset).iD) && hotelSaleIds.get(((Property) asset).iD) != ((Property) asset).hotelNo){
+                        System.out.println(((Property) asset).iD + " " + ((Property) asset).title + " houses:" + ((Property) asset).housesNo + " hotel:" + ((Property) asset).hotelNo);
+                        count++;
+                    }
+                }
+            }
+        }
+        return count;
+    }
+
+    private int printChooseAsset(HashMap<Integer, Integer> saleIds, HashMap<Integer, Integer> houseSaleIds) {
+
+        System.out.println("Saleable Assets");
+        for( Object asset : assets ){
+            if(!( asset instanceof GetOutOfJail)){
+                if( !saleIds.containsKey(((BoardTile) asset).getiD()) ){
+                    if( asset instanceof Property ){
+                        if( !((Property) asset).getDeveloped()){ //can only sell properties with no improvements
+                            System.out.println( ((BoardTile) asset).iD + " " + ((BoardTile) asset).title);
+                        } else {
+                            if( houseSaleIds.get(((Property) asset).iD) == ((Property) asset).housesNo || houseSaleIds.get(((Property) asset).iD) == 5){
+                                System.out.println( ((BoardTile) asset).iD + " " + ((BoardTile) asset).title);
+                            }
+                        }
+                    } else{
+                        System.out.println( ((BoardTile) asset).iD + " " + ((BoardTile) asset).title);
+                    }
+                }
+            }
+        }
+        Scanner userInputScanner = new Scanner( System.in ); //scanner for user input
+        boolean valid = false;
+        int decision = 0;
+
+        while(!valid){
+            boolean found = false; //flag for if given property found
+            System.out.println("Please enter an asset ID: ");
+            decision = userInputScanner.nextInt(); //fetch user input
+
+            for( Object asset : assets ){
+                if(!( asset instanceof GetOutOfJail)){
+                    if( decision == ((BoardTile) asset).iD ){
+                        if( asset instanceof  Property){
+                            saleIds.put( decision, ((Property) asset).getCost());
+                        }else if( asset instanceof  Station){
+                            saleIds.put( decision, ((Station) asset).getCost());
+                        }else if( asset instanceof Utility){
+                            saleIds.put( decision, ((Utility) asset).getCost());
+                        }
+                        found = true;
+                    }
+                }
+            }
+
+            //give response to user
+            if( found ){
+                System.out.println("You have selected property: " + decision);
+                valid = true;
+            }else {
+                System.out.println("Sorry, please try again, ID not found");
+            }
+        }
+
+        return decision;
+
     }
 }

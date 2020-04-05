@@ -13,20 +13,7 @@ public class TestSpace {
     private static List<CardEffect> potLuckPack;
 
     public static void main(String args[]) {
-        //player creation
-        Player ayman = new Player("Ayman", Token.HATSTAND);
-        Player danny = new Player("Danny", Token.CAT);
-        Player jacob = new Player("Jacob", Token.BOOT);
-        Player calvin = new Player("Calvin", Token.SMARTPHONE);
-        Player callum = new Player("Callum", Token.SPOON);
-        Player tom = new Player("Tom", Token.GOBLET);
-        //load players into turn order
-        order.add(ayman);
-        order.add(danny);
-        order.add(jacob);
-        order.add(calvin);
-        order.add(callum);
-        order.add(tom);
+
 
         Deque<CardEffect> pot = new ArrayDeque<CardEffect>();
         Deque<CardEffect> opp = new ArrayDeque<CardEffect>();
@@ -52,6 +39,20 @@ public class TestSpace {
         opp = new ArrayDeque<>(oppourtunityKnocksPack);
 
         Board b = new Board(order, board, pot, opp);
+        //player creation
+        Player ayman = new Player("Ayman", Token.HATSTAND, b);
+        Player danny = new Player("Danny", Token.CAT, b);
+        Player jacob = new Player("Jacob", Token.BOOT, b);
+        Player calvin = new Player("Calvin", Token.SMARTPHONE, b);
+        Player callum = new Player("Callum", Token.SPOON, b);
+        Player tom = new Player("Tom", Token.GOBLET, b);
+        //load players into turn order
+        order.add(ayman);
+        order.add(danny);
+        order.add(jacob);
+        order.add(calvin);
+        order.add(callum);
+        order.add(tom);
         b.demo();//run demo method shown in sprint 1 meeting
     }
 }
