@@ -300,6 +300,7 @@ public class Board {
                     } while (repeat);
                     if( turnOrder.contains( p )){
                         p.propertyImprovement();
+                        p.unMortgage();
                         trade(p);
                     }
 

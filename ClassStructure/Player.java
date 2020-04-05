@@ -405,17 +405,8 @@ public class Player {
                 while( goAgain ) {
                     //property selection
                     Property toBeImproved = selectProperty();
-
-                    //init group store
-                    ArrayList<Property> group = new ArrayList<>();
                     //find all houses in same group
-                    for( Object asset : assets ) {
-                        if (asset instanceof Property) {
-                            if (((Property) asset).group == toBeImproved.group) {
-                                group.add((Property) asset);
-                            }
-                        }
-                    }
+                    ArrayList<Property> group = findGroups( toBeImproved );
 
                     //flag for if improvement is possible
                     boolean validPurchase = true;
@@ -479,6 +470,58 @@ public class Player {
                 }
             }
         }
+    }
+
+    /**
+     * User input driven method to allow for a property to be unmortgaged
+     */
+    public void unMortgage() {
+        boolean mortgaged = false;
+        for( Object asset : assets ){
+            if( asset instanceof Property ){
+                if( ((Property) asset).getDeveloped() ){
+                    mortgaged = true;
+                    break;
+                }
+            }
+        }
+
+        boolean confirm = false;
+
+        if(mortgaged){
+            confirm = yesNoInput("Do you want to un-mortgage a property?");
+        }
+
+        if(confirm){
+
+            Property tempProperty;
+            boolean goAgain = true;
+
+            while( goAgain ){
+
+                //print mortgaged properties
+                for( Object asset : assets ){
+                    if( asset instanceof Property ){
+                        if( ((Property) asset).getDeveloped() ){
+                            System.out.println(((Property) asset).iD + " " + ((Property) asset).title);
+                        }
+                    }
+                }
+
+                //choose a property
+                System.out.println("Choose a property to un-mortgage");
+                tempProperty = selectProperty();
+                if( money >= (tempProperty.getCost()/2) ){
+                    System.out.println(tempProperty.title + " has been un-mortgaged for " + tempProperty.getCost()/2);
+                    tempProperty.unmortgageProperty();
+                } else {
+                    System.out.println("Sorry, you can't afford to do that");
+                }
+                goAgain = yesNoInput("Un-mortgage any other properties?");
+
+            }
+        }
+
     }
 
     /**
@@ -614,6 +657,7 @@ public class Player {
         boolean confirm;
         boolean restart = true;
         int sale;
+        HashMap<Integer, Integer> mortgageIds = new HashMap<>(); //id of property mortgaged, mortgage cost
         HashMap<Integer, Integer> saleIds = new HashMap<>(); //id of property sold, property cost
         HashMap<Integer, Integer> houseSaleIds = new HashMap<>(); //id of property, houses sold
         HashMap<Integer, Integer> hotelSaleIds = new HashMap<>(); //id of property, houses sold
@@ -622,6 +666,27 @@ public class Player {
             sale = 0;
             boolean yesNo;
             while( sale < amount ) {
+                System.out.println("You need to raise: " + (amount - sale));
+
+                boolean mortgaging = yesNoInput("Mortgage properties?");
+                if(mortgaging){
+                    boolean goAgain = true;
+                    while( goAgain ){
+                        //select property
+                        int count = printUnmortgagedProperties();
+                        if( count > 0 ) {
+                            System.out.println("Choose a property to mortgage");
+                            tempProperty = selectProperty();
+                            //sell improvements on chosen property
+                            sale += mortgageProperty( mortgageIds, tempProperty );
+                            goAgain = yesNoInput("Select more properties to mortgage? (yes/no)?");
+                        } else {
+                            System.out.println("No developed properties");
+                            goAgain = false;
+                        }
+                    }
+                }
+
                 boolean improvements = yesNoInput("Sell improvements?");
                 if(improvements){
                     boolean goAgain = true;
@@ -640,11 +705,12 @@ public class Player {
                         }
                     }
                 }
+
                 boolean tiles = yesNoInput("Sell tiles?");
                 if(tiles){
                     //sell properties
                     System.out.println("Choose an asset to sell:");
-                    choice = printChooseAsset(saleIds, houseSaleIds);
+                    choice = printChooseAsset(saleIds, houseSaleIds, mortgageIds);
                     confirm = yesNoInput("Are you sure (yes/no)?");
                     if( confirm ){
                         sale += saleIds.get(choice);
@@ -661,6 +727,15 @@ public class Player {
             yesNo = yesNoInput("Finalise selection? (no will start process again)");
             if( yesNo ){
                 //selection finalised
+                //mortgage properties
+                for(int ii = 0; ii < assets.size(); ii++){
+                    Object asset = assets.get(ii);
+                    if( asset instanceof Property ){
+                        if( mortgageIds.containsKey(((Property) asset).iD)){
+                            payPlayerAmount(((Property) asset).mortgageProperty());
+                        }
+                    }
+                }
                 //sell improvement
                 for(int ii = 0; ii < assets.size(); ii++){
                     Object asset = assets.get(ii);
@@ -701,10 +776,47 @@ public class Player {
     }
 
     /**
-     * It is vital this method is passed a property where a sale is possible
+     * prints properties that can mortgaged
+     *
+     * @return count of un-mortgaged properties
+     */
+    private int printUnmortgagedProperties() {
+        int count = 0;
+        for( Object asset: assets ){
+            if( asset instanceof Property ){
+                if( !((Property) asset).getDeveloped() && !((Property) asset).mortgaged ){
+                    System.out.println( ((Property) asset).iD + " " + ((Property) asset).title);
+                    count++;
+                }
+            }
+        }
+
+        return count;
+    }
+
+
+
+    private int mortgageProperty( HashMap<Integer, Integer> mortgageIds, Property property ) {
+
+        int cost = 0;
+
+        if( !mortgageIds.containsKey(property.iD) && !property.developed){
+            mortgageIds.put(property.iD, (property.cost/2));
+            cost = property.cost/2;
+        }
+
+        return cost;
+    }
+
+
+    /**
+     * A method to sell a house or hotel in such a way as to maintain the balance of houses and hotels across a
+     * property group
+     * This method should be passed a property where sales are potentially possible
+     *
      * @param houseSaleIds, temporary sale store
      * @param property, a developed property
-     * @return
+     * @return cost the integer sale price of the improvement selected to be sold
      */
     private int sellImprovement( HashMap<Integer, Integer> houseSaleIds, HashMap<Integer, Integer> hotelSaleIds, Property property ) {
         if( !property.getDeveloped()){
@@ -745,12 +857,14 @@ public class Player {
         } else {
             System.out.println("Improvement cannot be sold on this property");
         }
-        //return value
+
         return cost;
     }
 
     /**
+     * Finds all properties with the same group as the passed property in the player's asset list
      *
+     * @param property, a property tile on the board
      */
     private ArrayList<Property> findGroups( Property property ) {
         ArrayList<Property> group = new ArrayList<>();
@@ -770,6 +884,9 @@ public class Player {
     /**
      * Text based method for displaying developed property choices to the user where it is possible to sell more houses
      * or hotels
+     *
+     * @param houseSaleIds, temporary store of all houses sold on assets
+     * @param hotelSaleIds, temporary store of all hotels sold on assets
      */
     private int printDevelopedProperties( HashMap<Integer, Integer> houseSaleIds, HashMap<Integer, Integer> hotelSaleIds ) {
         int count = 0;
@@ -788,14 +905,21 @@ public class Player {
         return count;
     }
 
-    private int printChooseAsset(HashMap<Integer, Integer> saleIds, HashMap<Integer, Integer> houseSaleIds) {
+    /**
+     * Prints all assets that can be sold and allows the user to select one
+     *
+     * @param saleIds, temporary store of already selected assets
+     * @param houseSaleIds, temporary store of already selected assets where improvements have been sold
+     * @return id of chosen asset
+     */
+    private int printChooseAsset(HashMap<Integer, Integer> saleIds, HashMap<Integer, Integer> houseSaleIds, HashMap<Integer,Integer> mortgageIds) {
 
         System.out.println("Saleable Assets");
         for( Object asset : assets ){
             if(!( asset instanceof GetOutOfJail)){
                 if( !saleIds.containsKey(((BoardTile) asset).getiD()) ){
                     if( asset instanceof Property ){
-                        if( !((Property) asset).getDeveloped()){ //can only sell properties with no improvements
+                        if( !((Property) asset).getDeveloped() && !mortgageIds.containsKey(((Property) asset).iD)){ //can only sell properties with no improvements and that haven't been selected for mortgagein
                             System.out.println( ((BoardTile) asset).iD + " " + ((BoardTile) asset).title);
                         } else {
                             if( houseSaleIds.get(((Property) asset).iD) == ((Property) asset).housesNo || houseSaleIds.get(((Property) asset).iD) == 5){

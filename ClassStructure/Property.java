@@ -134,6 +134,16 @@ public class Property extends BoardTile{
         }
     }
 
+    public void unmortgageProperty() {
+
+        if( mortgaged ){
+            owner.deductAmount(cost/2);
+            mortgaged = false;
+        }else{
+            System.out.println("Property not currently mortgaged");
+        }
+    }
+
     /**
      * Function to sell the property. Will not be able to sell if property is developed, and will only sell at
      * half price when property is mortgaged.
@@ -151,7 +161,7 @@ public class Property extends BoardTile{
             owner.getAssets().remove( this );
             owner = null;
             return (this.cost);
-    }
+        }
     }
 
     /**
@@ -167,7 +177,7 @@ public class Property extends BoardTile{
         int highestBid = 0;
         //for each player that isn't the current player
         for( Player bidder: board.turnOrder ) {
-            if( bidder != currentPlayer && bidder.CanBuy() ){
+            if( bidder != currentPlayer && bidder.CanBuy() && !bidder.isInJail() ){
                 int bid = 0;
                 boolean wishToBid = false;
                 boolean valid = false;
