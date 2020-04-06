@@ -197,7 +197,7 @@ public class Board {
         String group = " ";
         BoardTile currentTile = tiles.get(tile);
         if(currentTile instanceof Property) {
-            group = ((Property) currentTile).group.toString();
+            group = ((Property) currentTile).getGroup().toString();
         }
         return group;
     }

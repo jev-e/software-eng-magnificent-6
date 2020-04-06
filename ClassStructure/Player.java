@@ -6,21 +6,22 @@ import java.util.*;
  *	Player information
  */
 public class Player {
-    private int currentPos;
-    private int previousPos;
-    private String name;
-    private Token token;
-    private int money;
-    private LinkedList<Object> assets;
-    private boolean canBuy;
-    private boolean inJail;//indicator to differ between players who are jailed or just visiting
-    private int jailTime;//counter to indicate how many turns a player has spent in jail
-    private Board board;
+    private int currentPos; //ID of player position on board
+    private int previousPos; //ID of player's previous position on board
+    private String name; //name of player
+    private Token token; //token representation of player on board
+    private int money; //money held by player
+    private LinkedList<Object> assets; //assets of player (utilities, station, property, get out of jail card)
+    private boolean canBuy; //flag for if player is eligible for purchasing property
+    private boolean inJail; //indicator to differ between players who are jailed or just visiting
+    private int jailTime; //counter to indicate how many turns a player has spent in jail
+    private Board board; //board the player is playing on
 
     /**
      * Sets players name and token and initialises the players starting assets
      * @param name player name
      * @param token one of token enum
+     * @param board the current board being played
      */
     public Player(String name, Token token, Board board) {
         this.name = name;
@@ -46,28 +47,30 @@ public class Player {
     /**
      * Deducts amount from players money if they can pay returning the amount
      * if they cannot pay assets can be sold
-     * if assets will not cover payment the player is bankrupt
+     * if assets will not cover payment the player is bankrupt, return the net worth of the player
      * it is imperative that it is checked that the player has enough money to purchase items such as houses before
      * this method is called
-     * @param amount amount to be deducted
+     * @param amount amount that was payed
      * @return the amount of money the player was able to pay
      */
     public int deductAmount(int amount) {
-        System.out.print(name + ":" + money + ":" + amount);
+
+        System.out.println(name + ":" + money + ":" + amount); //debug comment
         int payableAmount = 0;
-        if(money >= amount) {
-            payPlayerAmount(-amount);
-            payableAmount = amount;
+
+        if(money >= amount) { //player can pay, so pay full amount
+            payPlayerAmount(-amount); //deduct money from player
+            payableAmount = amount; //update payable amount to full amount
         }else{
             //find player net worth
             int netWorth = netWorth();
             if( netWorth >= amount){
                 //can pay after asset selling, trigger it
                 //owner money will be updated
-                assetSelling( amount - money );
+                assetSelling( amount - money ); //amount to be raised in excess of current money holdings
                 //pay amount
                 payPlayerAmount(-amount);
-                payableAmount = amount;
+                payableAmount = amount; //update payable amount to full amount
             }else{
                 //no point asset selling, bankrupt player
                 System.out.println("BANKRUPT");
@@ -95,10 +98,18 @@ public class Player {
         assets.remove(item);
     }
 
+    /**
+     * Getter for player name
+     * @return name player name
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Getter for player current position
+     * @return currentPos players position on the board
+     */
     public int getCurrentPos() {
         return currentPos;
     }
@@ -120,6 +131,10 @@ public class Player {
         this.previousPos = previousPos;
     }
 
+    /**
+     * Setter for player name
+     * @param name the new player name
+     */
     public void setName(String name) {
         this.name = name;
     }
@@ -128,12 +143,24 @@ public class Player {
         this.token = token;
     }
 
+    /**
+     * Getter for player money
+     * @return money the amount in player bank account
+     */
     public int getMoney() {
         return money;
     }
 
+    /**
+     * Getter for player board
+     * @return board player currently on
+     */
     public Board getBoard() { return board; }
 
+    /**
+     * Setter for player board
+     * @param board the board currently in play
+     */
     public void setBoard(Board board) { this.board = board; }
 
 
@@ -145,6 +172,10 @@ public class Player {
         return assets;
     }
 
+    /**
+     * Fetches whether the player can buy a property or not
+     * @return canBuy boolean representation of player's ability to purchase assets
+     */
     public boolean CanBuy() {
         return canBuy;
     }
@@ -235,6 +266,7 @@ public class Player {
     public int getJailTime() {
         return jailTime;
     }
+
     /**
      * Used to remove a player from jail by any means
      * Pay to get out/ spend turns in jail/ get out of jail card
@@ -258,29 +290,35 @@ public class Player {
      *
      */
     public void completeSetProperties() {
-        HashMap<Group, Integer> count = new HashMap<>();
+        HashMap<Group, Integer> count = new HashMap<>(); //frequency distribution
 
-        for(Object asset : assets){
+        for(Object asset : assets){ //for each asset owned by player
             //pull out all properties owned and form a count
             if( asset instanceof Property){
                 int prev = 0;
-                if (count.get(((Property) asset).group) != null) {
-                    prev = count.get(((Property) asset).group);
+                if (count.get(((Property) asset).getGroup()) != null) {
+                    prev = count.get(((Property) asset).getGroup());
                 }
-                count.put( ((Property) asset).group, prev + 1);
-
+                count.put( ((Property) asset).getGroup(), prev + 1);
             }
         }
-        System.out.println(count.toString());
-        for(Group key : count.keySet()){
-            for( Object asset: assets){
-                if( (asset instanceof Property) && count.get(key) == key.getMemberCount() && !((Property) asset).completedSet && ((Property) asset).group == key) {
-                    System.out.println(((Property) asset).title + " complete set updated");
-                    ((Property) asset).completedSet = true;
+        System.out.println(count.toString()); //debug
+
+        for(Group key : count.keySet()){ //for each key in frequency distribution
+            for( Object asset: assets){ //for each asset player owns
+                if( (asset instanceof Property) && count.get(key) == key.getMemberCount() &&
+                        !((Property) asset).isCompletedSet() && ((Property) asset).getGroup() == key) {
+                    //if asset is property and the property is part of a group where the number owned matches
+                    //member count in group enum and property is not already marked as a complete set
+                    System.out.println(((Property) asset).title + " complete set updated"); //debug
+                    ((Property) asset).setCompletedSet(true);
                     ((Property) asset).updateRent();
-                } else if((asset instanceof Property) && count.get(key) == key.getMemberCount() && ((Property) asset).completedSet ){
-                    System.out.println(((Property) asset).title + " complete set removed");
-                    ((Property) asset).completedSet = false;
+                } else if((asset instanceof Property) && count.get(key) == key.getMemberCount() &&
+                        ((Property) asset).isCompletedSet() && ((Property) asset).getGroup() == key ){
+                    //if asset is property and the group count is incorrect for property's group's member count
+                    //and property is marked as complete set
+                    System.out.println(((Property) asset).title + " complete set removed"); //debug
+                    ((Property) asset).setCompletedSet(false);
                     ((Property) asset).updateRent();
                 }
             }
@@ -289,22 +327,24 @@ public class Player {
 
     /**
      * Generates a text based interface to initiate the choosing of assets for trading
+     * @return tradeAssets, the assets selected for trading
      */
     public LinkedList<Object> tradeAssetSelection() {
-        LinkedList<Object> tradeAssets = new LinkedList<>();
+        LinkedList<Object> tradeAssets = new LinkedList<>(); //selection store
         Scanner userInputScanner = new Scanner( System.in ); //scanner for user input
-        String assetChoice = null;
+        String assetChoice; //user selection
         boolean goAgain = true;
         boolean valid = false;
         boolean cancel = false;
 
-        for( Object asset: assets ) {
+        //display viable choices
+        for( Object asset: assets ) { //for each asset owned by player
             if( asset instanceof Property ){
-                if( !((Property) asset).developed ){
-                    System.out.println(((Property) asset).title);
+                if( !((Property) asset).isDeveloped() ){
+                    System.out.println(((Property) asset).title); //only non developed properties can be traded
                 }
             } else if( !(asset instanceof GetOutOfJail) ){
-                System.out.println(((BoardTile)asset).title);
+                System.out.println(((BoardTile)asset).title); //cards cannot be traded
             }
         }
 
@@ -318,8 +358,8 @@ public class Player {
                 if( !(assetChoice.toLowerCase().equals("cancel"))){
                     for (Object asset : assets ) {
                         if (((BoardTile)asset).title.toLowerCase().equals(assetChoice.toLowerCase())) {
-                            System.out.println("You have selected property: " + ((BoardTile) asset).title);
-                            tradeAssets.add( asset );
+                            System.out.println("You have selected property: " + ((BoardTile) asset).title); //normalise
+                            tradeAssets.add( asset ); //temporary store asset
                             found = true; //user input reflects a possible property
                         }
                     }
@@ -405,7 +445,7 @@ public class Player {
                 while( goAgain ) {
                     //property selection
                     Property toBeImproved = selectProperty();
-                    if( toBeImproved.completedSet ){
+                    if( toBeImproved.isCompletedSet() ){
                         //find all houses in same group
                         ArrayList<Property> group = findGroups( toBeImproved );
 
@@ -413,17 +453,17 @@ public class Player {
                         boolean validPurchase = true;
 
                         //if hotel needs to be bought
-                        if((toBeImproved.getHousesNo() == 4) && (toBeImproved.hotelNo == 0)){
+                        if((toBeImproved.getHousesNo() == 4) && (toBeImproved.getHotelNo() == 0)){
                             //all other properties in group must have 4 houses as well
                             for( Property pp: group ){
-                                if(pp.housesNo != 4){
+                                if(pp.getHousesNo() != 4){
                                     validPurchase = false;
                                     break;
                                 }
                             }
                             //if purchase possible and if player can afford it
-                            if( validPurchase && (money > toBeImproved.group.getBuildingCost())){
-                                improve = yesNoInput("Do you want to purchase a hotel for £" + toBeImproved.group.getBuildingCost() + " (yes/no)?");
+                            if( validPurchase && (money > toBeImproved.getGroup().getBuildingCost())){
+                                improve = yesNoInput("Do you want to purchase a hotel for £" + toBeImproved.getGroup().getBuildingCost() + " (yes/no)?");
                                 if( improve) {
                                     toBeImproved.purchaseHotel(); //manages transaction
                                 }
@@ -434,14 +474,14 @@ public class Player {
                         } else if((toBeImproved.getHousesNo() < 4) && (toBeImproved.getHotelNo() == 0 )) { //only a house can be bought
                             //all other properties must have the same or more than the number of houses on the property
                             for( Property pp: group ){
-                                if( pp.housesNo < toBeImproved.getHousesNo() ){
+                                if( pp.getHousesNo() < toBeImproved.getHousesNo() ){
                                     validPurchase = false;
                                     break;
                                 }
                             }
                             //if purchase possible and if player can afford it
-                            if( validPurchase && (money > toBeImproved.group.getBuildingCost())){
-                                improve = yesNoInput("Do you want to purchase a house £" + toBeImproved.group.getBuildingCost() + " (yes/no)?");
+                            if( validPurchase && (money > toBeImproved.getGroup().getBuildingCost())){
+                                improve = yesNoInput("Do you want to purchase a house £" + toBeImproved.getGroup().getBuildingCost() + " (yes/no)?");
                                 if( improve) {
                                     toBeImproved.purchaseHouse(); //manages transaction
                                 }
@@ -455,7 +495,7 @@ public class Player {
                         //check if any more improvements possible
                         for( Object asset : assets ){
                             if( asset instanceof Property ){
-                                if( ((Property) asset).hotelNo == 0  && ((Property) asset).completedSet){
+                                if( ((Property) asset).getHotelNo() == 0  && ((Property) asset).isCompletedSet() ){
                                     possible = true;
                                     break;
                                 }
@@ -482,10 +522,11 @@ public class Player {
      */
     public void unMortgage() {
         boolean mortgaged = false;
-        for( Object asset : assets ){
+
+        for( Object asset : assets ){ //for each asset
             if( asset instanceof Property ){
                 if( ((Property) asset).getDeveloped() ){
-                    mortgaged = true;
+                    mortgaged = true; //update flag as a mortgaged property is present
                     break;
                 }
             }
@@ -516,11 +557,12 @@ public class Player {
                 //choose a property
                 System.out.println("Choose a property to un-mortgage");
                 tempProperty = selectProperty();
-                if( money >= (tempProperty.getCost()/2) ){
+
+                if( money >= (tempProperty.getCost()/2) && tempProperty.isMortgaged() ){ //if player can afford to un mortgage
                     System.out.println(tempProperty.title + " has been un-mortgaged for " + tempProperty.getCost()/2);
                     tempProperty.unmortgageProperty();
                 } else {
-                    System.out.println("Sorry, you can't afford to do that");
+                    System.out.println("Sorry, you can't do that");
                 }
                 goAgain = yesNoInput("Un-mortgage any other properties?");
 
@@ -532,6 +574,7 @@ public class Player {
     /**
      * Text based method for displaying improvable property choices to the user
      * //TODO convert into GUI method to only show improvable properties to user
+     * @return count the number of properties available to improve
      */
     private int improvableProperties() {
         int count = 0;
@@ -540,7 +583,7 @@ public class Player {
         for(Object asset : assets) {
             if(asset instanceof Property) {
                 //if potentially improvable (part of complete set and doesn't have a hotel built and isn't currently mortgaged)
-                if( ((Property) asset).completedSet  && ((Property) asset).hotelNo != 1 && !((Property) asset).mortgaged) {
+                if( ((Property) asset).isCompletedSet()  && ((Property) asset).getHotelNo() != 1 && !((Property) asset).isMortgaged() ) {
                     System.out.println(((Property) asset).iD + " " + ((Property) asset).title); //print for selection
                     count++;
                 }
@@ -599,19 +642,19 @@ public class Player {
             //property
             if( asset instanceof Property ){
                 //mortgaged?
-                if( ((Property) asset).mortgaged ){
-                    netWorth += (((Property) asset).cost/2);
+                if( ((Property) asset).isMortgaged() ){
+                    netWorth += ( (((Property) asset).getCost())/2 );
                 } else {
-                    if( ((Property) asset).developed ){
+                    if( ((Property) asset).isDeveloped() ){
                         //add resell value of all properties
-                        if( ((Property) asset).housesNo >= 1){
-                            netWorth += (((Property) asset).housesNo * ((Property) asset).group.getBuildingCost());
-                        } else if( ((Property) asset).hotelNo == 1){
-                            netWorth += (((Property) asset).group.getBuildingCost() * 5);
+                        if( ((Property) asset).getHousesNo() >= 1){
+                            netWorth += (((Property) asset).getHousesNo() * ((Property) asset).getGroup().getBuildingCost());
+                        } else if( ((Property) asset).getHotelNo() == 1){
+                            netWorth += (((Property) asset).getGroup().getBuildingCost() * 5);
                         }
                     }
                     //property worth
-                    netWorth += ((Property) asset).cost;
+                    netWorth += ((Property) asset).getCost();
                 }
             } else if( asset instanceof Station ){
                 netWorth += ((Station) asset).getCost();
@@ -629,12 +672,10 @@ public class Player {
     private void bankrupt() {
         System.out.println(name);
         //remove player from turnorder
-        System.out.println("Before removal");
+        System.out.println(name + " has been removed from the game as they are bankrupt");
         board.turnOrder.remove( this );
-        System.out.println("After removal");
         //transfer all assets to bank ownership
         for( Object asset : assets ){
-            System.out.println("Assets removed");
             if( asset instanceof GetOutOfJail ){
                 ((GetOutOfJail) asset).returnCard();
             } else if( asset instanceof Property){
@@ -645,9 +686,13 @@ public class Player {
                 ((Utility) asset).setOwner( null );
             }
             assets.remove( asset );
-            System.out.println("Assets removed success");
+            System.out.println("All assets of " + name + " have been returned to the bank's ownership");
         }
-        System.out.println("After assets");
+
+        System.out.println("Players left in the game:");
+        for( Player pp : board.turnOrder ){
+            System.out.println(pp.getName());
+        }
     }
 
     /**
@@ -657,11 +702,11 @@ public class Player {
      * @param amount, the money amount that must be raised
      */
     private void assetSelling( int amount ) {
-        int choice;
-        Property tempProperty;
-        boolean confirm;
-        boolean restart = true;
-        int sale;
+        int choice; //user choice
+        Property tempProperty; //temporary container for user choice
+        boolean confirm; //user input
+        boolean restart = true; //user input
+        int sale; //amount raised via asset selling
         HashMap<Integer, Integer> mortgageIds = new HashMap<>(); //id of property mortgaged, mortgage cost
         HashMap<Integer, Integer> saleIds = new HashMap<>(); //id of property sold, property cost
         HashMap<Integer, Integer> houseSaleIds = new HashMap<>(); //id of property, houses sold
@@ -678,12 +723,12 @@ public class Player {
                     boolean goAgain = true;
                     while( goAgain ){
                         //select property
-                        int count = printUnmortgagedProperties();
+                        int count = printUnmortgagedProperties(); //prints all valid choices
                         if( count > 0 ) {
                             System.out.println("Choose a property to mortgage");
                             tempProperty = selectProperty();
-                            //sell improvements on chosen property
-                            sale += mortgageProperty( mortgageIds, tempProperty );
+                            //mortgage property temporarily
+                            sale += mortgageProperty( mortgageIds, tempProperty ); //update sale total
                             goAgain = yesNoInput("Select more properties to mortgage? (yes/no)?");
                         } else {
                             System.out.println("No developed properties");
@@ -700,9 +745,9 @@ public class Player {
                         int count = printDevelopedProperties(houseSaleIds, hotelSaleIds);
                         if( count > 0 ) {
                             System.out.println("Choose a property to sell improvements on");
-                            tempProperty = selectProperty();
+                            tempProperty = selectProperty(); //prints all valid choices
                             //sell improvements on chosen property
-                            sale += sellImprovement( houseSaleIds, hotelSaleIds, tempProperty);
+                            sale += sellImprovement( houseSaleIds, hotelSaleIds, tempProperty); //update sale total
                             goAgain = yesNoInput("Select more improvements (yes/no)?");
                         } else {
                             System.out.println("No developed properties");
@@ -718,7 +763,7 @@ public class Player {
                     choice = printChooseAsset(saleIds, houseSaleIds, mortgageIds);
                     confirm = yesNoInput("Are you sure (yes/no)?");
                     if( confirm ){
-                        sale += saleIds.get(choice);
+                        sale += saleIds.get(choice); //update sale total
                     }
                 }
             }
@@ -787,9 +832,10 @@ public class Player {
      */
     private int printUnmortgagedProperties() {
         int count = 0;
+
         for( Object asset: assets ){
             if( asset instanceof Property ){
-                if( !((Property) asset).getDeveloped() && !((Property) asset).mortgaged ){
+                if( !((Property) asset).getDeveloped() && !((Property) asset).isMortgaged() ){
                     System.out.println( ((Property) asset).iD + " " + ((Property) asset).title);
                     count++;
                 }
@@ -799,15 +845,20 @@ public class Player {
         return count;
     }
 
-
-
+    /**
+     * Temporarily mortgages a property
+     *
+     * @param mortgageIds store of properties temporarily mortgaged
+     * @param property property requested to be mortgaged
+     * @return return money generated from mortgaging property
+     */
     private int mortgageProperty( HashMap<Integer, Integer> mortgageIds, Property property ) {
 
         int cost = 0;
 
-        if( !mortgageIds.containsKey(property.iD) && !property.developed){
-            mortgageIds.put(property.iD, (property.cost/2));
-            cost = property.cost/2;
+        if( !mortgageIds.containsKey(property.iD) && !property.isDeveloped()){
+            mortgageIds.put(property.iD, ((property.getCost())/2));
+            cost = (property.getCost())/2;
         }
 
         return cost;
@@ -832,14 +883,14 @@ public class Player {
         ArrayList<Property> group = findGroups( property );
 
         boolean houseSalePossible = true;
-        int houseNo =  property.housesNo - houseSaleIds.get(property.iD);
-        int hotelNo = property.hotelNo - hotelSaleIds.get(property.iD);
+        int houseNo =  property.getHousesNo() - houseSaleIds.get(property.iD);
+        int hotelNo = property.getHotelNo() - hotelSaleIds.get(property.iD);
 
         if( houseNo != 0){
             //is house sale possible?
             for( Property pp : group){
                 //find house number for properties in group
-                if( (pp.housesNo - houseSaleIds.get(pp.iD)) > houseNo ){
+                if( (pp.getHousesNo() - houseSaleIds.get(pp.iD)) > houseNo ){
                     //a property in the group has a theoretical higher house number than the current property
                     //improvements cannot be sold as this would create an imbalance
                     houseSalePossible = false;
@@ -849,16 +900,18 @@ public class Player {
         }
 
         if(houseSalePossible){
+            //update count of houses sold
             Integer tempCount = houseSaleIds.get( property.iD );
             if (tempCount == null) {
                 houseSaleIds.put(property.iD, 1);
             } else {
                 houseSaleIds.put(property.iD, tempCount++);
             }
-            cost = property.group.getBuildingCost();
+            cost = property.getGroup().getBuildingCost();
         } else if( hotelNo == 1){
+            //update count of hotels sold
             hotelSaleIds.put(property.iD, 1);
-            cost = property.group.getBuildingCost();
+            cost = property.getGroup().getBuildingCost();
         } else {
             System.out.println("Improvement cannot be sold on this property");
         }
@@ -876,7 +929,7 @@ public class Player {
         //find property group
         for( Object asset: assets){
             if(asset instanceof Property){
-                if(((Property) asset).group == property.group){
+                if(((Property) asset).getGroup() == property.getGroup()){
                     group.add((Property) asset);
                 }
             }
@@ -900,8 +953,10 @@ public class Player {
         for(Object asset : assets) {
             if(asset instanceof Property) {
                 if( ((Property) asset).getDeveloped()){
-                    if( ((Property) asset).housesNo != houseSaleIds.get(((Property) asset).iD) && hotelSaleIds.get(((Property) asset).iD) != ((Property) asset).hotelNo){
-                        System.out.println(((Property) asset).iD + " " + ((Property) asset).title + " houses:" + ((Property) asset).housesNo + " hotel:" + ((Property) asset).hotelNo);
+                    if( ((Property) asset).getHousesNo() != houseSaleIds.get(((Property) asset).iD) &&
+                            hotelSaleIds.get(((Property) asset).iD) != ((Property) asset).getHotelNo()){
+                        System.out.println(((Property) asset).iD + " " + ((Property) asset).title + " houses:" +
+                                ((Property) asset).getHousesNo() + " hotel:" + ((Property) asset).getHotelNo());
                         count++;
                     }
                 }
@@ -924,10 +979,12 @@ public class Player {
             if(!( asset instanceof GetOutOfJail)){
                 if( !saleIds.containsKey(((BoardTile) asset).getiD()) ){
                     if( asset instanceof Property ){
-                        if( !((Property) asset).getDeveloped() && !mortgageIds.containsKey(((Property) asset).iD)){ //can only sell properties with no improvements and that haven't been selected for mortgagein
+                        if( !((Property) asset).getDeveloped() && !mortgageIds.containsKey(((Property) asset).iD)){
+                            //can only sell properties with no improvements and that haven't been selected for mortgage
                             System.out.println( ((BoardTile) asset).iD + " " + ((BoardTile) asset).title);
                         } else {
-                            if( houseSaleIds.get(((Property) asset).iD) == ((Property) asset).housesNo || houseSaleIds.get(((Property) asset).iD) == 5){
+                            if( houseSaleIds.get(((Property) asset).iD) == ((Property) asset).getHousesNo() ||
+                                    houseSaleIds.get(((Property) asset).iD) == 5){
                                 System.out.println( ((BoardTile) asset).iD + " " + ((BoardTile) asset).title);
                             }
                         }

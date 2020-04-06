@@ -7,19 +7,18 @@ import java.util.Scanner;
  * Structure for property objects
  */
 public class Property extends BoardTile{
-    Group group;//enum colour group the tile belongs to
-    int cost;//amount to be paid to purchase property. This is also the sell value
-    int rent;//default rent of a property which developments are added to
-    int[] buildingRents; //4 int length array, amounts to increase rent by per house [1 House,2 Houses,3 Houses, 4 Houses]
-    int housesNo;
-    int hotelNo;
-    int hotelRent;//A given property may have only one hotel this functions the same as building rent
+    private Group group;//enum colour group the tile belongs to
+    private int cost;//amount to be paid to purchase property. This is also the sell value
+    private int rent;//default rent of a property which developments are added to
+    private int[] buildingRents; //4 int length array, amounts to increase rent by per house [1 House,2 Houses,3 Houses, 4 Houses]
+    private int housesNo;
+    private int hotelNo;
+    private int hotelRent;//A given property may have only one hotel this functions the same as building rent
     private Player owner;
-    boolean mortgaged;//if property is mortgaged no rent is deducted. Can be restored by paying half the cost to the bank
-    boolean completedSet;//If a single player owns all properties in group this is true and false otherwise
-    boolean rentDoubled; //Flag representing whether the rent on this property has been doubled
-    boolean developed; //flag for if property improved
-    boolean sellable; //used in temporary selling of houses menu
+    private boolean mortgaged;//if property is mortgaged no rent is deducted. Can be restored by paying half the cost to the bank
+    private boolean completedSet;//If a single player owns all properties in group this is true and false otherwise
+    private boolean rentDoubled; //Flag representing whether the rent on this property has been doubled
+    private boolean developed; //flag for if property improved
 
     /**
      * Default constructor for Jackson
@@ -83,16 +82,32 @@ public class Property extends BoardTile{
         }
     }
 
+    /**
+     * Getter for number of houses on property
+     * @return number of houses
+     */
     public int getHousesNo() {
         return housesNo;
     }
 
+    /**
+     * Getter for number of hotels on property
+     * @return number of hotels
+     */
     public int getHotelNo() {
         return hotelNo;
     }
 
+    /**
+     * Getter for owner of property
+     * @return owner player owner of property
+     */
     public Player getOwner() { return owner; }
 
+    /**
+     * Getter for if property has been developed or not
+     * @return boolean true if property developed, false otherwise
+     */
     public boolean getDeveloped() { return developed; }
 
 
@@ -134,12 +149,16 @@ public class Property extends BoardTile{
         }
     }
 
+    /**
+     * method to un-mortgage the property
+     */
     public void unmortgageProperty() {
-
-        if( mortgaged ){
-            owner.deductAmount(cost/2);
-            mortgaged = false;
-        }else{
+        if( mortgaged && owner.getMoney() >= (cost/2)){
+            owner.deductAmount(cost/2); //pay un mortgaging fee
+            mortgaged = false; //update flag
+        } else if( mortgaged && (owner.getMoney() < (cost/2))) {
+            System.out.println("Sorry, you cannot afford to do this");
+        } else{
             System.out.println("Property not currently mortgaged");
         }
     }
@@ -167,7 +186,6 @@ public class Property extends BoardTile{
     /**
      * Runs an auction for the players to purchase the property. Each player makes an (optional) bid and the highest
      * bidding player purchases the property
-     *
      */
     private void auction( Player currentPlayer ) {
         System.out.println("==========================================================================================");
@@ -241,7 +259,7 @@ public class Property extends BoardTile{
         while(!valid){
             String decision = userInputScanner.nextLine();
             //normalise input
-            decision.toLowerCase();
+            decision.toLowerCase(); //normalise
 
             if( decision.equals( "no" )){
                 userDecision = false;

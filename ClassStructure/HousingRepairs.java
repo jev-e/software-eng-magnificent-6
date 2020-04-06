@@ -43,8 +43,8 @@ public class HousingRepairs extends CardEffect {
         LinkedList<Object> assets = currentPlayer.getAssets();// get players asset list
         for(Object item: assets) {//Count number of houses and hotels a player owns
             if(item instanceof Property) {//checks the asset is a property
-                hotelCount += ((Property) item).hotelNo;
-                houseCount += ((Property) item).housesNo;
+                hotelCount += ((Property) item).getHotelNo();
+                houseCount += ((Property) item).getHousesNo();
             }
         }
         amount = (hotelCount*hotelFine) + (houseCount*houseFine);//calculate the total fine
