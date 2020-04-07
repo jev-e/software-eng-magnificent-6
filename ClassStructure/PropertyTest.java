@@ -62,5 +62,5 @@ public class PropertyTest {
         assertEquals(temp3.sellProperty(), 5);
     }
     */
-     
+
 }
