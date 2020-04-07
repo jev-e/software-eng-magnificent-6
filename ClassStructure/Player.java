@@ -670,9 +670,8 @@ public class Player {
      * Removes player from turnorder and transfers all assets to bank ownership
      */
     private void bankrupt() {
-        System.out.println(name);
         //remove player from turnorder
-        System.out.println(name + " has been removed from the game as they are bankrupt");
+        System.out.println(name + " has been removed from the game");
         board.turnOrder.remove( this );
         //transfer all assets to bank ownership
         for( Object asset : assets ){
@@ -1029,5 +1028,22 @@ public class Player {
 
         return decision;
 
+    }
+
+    /**
+     * Processes player request to leave the game
+     */
+    public void leaveGame() {
+        //ask user
+        boolean confirm = yesNoInput("Do you want to leave the game?");
+        boolean possible;
+
+        //get user votes
+        if( confirm ){
+            possible = board.getLeaveVotes( this );
+            if( possible ){
+                bankrupt(); //remove from turn order and transfer all assets
+            }
+        }
     }
 }

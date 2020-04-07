@@ -37,10 +37,7 @@ public class PayBankTax extends TileEffect{
      */
     @Override
     public void activeEffect(Player currentPlayer) {
-        int payment = currentPlayer.deductAmount(amount);
-        if(payment < amount) {
-            this.board.bankruptPlayer(currentPlayer);//bankrupt player for failure to pay full amount
-        }
+        currentPlayer.deductAmount(amount);
         System.out.println(text);//Display for test version
     }
 

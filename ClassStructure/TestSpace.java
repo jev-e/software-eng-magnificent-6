@@ -53,7 +53,11 @@ public class TestSpace {
         order.add(calvin);
         order.add(callum);
         order.add(tom);
-        b.demo();//run demo method shown in sprint 1 meeting
+        try {
+            b.demo();//run demo method shown in sprint 1 meeting
+        } catch ( Exception e ){
+            System.out.println("An error occurred in game execution");
+        }
     }
 }
 

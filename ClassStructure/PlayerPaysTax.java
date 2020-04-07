@@ -31,9 +31,6 @@ public class PlayerPaysTax extends CardEffect {
     @Override
     void effect(Player currentPlayer) {
         int payment = currentPlayer.deductAmount(amount);
-        if(payment < amount) {
-            this.board.bankruptPlayer(currentPlayer);//bankrupt player for failure to pay full amount
-        }
         this.board.taxPot += payment;//add amount to tax pot
         System.out.println(cardText);//Display for test version
     }

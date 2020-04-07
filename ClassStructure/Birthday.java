@@ -25,9 +25,6 @@ public class Birthday extends CardEffect{
         for(Player p : players) {
             if(!p.equals(currentPlayer)) {//only take from other players than current
                 int temp = p.deductAmount(10);//take £10 from player
-                if(temp < 10) {
-                    this.board.bankruptPlayer(p);//bankrupt player for failure to pay
-                }
                 payment += temp;
             }
         }

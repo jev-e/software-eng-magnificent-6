@@ -29,10 +29,7 @@ public class PlayerPaysBank extends CardEffect{
      */
     @Override
     void effect(Player currentPlayer) {
-        int payment = currentPlayer.deductAmount(amount);
-        if(payment < amount) {
-            this.board.bankruptPlayer(currentPlayer);//bankrupt current player for failure to pay full amount
-        }
+        currentPlayer.deductAmount(amount);
         System.out.println(cardText);//for testing
     }
 

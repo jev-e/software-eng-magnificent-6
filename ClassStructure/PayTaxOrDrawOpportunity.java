@@ -42,9 +42,6 @@ public class PayTaxOrDrawOpportunity extends CardEffect {
         }
         if(input == 1) {
             int payment = currentPlayer.deductAmount(amount);
-            if(payment < amount) {
-                this.board.bankruptPlayer(currentPlayer);//bankrupt player for failure to pay full amount
-            }
             this.board.taxPot += payment;//add the amount the player paid to the tax pot
         }else{
             this.board.drawOpportunityKnocks().effect(currentPlayer);//draw card and activate it's effect

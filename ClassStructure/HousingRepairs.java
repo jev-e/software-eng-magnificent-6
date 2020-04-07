@@ -49,10 +49,8 @@ public class HousingRepairs extends CardEffect {
         }
         amount = (hotelCount*hotelFine) + (houseCount*houseFine);//calculate the total fine
         //note potentially add to card text here the amount that the player is charged
-        int payment = currentPlayer.deductAmount(amount);//deduct amount from players balance
-        if(payment < amount) {
-            this.board.bankruptPlayer(currentPlayer);//bankrupt player for failure to pay
-        }
+        currentPlayer.deductAmount(amount);//deduct amount from players balance
+
         System.out.println(cardText);//Display for test version
     }
     public int getHouseFine() {

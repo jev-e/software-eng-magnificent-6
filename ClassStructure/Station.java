@@ -66,9 +66,6 @@ public class Station extends TileEffect {
                 }
                 int payment = currentPlayer.deductAmount(amount);//take from current player
                 owner.payPlayerAmount(payment);// gives the amount the player was able to pay
-                if (payment < amount) {//if the player couldn't pay the full amount
-                    this.board.bankruptPlayer(currentPlayer);//bankrupt player
-                }
             }
             text = "You pay £" + amount;
             System.out.println(text);//Display for test version
