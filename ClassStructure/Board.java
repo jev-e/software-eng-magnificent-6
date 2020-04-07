@@ -403,6 +403,8 @@ public class Board {
                 }
             }
             if( timeUp ){
+                System.out.println("Time limit reached");
+                System.out.println(version);
                 break;
             } else {
                 turns++;
@@ -411,7 +413,7 @@ public class Board {
         try {
             gameOver();
         } catch ( Exception e ){
-            System.out.println("End game error state");
+            System.out.println(e.getMessage());
         }
         /*
         for(Player player : playerPool) {
@@ -428,7 +430,7 @@ public class Board {
 
         Player winner = null;
 
-        if( version.equals("abridged ") && timeUp){ //time limit up on abridged game
+        if( version.equals("abridged") && timeUp ){ //time limit up on abridged game
             int maxNetWorth = 0;
             for( Player player: turnOrder ){
                 if( player.netWorth() > maxNetWorth){
@@ -448,7 +450,7 @@ public class Board {
 
 
         assert winner != null;
-        System.out.println( winner.getName() + "has won the game with a net worth of " + winner.netWorth());
+        System.out.println( winner.getName() + " has won the game with a net worth of " + winner.netWorth());
     }
 
     /**
