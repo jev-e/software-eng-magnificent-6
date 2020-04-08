@@ -3,6 +3,7 @@ package GUI;
 import javafx.fxml.Initializable;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.Random;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
@@ -19,6 +20,8 @@ import javafx.scene.Scene;
 import javafx.scene.Node;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 
 import java.io.IOException;
 
@@ -63,9 +66,7 @@ public class Controller implements Initializable {
     private Button generateGame;
     private ComboBox gameMode;
 
-    @FXML private Label diceRoll = new Label();
-
-    //@FXML private Button addPlayer = new Button();
+    @FXML private Button diceRoll1 = new Button();
 
     // This is called when the GUI is loading
     @Override
@@ -74,7 +75,6 @@ public class Controller implements Initializable {
         setupTitle = new Label();
         setupTitle.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;");
         setupTitle.setText("Property Tycoon Setup\n");
-
         // Initializing players' spinner and textfield
         spinP1 = new Spinner <String>();
         // Making the arrows on the spinner HORIZONTAL (rather than vertical)
@@ -129,6 +129,7 @@ public class Controller implements Initializable {
         nameAI.add("Adel");
 
         Random rand = new Random();
+        //rand.setSeed(5);
         int randomIndex = rand.nextInt(nameAI.size());
         String tempName = nameAI.get(randomIndex);
 
@@ -137,7 +138,7 @@ public class Controller implements Initializable {
         spinAI1.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
         nameAI1 = new TextField();
         nameAI1.setStyle("-fx-font-size: 14px");
-        nameAI1.setPromptText(tempName);
+        nameAI1.setText(tempName);
         // Remove the AI's name that been assigned so no duplicate name at one time
         nameAI.remove(randomIndex);
 
@@ -148,7 +149,7 @@ public class Controller implements Initializable {
         spinAI2.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
         nameAI2 = new TextField();
         nameAI2.setStyle("-fx-font-size: 14px");
-        nameAI2.setPromptText(tempName);
+        nameAI2.setText(tempName);
         nameAI.remove(randomIndex);
 
         randomIndex = rand.nextInt(nameAI.size());
@@ -158,7 +159,7 @@ public class Controller implements Initializable {
         spinAI3.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
         nameAI3 = new TextField();
         nameAI3.setStyle("-fx-font-size: 14px");
-        nameAI3.setPromptText(tempName);
+        nameAI3.setText(tempName);
         nameAI.remove(randomIndex);
 
         randomIndex = rand.nextInt(nameAI.size());
@@ -168,7 +169,7 @@ public class Controller implements Initializable {
         spinAI4.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
         nameAI4 = new TextField();
         nameAI4.setStyle("-fx-font-size: 14px");
-        nameAI4.setPromptText(tempName);
+        nameAI4.setText(tempName);
         nameAI.remove(randomIndex);
 
         randomIndex = rand.nextInt(nameAI.size());
@@ -178,7 +179,7 @@ public class Controller implements Initializable {
         spinAI5.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
         nameAI5 = new TextField();
         nameAI5.setStyle("-fx-font-size: 14px");
-        nameAI5.setPromptText(tempName);
+        nameAI5.setText(tempName);
         nameAI.remove(randomIndex);
 
         randomIndex = rand.nextInt(nameAI.size());
@@ -188,7 +189,7 @@ public class Controller implements Initializable {
         spinAI6.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
         nameAI6 = new TextField();
         nameAI6.setStyle("-fx-font-size: 14px");
-        nameAI6.setPromptText(tempName);
+        nameAI6.setText(tempName);
         nameAI.remove(randomIndex);
 
         generateGame = new Button("Generate Game");
@@ -213,6 +214,39 @@ public class Controller implements Initializable {
         gameMode.setValue("Normal");
     }
 
+    /***
+     * A new window appears showing the number that they have rolled
+     */
+    public void diceRoll(ActionEvent event){
+        // testing purpose
+        int x = 2;
+        int y = 2;
+
+        // Allow the user to roll again if both the dices == same
+        ButtonType rollAgain = new ButtonType("Reroll");
+        if(x == y){
+            Alert diceMessage = new Alert(AlertType.NONE);
+            diceMessage.setTitle("Dice Generated");
+            diceMessage.setHeaderText("Your first dice rolled a " + x + " and the second rolled a " + y);
+            diceMessage.setContentText("Roll again");
+            diceMessage.getButtonTypes().add(rollAgain);
+            Optional<ButtonType> option = diceMessage.showAndWait();
+            // After clicking the "Reroll" button from the popup
+            if(option.get() == rollAgain){
+                // function to roll again implement later
+                Alert reroll = new Alert(AlertType.INFORMATION);
+                reroll.setTitle("Dice Generated");
+                reroll.setHeaderText("Reroll test");
+                reroll.show();
+            }
+        }else{ // dice one and dice two != same
+            Alert diceMessage = new Alert(AlertType.INFORMATION);
+            diceMessage.setTitle("Dice Generated");
+            diceMessage.setHeaderText("You rolled a " + x + " and a " + y);
+            diceMessage.showAndWait();
+        }
+    }
+
     /**
      * Switch scene from setup when "Generate Game" button is clicked
      * @param event
@@ -225,7 +259,7 @@ public class Controller implements Initializable {
         // Grab stage information and change scene to setup
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         window.setScene(gameScene);
-        window.setFullScreen(true);
+        //window.setFullScreen(true);
         window.show();
     }
 
@@ -520,6 +554,8 @@ public class Controller implements Initializable {
                 SpinnerValueFactory<String> tokenChoice1 = new SpinnerValueFactory.ListSpinnerValueFactory<>(tokenName);
                 tokenChoice1.setValue("Boot");
                 spinAI1.setValueFactory(tokenChoice1);
+                // Prevent players from changing the AI's name
+                nameAI1.setEditable(false);
 
                 aiSetup1.getChildren().addAll(spinAI1, nameAI1);
                 alignAI.getChildren().add(aiSetup1);
@@ -532,6 +568,9 @@ public class Controller implements Initializable {
                 SpinnerValueFactory<String> tokenChoice2 = new SpinnerValueFactory.ListSpinnerValueFactory<>(tokenName);
                 tokenChoice2.setValue("Boot");
                 spinAI2.setValueFactory(tokenChoice2);
+                // Prevent players from changing the AI's name
+                nameAI1.setEditable(false);
+                nameAI2.setEditable(false);
 
                 aiSetup1.getChildren().addAll(spinAI1, nameAI1);
                 aiSetup2.getChildren().addAll(spinAI2, nameAI2);
@@ -549,6 +588,10 @@ public class Controller implements Initializable {
                 SpinnerValueFactory<String> tokenChoice3 = new SpinnerValueFactory.ListSpinnerValueFactory<>(tokenName);
                 tokenChoice3.setValue("Boot");
                 spinAI3.setValueFactory(tokenChoice3);
+                // Prevent players from changing the AI's name
+                nameAI1.setEditable(false);
+                nameAI2.setEditable(false);
+                nameAI3.setEditable(false);
 
                 aiSetup1.getChildren().addAll(spinAI1, nameAI1);
                 aiSetup2.getChildren().addAll(spinAI2, nameAI2);
@@ -571,6 +614,11 @@ public class Controller implements Initializable {
                 SpinnerValueFactory<String> tokenChoice4 = new SpinnerValueFactory.ListSpinnerValueFactory<>(tokenName);
                 tokenChoice4.setValue("Boot");
                 spinAI4.setValueFactory(tokenChoice4);
+                // Prevent players from changing the AI's name
+                nameAI1.setEditable(false);
+                nameAI2.setEditable(false);
+                nameAI3.setEditable(false);
+                nameAI4.setEditable(false);
 
                 aiSetup1.getChildren().addAll(spinAI1, nameAI1);
                 aiSetup2.getChildren().addAll(spinAI2, nameAI2);
@@ -598,6 +646,12 @@ public class Controller implements Initializable {
                 SpinnerValueFactory<String> tokenChoice5 = new SpinnerValueFactory.ListSpinnerValueFactory<>(tokenName);
                 tokenChoice5.setValue("Boot");
                 spinAI5.setValueFactory(tokenChoice5);
+                // Prevent players from changing the AI's name
+                nameAI1.setEditable(false);
+                nameAI2.setEditable(false);
+                nameAI3.setEditable(false);
+                nameAI4.setEditable(false);
+                nameAI5.setEditable(false);
 
                 aiSetup1.getChildren().addAll(spinAI1, nameAI1);
                 aiSetup2.getChildren().addAll(spinAI2, nameAI2);
@@ -632,6 +686,13 @@ public class Controller implements Initializable {
                 SpinnerValueFactory<String> tokenChoice6 = new SpinnerValueFactory.ListSpinnerValueFactory<>(tokenName);
                 tokenChoice6.setValue("Boot");
                 spinAI6.setValueFactory(tokenChoice6);
+                // Prevent players from changing the AI's name
+                nameAI1.setEditable(false);
+                nameAI2.setEditable(false);
+                nameAI3.setEditable(false);
+                nameAI4.setEditable(false);
+                nameAI5.setEditable(false);
+                nameAI6.setEditable(false);
 
                 aiSetup1.getChildren().addAll(spinAI1, nameAI1);
                 aiSetup2.getChildren().addAll(spinAI2, nameAI2);
@@ -699,10 +760,5 @@ public class Controller implements Initializable {
      */
     public void quit(ActionEvent event){
         Platform.exit();
-    }
-
-    public void rollDice(ActionEvent event) throws IOException{
-
-
     }
 }
