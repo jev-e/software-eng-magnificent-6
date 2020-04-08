@@ -63,6 +63,8 @@ public class Controller implements Initializable {
     private Button generateGame;
     private ComboBox gameMode;
 
+    @FXML private Label diceRoll = new Label();
+
     //@FXML private Button addPlayer = new Button();
 
     // This is called when the GUI is loading
@@ -223,6 +225,7 @@ public class Controller implements Initializable {
         // Grab stage information and change scene to setup
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         window.setScene(gameScene);
+        window.setFullScreen(true);
         window.show();
     }
 
@@ -696,5 +699,10 @@ public class Controller implements Initializable {
      */
     public void quit(ActionEvent event){
         Platform.exit();
+    }
+
+    public void rollDice(ActionEvent event) throws IOException{
+
+
     }
 }
