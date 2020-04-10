@@ -71,6 +71,7 @@ public class Board {
         if( version.equals("full") || version.equals("abridged") ){
             this.version = version;
         } else {
+            System.out.println("Error in version");
             throw new IllegalArgumentException();
         }
 
@@ -344,10 +345,9 @@ public class Board {
             repeat = true;//tracks double rolled for player to go again
             if (count >= 3) {
                 result = die1 + die2;
+                repeat = false;
                 System.out.printf("%s:%s Has Gone To Jail\n", currentPlayer.getName(), currentPlayer.getToken().getSymbol());
                 currentPlayer.jailPlayer();//sets players status to jailed
-                currentPlayer.setCurrentPos(0);//Currently sends player to Go however must be changed to jail position
-                //In future versions the player method jailPlayer will move the player to the jail tile
             }
         }
         if(count < 3) {
@@ -360,19 +360,21 @@ public class Board {
     }
 
     /**
-     * Displays the board and rolls the die for 10 complete turns
+     * Game loop
      */
-    public void demo() throws Exception {
+    public void gameLoop() throws Exception {
         displayAsString();
+        //Player pool for use in end game screen to be removed
+        Collections.shuffle(turnOrder);//randomises the player turn order
         LinkedList<Player> playerPool = (LinkedList<Player>) turnOrder.clone();
-        for(Player p: turnOrder) {
+        for (Player p : turnOrder) {
             System.out.println(p.getName() + " Money:" + p.getMoney());
         }
 
 
         while (turnOrder.size() != 1) {
             System.out.println(turnOrder.toString());
-            for( int ii = 0; ii < turnOrder.size(); ii++ ){
+            for (int ii = 0; ii < turnOrder.size(); ii++) {
                 Player p = turnOrder.get(ii);
                 if (!p.isInJail()) {
                     int count = 0;
@@ -383,15 +385,16 @@ public class Board {
                         try {
                             System.in.read();
                         } catch (Exception e) {
+                            System.out.println("Error in press next");
                             e.printStackTrace();
                         }
-                        roll(p, count);
+                        p.setLastRoll(roll(p, count));//keep track of player roll
                         //displayAsString();
                         p.passGo();
                         tiles.get(p.getCurrentPos()).activeEffect(p);
                         displayAsString();
                     } while (repeat);
-                    if( turnOrder.contains( p )){
+                    if (turnOrder.contains(p) && !p.isInJail()) {
                         p.leaveGame();
                         p.propertyImprovement();
                         p.unMortgage();
@@ -413,13 +416,9 @@ public class Board {
         try {
             gameOver();
         } catch ( Exception e ){
+            e.printStackTrace();
             System.out.println(e.getMessage());
         }
-        /*
-        for(Player player : playerPool) {
-            System.out.println(player.getName() + " ended with £" + player.getMoney());
-        }
-        */
     }
 
     /**
@@ -569,10 +568,24 @@ public class Board {
                             for (Object asset : tradeAssetsGive) {
                                 currentPlayer.getAssets().remove(asset);
                                 choice.getAssets().add(asset);
+                                if (asset instanceof Property) {
+                                    ((Property) asset).setOwner(choice);
+                                } else if (asset instanceof Station) {
+                                    ((Station) asset).setOwner(choice);
+                                } else if (asset instanceof Utility) {
+                                    ((Utility) asset).setOwner(choice);
+                                }
                             }
                             for (Object asset : tradeAssetsReceive) {
                                 choice.getAssets().remove(asset);
                                 currentPlayer.getAssets().add(asset);
+                                if (asset instanceof Property) {
+                                    ((Property) asset).setOwner(currentPlayer);
+                                } else if (asset instanceof Station) {
+                                    ((Station) asset).setOwner(currentPlayer);
+                                } else if (asset instanceof Utility) {
+                                    ((Utility) asset).setOwner(currentPlayer);
+                                }
                             }
                             System.out.println("Trade Complete");
                             //check for complete set

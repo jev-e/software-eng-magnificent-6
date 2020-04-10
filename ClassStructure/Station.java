@@ -50,24 +50,24 @@ public class Station extends TileEffect {
                 if (item instanceof Station) {
                     stationCount++;//count number of stations owned by this tiles owner
                 }
-                switch (stationCount) {//selects the amount based on how many station owned
-                    case 1:
-                        amount = 25;
-                        break;
-                    case 2:
-                        amount = 50;
-                        break;
-                    case 3:
-                        amount = 100;
-                        break;
-                    case 4:
-                        amount = 200;
-                        break;
-                }
-                int payment = currentPlayer.deductAmount(amount);//take from current player
-                owner.payPlayerAmount(payment);// gives the amount the player was able to pay
             }
-            text = "You pay £" + amount;
+            switch (stationCount) {//selects the amount based on how many station owned
+                case 1:
+                    amount = 25;
+                    break;
+                case 2:
+                    amount = 50;
+                    break;
+                case 3:
+                    amount = 100;
+                    break;
+                case 4:
+                    amount = 200;
+                    break;
+            }
+            int payment = currentPlayer.deductAmount(amount);//take from current player
+            owner.payPlayerAmount(payment);// gives the amount the player was able to pay
+            text = "Player owns " + stationCount + "stations. You pay £" + amount;
             System.out.println(text);//Display for test version
         } else {
             if (owner == null) {
@@ -75,7 +75,6 @@ public class Station extends TileEffect {
             }
         }
     }
-
     /**
      * Runs an auction for the players to purchase the property. Each player makes an (optional) bid and the highest
      * bidding player purchases the property

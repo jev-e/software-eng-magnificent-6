@@ -33,7 +33,7 @@ public class Jail extends TileEffect{
                 System.out.println(currentPlayer.getName() + " has left jail");//Display for test version
             } else {
                 currentPlayer.serveJailTime();//Increases the jail time count
-                System.out.println(currentPlayer.getName() + "is in jail");
+                System.out.println(currentPlayer.getName() + " is in jail");
                 //move on with players turn they are still in jail
             }
         } else {

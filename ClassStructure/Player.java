@@ -16,6 +16,7 @@ public class Player {
     private boolean inJail; //indicator to differ between players who are jailed or just visiting
     private int jailTime; //counter to indicate how many turns a player has spent in jail
     private Board board; //board the player is playing on
+    private int lastRoll;//For use in utility functions
 
     /**
      * Sets players name and token and initialises the players starting assets
@@ -28,7 +29,7 @@ public class Player {
         this.token = token;
         currentPos = 0;
         previousPos = 0;
-        money = 10;//All references to money is in £'s
+        money = 1500;//All references to money is in £'s
         assets = new LinkedList<>();
         canBuy = false;
         inJail = false;
@@ -145,6 +146,7 @@ public class Player {
 
     /**
      * Getter for player money
+     *
      * @return money the amount in player bank account
      */
     public int getMoney() {
@@ -152,10 +154,22 @@ public class Player {
     }
 
     /**
+     * Setter for player money for use in testing
+     *
+     * @param amount the amount to set player money to
+     */
+    public void setMoney(int amount) {
+        money = amount;
+    }
+
+    /**
      * Getter for player board
+     *
      * @return board player currently on
      */
-    public Board getBoard() { return board; }
+    public Board getBoard() {
+        return board;
+    }
 
     /**
      * Setter for player board
@@ -248,6 +262,7 @@ public class Player {
                     break;
                 default:
                     System.out.println("Invalid Input");
+                    break;
             }
         }
     }
@@ -284,37 +299,44 @@ public class Player {
         return inJail;
     }
 
+    public int getLastRoll() {
+        return lastRoll;
+    }
+
+    public void setLastRoll(int lastRoll) {
+        this.lastRoll = lastRoll;
+    }
+
     /**
      * Updates flags for all player's properties, updates base rent amount if complete set with no properties. Should
      * be called whenever a change to property ownership has occurred - e.g in purchase, sale, trading etc
-     *
      */
     public void completeSetProperties() {
         HashMap<Group, Integer> count = new HashMap<>(); //frequency distribution
 
-        for(Object asset : assets){ //for each asset owned by player
+        for (Object asset : assets) { //for each asset owned by player
             //pull out all properties owned and form a count
-            if( asset instanceof Property){
+            if (asset instanceof Property) {
                 int prev = 0;
                 if (count.get(((Property) asset).getGroup()) != null) {
                     prev = count.get(((Property) asset).getGroup());
                 }
-                count.put( ((Property) asset).getGroup(), prev + 1);
+                count.put(((Property) asset).getGroup(), prev + 1);
             }
         }
         System.out.println(count.toString()); //debug
 
         for(Group key : count.keySet()){ //for each key in frequency distribution
             for( Object asset: assets){ //for each asset player owns
-                if( (asset instanceof Property) && count.get(key) == key.getMemberCount() &&
+                if ((asset instanceof Property) && count.get(key) == key.getMemberCount() &&
                         !((Property) asset).isCompletedSet() && ((Property) asset).getGroup() == key) {
                     //if asset is property and the property is part of a group where the number owned matches
                     //member count in group enum and property is not already marked as a complete set
                     System.out.println(((Property) asset).title + " complete set updated"); //debug
                     ((Property) asset).setCompletedSet(true);
                     ((Property) asset).updateRent();
-                } else if((asset instanceof Property) && count.get(key) == key.getMemberCount() &&
-                        ((Property) asset).isCompletedSet() && ((Property) asset).getGroup() == key ){
+                } else if ((asset instanceof Property) && count.get(key) != key.getMemberCount() &&
+                        ((Property) asset).isCompletedSet() && ((Property) asset).getGroup() == key) {
                     //if asset is property and the group count is incorrect for property's group's member count
                     //and property is marked as complete set
                     System.out.println(((Property) asset).title + " complete set removed"); //debug
@@ -456,7 +478,7 @@ public class Player {
                         if((toBeImproved.getHousesNo() == 4) && (toBeImproved.getHotelNo() == 0)){
                             //all other properties in group must have 4 houses as well
                             for( Property pp: group ){
-                                if(pp.getHousesNo() != 4){
+                                if (pp.getHousesNo() != 4 || pp.getHotelNo() == 1) {
                                     validPurchase = false;
                                     break;
                                 }
@@ -684,10 +706,9 @@ public class Player {
             } else if( asset instanceof Utility){
                 ((Utility) asset).setOwner( null );
             }
-            assets.remove( asset );
             System.out.println("All assets of " + name + " have been returned to the bank's ownership");
         }
-
+        assets = new LinkedList<>();//clear their asset list
         System.out.println("Players left in the game:");
         for( Player pp : board.turnOrder ){
             System.out.println(pp.getName());
@@ -874,15 +895,16 @@ public class Player {
      * @return cost the integer sale price of the improvement selected to be sold
      */
     private int sellImprovement( HashMap<Integer, Integer> houseSaleIds, HashMap<Integer, Integer> hotelSaleIds, Property property ) {
-        if( !property.getDeveloped()){
+        if (!property.getDeveloped()) {
+            System.out.println("Error in argument");
             throw new IllegalArgumentException();
         }
         int cost = 0;
         //find property group
-        ArrayList<Property> group = findGroups( property );
+        ArrayList<Property> group = findGroups(property);
 
         boolean houseSalePossible = true;
-        int houseNo =  property.getHousesNo() - houseSaleIds.get(property.iD);
+        int houseNo = property.getHousesNo() - houseSaleIds.get(property.iD);
         int hotelNo = property.getHotelNo() - hotelSaleIds.get(property.iD);
 
         if( houseNo != 0){

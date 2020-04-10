@@ -1,18 +1,80 @@
 [
-	{"type": "bankPaysPlayer", "cardText": "You inherit £100", "amount": 100},
-	{"type": "bankPaysPlayer", "cardText": "You have won 2nd prize in a beauty contest, collect £20", "amount": 20},
-	{"type": "movePlayerNoPassGo", "cardText": "Go back to Crapper Street", "destination": 1},
-	{"type": "bankPaysPlayer", "cardText": "Student loan refund. Collect £20", "amount": 20},
-	{"type": "bankPaysPlayer", "cardText": "Bank error in your favour. Collect £200", "amount": 200},
-	{"type": "playerPaysBank", "cardText": "Pay bill for text books of £100", "amount": 100},
-	{"type": "playerPaysBank", "cardText": "Mega late night taxi bill pay £50", "amount": 50},
-	{"type": "movePlayerPassGo", "cardText": "Advance to Go", "destination": 0},
-	{"type": "bankPaysPlayer", "cardText": "From sale of Bitcoin you get £50", "amount": 50},
-	{"type": "payTaxOrDrawOpportunity", "cardText": "Pay a £10 fine or take opportunity knocks", "amount": 10},
-	{"type": "playerPaysTax", "cardText": "Pay insurance fee of £50", "amount": 50},
-	{"type": "bankPaysPlayer", "cardText": "Savings bond matures, collect £100", "amount": 100},
-	{"type": "goToJailCard", "cardText": "Go to jail. Do not pass GO, do not collect £200"},
-	{"type": "bankPaysPlayer", "cardText": "Received interst on shares of £25", "amount": 25},
-	{"type": "birthday", "cardText": "It's your birthday. Collect £10 from each player"},
-	{"type": "getOutOfJail", "cardText": "Get out of jail free", "deck" : "pot"}
+  {
+    "type": "bankPaysPlayer",
+    "cardText": "You inherit £100",
+    "amount": 100
+  },
+  {
+    "type": "bankPaysPlayer",
+    "cardText": "You have won 2nd prize in a beauty contest, collect £20",
+    "amount": 20
+  },
+  {
+    "type": "movePlayerNoPassGo",
+    "cardText": "Go back to Crapper Street",
+    "destination": 1
+  },
+  {
+    "type": "bankPaysPlayer",
+    "cardText": "Student loan refund. Collect £20",
+    "amount": 20
+  },
+  {
+    "type": "bankPaysPlayer",
+    "cardText": "Bank error in your favour. Collect £200",
+    "amount": 200
+  },
+  {
+    "type": "playerPaysBank",
+    "cardText": "Pay bill for text books of £100",
+    "amount": 100
+  },
+  {
+    "type": "playerPaysBank",
+    "cardText": "Mega late night taxi bill pay £50",
+    "amount": 50
+  },
+  {
+    "type": "movePlayerPassGo",
+    "cardText": "Advance to Go",
+    "destination": 0
+  },
+  {
+    "type": "bankPaysPlayer",
+    "cardText": "From sale of Bitcoin you get £50",
+    "amount": 50
+  },
+  {
+    "type": "payTaxOrDrawOpportunity",
+    "cardText": "Pay a £10 fine or take opportunity knocks",
+    "amount": 10
+  },
+  {
+    "type": "playerPaysTax",
+    "cardText": "Pay insurance fee of £50",
+    "amount": 50
+  },
+  {
+    "type": "bankPaysPlayer",
+    "cardText": "Savings bond matures, collect £100",
+    "amount": 100
+  },
+  {
+    "type": "goToJailCard",
+    "cardText": "Go to jail. Do not pass GO, do not collect £200"
+  },
+  {
+    "type": "bankPaysPlayer",
+    "cardText": "Received interest on shares of £25",
+    "amount": 25
+  },
+  {
+    "type": "birthday",
+    "cardText": "It's your birthday. Collect £10 from each player"
+  },
+  {
+    "type": "getOutOfJail",
+    "cardText": "Get out of jail free",
+    "deck": "pot"
+  }
 ]

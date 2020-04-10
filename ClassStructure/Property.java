@@ -293,8 +293,8 @@ public class Property extends BoardTile{
             if( cost > currentPlayer.getMoney() ){
                 //no purchase can be made, trigger auction
                 System.out.println("Sorry, you can't afford this");
-                auction( currentPlayer );
-                System.out.println("Auction ended, can;t affird");
+                auction(currentPlayer);
+                System.out.println("Auction ended, can;t afford");
             } else {
                 //deduct purchase cost from player
                 currentPlayer.deductAmount( cost );

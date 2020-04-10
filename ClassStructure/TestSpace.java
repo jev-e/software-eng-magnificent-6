@@ -9,7 +9,7 @@ import java.util.*;
 public class TestSpace {
     private static HashMap<Integer, BoardTile> board = new HashMap<Integer, BoardTile>();
     private static LinkedList<Player> order = new LinkedList<Player>();
-    private static List<CardEffect> oppourtunityKnocksPack;
+    private static List<CardEffect> opportunityKnocksPack;
     private static List<CardEffect> potLuckPack;
 
     public static void main(String args[]) {
@@ -26,17 +26,17 @@ public class TestSpace {
         }
 
         try{
-            oppourtunityKnocksPack = Json.fromJsonToList("OpportunityKnocksCardData.json");
+            opportunityKnocksPack = Json.fromJsonToList("OpportunityKnocksCardData.json");
             potLuckPack = Json.fromJsonToList("PotLuckCardData.json");
         }catch (IOException e) {
             e.printStackTrace();
         }
 
-        Collections.shuffle(oppourtunityKnocksPack);//shuffles order
+        Collections.shuffle(opportunityKnocksPack);//shuffles order
         Collections.shuffle(potLuckPack);
 
         pot = new ArrayDeque<>(potLuckPack);//Load shuffled pack into decks
-        opp = new ArrayDeque<>(oppourtunityKnocksPack);
+        opp = new ArrayDeque<>(opportunityKnocksPack);
 
         Board b = new Board(order, board, pot, opp);
         //player creation
@@ -54,8 +54,9 @@ public class TestSpace {
         order.add(callum);
         order.add(tom);
         try {
-            b.demo();//run demo method shown in sprint 1 meeting
-        } catch ( Exception e ){
+            b.gameLoop();
+        } catch (Exception e) {
+            e.printStackTrace();
             System.out.println("An error occurred in game execution");
         }
     }
