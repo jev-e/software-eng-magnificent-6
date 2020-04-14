@@ -12,6 +12,7 @@ import javafx.event.ActionEvent;
 import javafx.application.Platform;
 import javafx.scene.Parent;
 import javafx.geometry.Pos;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -66,7 +67,12 @@ public class Controller implements Initializable {
     private Button generateGame;
     private ComboBox gameMode;
 
+    // Callum's Additions
+
+    private Canvas Tiles;
+
     @FXML private Button diceRoll1 = new Button();
+    @FXML private Canvas bob = new Canvas();
 
     // This is called when the GUI is loading
     @Override
@@ -318,6 +324,8 @@ public class Controller implements Initializable {
     }
 
     /***
+     *
+     * Called When "add player" is clicked, by addNewPlayer.
      *
      * @return VBox which setup the spinner and textfield for each players'
      */
