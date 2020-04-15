@@ -67,7 +67,7 @@ public class Station extends TileEffect {
             }
             int payment = currentPlayer.deductAmount(amount);//take from current player
             owner.payPlayerAmount(payment);// gives the amount the player was able to pay
-            text = "Player owns " + stationCount + "stations. You pay £" + amount;
+            text = "Player owns " + stationCount + " station(s). You pay £" + amount;
             System.out.println(text);//Display for test version
         } else {
             if (owner == null) {
@@ -80,6 +80,7 @@ public class Station extends TileEffect {
      * bidding player purchases the property
      */
     private void auction(Player currentPlayer) {
+        System.out.println(title);
         System.out.println("==========================================================================================");
         System.out.println("==================================AUCTION BEGINS==========================================");
         System.out.println("==========================================================================================");
@@ -95,7 +96,12 @@ public class Station extends TileEffect {
 
                 //ask if want to purchase
                 String question = bidder.getName() + ", do you want to make a bid (yes/no)?";
-                wishToBid = yesNoInput(question);
+                if (bidder.isAiAgent()) {
+                    wishToBid = false;//TODO temp for testing to be removed
+                    System.out.println("no");
+                } else {
+                    wishToBid = yesNoInput(question);
+                }
                 if (wishToBid) {
 
                     Scanner userInputScanner = new Scanner(System.in);
@@ -179,8 +185,11 @@ public class Station extends TileEffect {
 
         String message = currentPlayer.getName() + ", do you want to make a purchase (yes/no)?";
 
-        wishToPurchase = yesNoInput(message);
-
+        if (!currentPlayer.isAiAgent()) {
+            wishToPurchase = yesNoInput(message);
+        } else {
+            wishToPurchase = currentPlayer.decide(this);
+        }
         if (wishToPurchase) {
             if (cost > currentPlayer.getMoney()) {
                 //no purchase can be made, trigger auction
@@ -206,8 +215,7 @@ public class Station extends TileEffect {
      * @return cost
      */
     public int sellStation() {
-        owner.getAssets().remove(this);
-        owner = null;
+        owner.removeAsset(this);
         return cost;
     }
 

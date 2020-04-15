@@ -341,7 +341,7 @@ public class Board {
         Random rand = new Random();
         int die1 = rand.nextInt(6)+1;
         int die2 = rand.nextInt(6)+1;
-        if(die1 == die2) {
+        if (die1 == die2) {
             repeat = true;//tracks double rolled for player to go again
             if (count >= 3) {
                 result = die1 + die2;
@@ -350,7 +350,7 @@ public class Board {
                 currentPlayer.jailPlayer();//sets players status to jailed
             }
         }
-        if(count < 3) {
+        if (count < 3) {
             result = die1 + die2;
             int position = (currentPlayer.getCurrentPos() + result) % tiles.size();
             System.out.printf("%s:%s Rolled |%d|%d| = %d\n", currentPlayer.getName(), currentPlayer.getToken().getSymbol(), die1, die2, result);
@@ -358,6 +358,60 @@ public class Board {
         }
         return result;
     }
+
+    public void testLoop() {
+        displayAsString();
+        Collections.shuffle(turnOrder);
+        turns = 0;
+        while (turnOrder.size() > 1) {
+            if (turns > 1000) {
+                break;//TODO Remove this
+            }
+            for (int i = 0; i < turnOrder.size(); i++) {
+                Player currentPlayer = turnOrder.get(i);
+                if (currentPlayer == null) {
+                    continue;//skip players that have been removed from turn order
+                } else if (currentPlayer.isInJail()) {
+                    tiles.get(10).activeEffect(currentPlayer);//Activate the jail tile to serve time
+                    continue;//move to next turn
+                }
+                int count = 0;
+                do {
+                    turns++;
+                    count++;
+                    repeat = false;
+                    if (!currentPlayer.isAiAgent()) {//get input from player
+                        try {
+                            System.in.read();
+                        } catch (Exception e) {
+                            System.out.println("Error in press next");
+                            e.printStackTrace();
+                        }
+                    }
+                    currentPlayer.setLastRoll(roll(currentPlayer, count));//keep track of player roll
+                    currentPlayer.passGo();
+                    tiles.get(currentPlayer.getCurrentPos()).activeEffect(currentPlayer);
+                    displayAsString();
+
+                    if (turnOrder.contains(currentPlayer) && !currentPlayer.isInJail()) {
+                        if (!currentPlayer.isAiAgent()) {
+                            currentPlayer.leaveGame();
+                            currentPlayer.unMortgage();
+                            trade(currentPlayer);
+                        }
+                        currentPlayer.developProperties();
+                    }
+                } while (repeat);
+            }
+        }
+        try {
+            gameOver();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+        }
+    }
+
 
     /**
      * Game loop
@@ -367,13 +421,12 @@ public class Board {
         //Player pool for use in end game screen to be removed
         Collections.shuffle(turnOrder);//randomises the player turn order
         LinkedList<Player> playerPool = (LinkedList<Player>) turnOrder.clone();
-        for (Player p : turnOrder) {
-            System.out.println(p.getName() + " Money:" + p.getMoney());
-        }
-
 
         while (turnOrder.size() != 1) {
-            System.out.println(turnOrder.toString());
+            for (Player p : turnOrder) {
+                System.out.print(p.getName() + ":" + p.getMoney() + " ");
+            }
+            System.out.println();
             for (int ii = 0; ii < turnOrder.size(); ii++) {
                 Player p = turnOrder.get(ii);
                 if (!p.isInJail()) {
@@ -382,27 +435,37 @@ public class Board {
                         count++;//keep track of number of repeat turns player has had
                         repeat = false;
                         System.out.println("Press Enter to continue");
-                        try {
-                            System.in.read();
-                        } catch (Exception e) {
-                            System.out.println("Error in press next");
-                            e.printStackTrace();
+                        if (!p.isAiAgent()) {//get input from player
+                            try {
+                                System.in.read();
+                            } catch (Exception e) {
+                                System.out.println("Error in press next");
+                                e.printStackTrace();
+                            }
                         }
                         p.setLastRoll(roll(p, count));//keep track of player roll
                         //displayAsString();
                         p.passGo();
                         tiles.get(p.getCurrentPos()).activeEffect(p);
+                        if (!turnOrder.contains(p)) {
+                            System.out.println("Player not in turn order");
+                            break;//end turn if player has been bankrupt
+                        }
                         displayAsString();
                     } while (repeat);
                     if (turnOrder.contains(p) && !p.isInJail()) {
-                        p.leaveGame();
-                        p.propertyImprovement();
-                        p.unMortgage();
-                        trade(p);
+                        if (!p.isAiAgent()) {
+                            p.leaveGame();
+                            p.unMortgage();
+                            trade(p);
+                        }
+                        p.developProperties();
                     }
 
                 } else {
-                    tiles.get(p.getCurrentPos()).activeEffect(p);//Activate the jail tile to serve time
+                    if (turnOrder.contains(p) && p.getCurrentPos() == 10) {
+                        tiles.get(10).activeEffect(p);//Activate the jail tile to serve time
+                    }
                 }
             }
             if( timeUp ){
@@ -429,18 +492,18 @@ public class Board {
 
         Player winner = null;
 
-        if( version.equals("abridged") && timeUp ){ //time limit up on abridged game
+        if (version.equals("abridged") && timeUp) { //time limit up on abridged game
             int maxNetWorth = 0;
-            for( Player player: turnOrder ){
-                if( player.netWorth() > maxNetWorth){
+            for (Player player : turnOrder) {
+                if (player.netWorth() > maxNetWorth) {
                     maxNetWorth = player.netWorth(); //find player with max net worth
                     winner = player;
                 }
             }
-        } else if( version.equals("full") && turnOrder.size() == 1 ){ //full game end
+        } else if (version.equals("full") && turnOrder.size() == 1) { //full game end
             System.out.println("Game over");
             winner = turnOrder.peekFirst();
-        } else if( version.equals("abridged") && turnOrder.size() == 1 ){ //abridged game ended like a full game
+        } else if (version.equals("abridged") && turnOrder.size() == 1) { //abridged game ended like a full game
             System.out.println("Game over before time limit reached");
             winner = turnOrder.peekFirst();
         } else { //no winner
@@ -449,7 +512,10 @@ public class Board {
 
 
         assert winner != null;
-        System.out.println( winner.getName() + " has won the game with a net worth of " + winner.netWorth());
+        System.out.println(winner.getName() + " has won the game with a net worth of " + winner.netWorth());
+        if (winner.isAiAgent()) {
+            System.out.println(winner.getPersonality());//TODO remove this, trait balancing inspection
+        }
     }
 
     /**
@@ -463,10 +529,10 @@ public class Board {
         boolean confirm;
         boolean canLeave = true;
 
-        for( Player player: turnOrder ){
-            if( player != leavingPlayer ){
-                confirm = yesNoInput( player.getName() + ", do you agree that " + leavingPlayer.getName() + " can leave the game?");
-                if( !confirm ){ //votes must be unanimous so if one disagrees, player can't leave
+        for (Player player : turnOrder) {
+            if (player != leavingPlayer && !player.isAiAgent()) {//ignore AI agents
+                confirm = yesNoInput(player.getName() + ", do you agree that " + leavingPlayer.getName() + " can leave the game?");
+                if (!confirm) { //votes must be unanimous so if one disagrees, player can't leave
                     canLeave = false;
                     System.out.println("Sorry " + leavingPlayer.getName() + ", you cannot leave the game right now");
                     break;
@@ -507,8 +573,6 @@ public class Board {
 
         return userDecision;
     }
-
-
 
     /**
      * Player trading method, called at the end of the turn for the player right now, in GUI should only be called once
@@ -566,26 +630,12 @@ public class Board {
                         //perform transfers
                         if (confirm) {
                             for (Object asset : tradeAssetsGive) {
-                                currentPlayer.getAssets().remove(asset);
-                                choice.getAssets().add(asset);
-                                if (asset instanceof Property) {
-                                    ((Property) asset).setOwner(choice);
-                                } else if (asset instanceof Station) {
-                                    ((Station) asset).setOwner(choice);
-                                } else if (asset instanceof Utility) {
-                                    ((Utility) asset).setOwner(choice);
-                                }
+                                currentPlayer.removeAsset(asset);
+                                choice.addAsset(asset);
                             }
                             for (Object asset : tradeAssetsReceive) {
-                                choice.getAssets().remove(asset);
-                                currentPlayer.getAssets().add(asset);
-                                if (asset instanceof Property) {
-                                    ((Property) asset).setOwner(currentPlayer);
-                                } else if (asset instanceof Station) {
-                                    ((Station) asset).setOwner(currentPlayer);
-                                } else if (asset instanceof Utility) {
-                                    ((Utility) asset).setOwner(currentPlayer);
-                                }
+                                choice.removeAsset(asset);
+                                currentPlayer.addAsset(asset);
                             }
                             System.out.println("Trade Complete");
                             //check for complete set

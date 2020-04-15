@@ -36,12 +36,12 @@ class GameTest {
     public void setup() {
 
         //player creation
-        Player ayman = new Player("Ayman", Token.HATSTAND, null);
-        Player danny = new Player("Danny", Token.CAT, null);
-        Player jacob = new Player("Jacob", Token.BOOT, null);
-        Player calvin = new Player("Calvin", Token.SMARTPHONE, null);
-        Player callum = new Player("Callum", Token.SPOON, null);
-        Player tom = new Player("Tom", Token.GOBLET, null);
+        Player ayman = new Player("Ayman", Token.HATSTAND, null, false);
+        Player danny = new Player("Danny", Token.CAT, null, false);
+        Player jacob = new Player("Jacob", Token.BOOT, null, false);
+        Player calvin = new Player("Calvin", Token.SMARTPHONE, null, false);
+        Player callum = new Player("Callum", Token.SPOON, null, false);
+        Player tom = new Player("Tom", Token.GOBLET, null, false);
         //load players into turn order
         order = new LinkedList<Player>();
         order.add(ayman);
@@ -276,6 +276,24 @@ class GameTest {
         board.tiles.get(currentPlayer.getCurrentPos()).activeEffect(currentPlayer);//activate tile
         //Jacob cannot pay £200 fine, crapper street returned to bank
         assertNull(((Property) board.tiles.get(1)).getOwner());//ownership check
+    }
+
+    @Test
+    public void assetManagementTest() throws IOException {
+        jsonDataBoard();
+        Player player = board.turnOrder.peekFirst();
+        Property crapper = (Property) tileSet.get(1);
+        player.addAsset(crapper);
+        assertEquals(crapper.getOwner(), player);
+        player.removeAsset(crapper);
+        assertNull(crapper.getOwner());
+        player.addAsset(crapper);
+        assertTrue(player.getAssets().contains(crapper));
+        assertEquals(crapper.getOwner(), player);
+        crapper.sellProperty();
+        assertFalse(player.getAssets().contains(crapper));
+        assertTrue(player.getAssets().size() != 1);
+        assertNull(crapper.getOwner());
     }
 
     /**
@@ -513,12 +531,105 @@ class GameTest {
         ((Property) board.tiles.get(3)).setOwner(firstPlayer);
         firstPlayer.addAsset(board.tiles.get(3));
         firstPlayer.completeSetProperties();
+        ((Property) board.tiles.get(1)).purchaseHouse();//buy house on crapper street
+        ((Property) board.tiles.get(3)).purchaseHouse();//buy house on gangsters paradise
         ((Property) board.tiles.get(1)).purchaseHouse();
+        ((Property) board.tiles.get(3)).purchaseHouse();
         ((Property) board.tiles.get(1)).purchaseHouse();
+        ((Property) board.tiles.get(3)).purchaseHouse();
         ((Property) board.tiles.get(1)).purchaseHouse();
-        ((Property) board.tiles.get(1)).purchaseHouse();
-        ((Property) board.tiles.get(1)).purchaseHotel();
+        ((Property) board.tiles.get(3)).purchaseHouse();
+        ((Property) board.tiles.get(1)).purchaseHotel();//buy hotel on crapper street
+        ((Property) board.tiles.get(3)).purchaseHotel();//buy hotel gangsters paradise
         assertEquals(0, ((Property) board.tiles.get(1)).getHousesNo());
         assertEquals(1, ((Property) board.tiles.get(1)).getHotelNo());
+    }
+
+    @Test
+    public void agentPurchaseTest() throws IOException {
+        jsonDataBoard();
+        Player player = board.turnOrder.peekFirst();
+        player.setAiAgent(true);//player is not AI
+        player.setCurrentPos(39);
+        player.setCurrentPos(1);
+        player.passGo();//check to switch canPurchase true
+        player.getPersonality().setTwoSetAffinity(true);//give player two set affinity will buy Brown tiles if possible
+        Property crapper = (Property) board.tiles.get(1);//brown tile
+        crapper.activeEffect(player);//AI will buy tile
+        assertTrue(crapper.getOwner() == player);
+        assertTrue(player.getAssets().contains(crapper));
+        for (Object item : player.getAssets()) {
+            if (item instanceof Property) {
+                System.out.println(((Property) item).title);
+            } else if (item instanceof Station) {
+                System.out.println(((Station) item).title);
+            } else if (item instanceof Utility) {
+                System.out.println(((Utility) item).title);
+            } else {
+                System.out.println("Card");
+            }
+        }
+    }
+
+    /**
+     * Test of cautious buying strategy
+     * will fail at times due to random element.
+     * solution run scenario multiple times and assert expected outcome > 90% of the time
+     *
+     * @throws IOException
+     */
+    @Test
+    public void cautiousPurchaseTest() throws IOException {
+        jsonDataBoard();
+        Player player = board.turnOrder.peekFirst();
+        player.setAiAgent(true);//player is not AI
+        player.setCurrentPos(39);
+        player.setCurrentPos(1);
+        player.passGo();//check to switch canPurchase true
+        player.getPersonality().setCautious(true);
+        player.getPersonality().setPlanner(false);
+        player.getPersonality().setTwoSetAffinity(false);
+        Property crapper = (Property) board.tiles.get(1);//brown tile
+        crapper.activeEffect(player);//AI will buy tile
+        assertTrue(crapper.getOwner() == player);
+        assertTrue(player.getAssets().contains(crapper));
+        player.setMoney(70);
+        Property gangsters = (Property) board.tiles.get(3);
+        gangsters.activeEffect(player);
+        assertFalse(gangsters.getOwner() == player);
+        assertFalse(player.getAssets().contains(gangsters));
+
+        for (Player p : board.turnOrder) {//check that no player received item after auction
+            if (p != player) {
+                assertTrue(p.getAssets().size() == 0);
+            }
+        }
+    }
+
+    @Test
+    public void agentAssetSelling() throws IOException {
+        jsonDataBoard();
+        Player currentPlayer = board.turnOrder.getFirst();
+        currentPlayer.setAiAgent(true);
+        currentPlayer.getPersonality().setInvestor(true);
+        currentPlayer.setMoney(1000);
+        currentPlayer.addAsset(tileSet.get(1));//give crapper street
+        currentPlayer.addAsset(tileSet.get(3));
+        currentPlayer.addAsset(tileSet.get(31));
+        currentPlayer.addAsset(tileSet.get(5));
+        currentPlayer.addAsset(tileSet.get(6));
+        currentPlayer.addAsset(tileSet.get(8));
+        currentPlayer.addAsset(tileSet.get(9));
+        currentPlayer.addAsset(new GetOutOfJail());//check card causes no issues
+        currentPlayer.completeSetProperties();
+        currentPlayer.agentDevelopProperties();
+        System.out.println("Net worth: £" + currentPlayer.netWorth());
+        currentPlayer.deductAmount(1800);//trigger asset selling
+        for (Object item : currentPlayer.getAssets()) {
+            if (item instanceof Property) {
+                assertFalse(((Property) item).isDeveloped());
+                assertFalse(((Property) item).isCompletedSet());
+            }
+        }
     }
 }

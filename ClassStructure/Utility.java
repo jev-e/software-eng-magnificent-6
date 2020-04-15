@@ -60,8 +60,7 @@ public class Utility extends TileEffect {
      * @return cost
      */
     public int sellUtility() {
-        owner.getAssets().remove(this);
-        owner = null;
+        owner.removeAsset(this);
         return cost;
     }
 
@@ -71,6 +70,7 @@ public class Utility extends TileEffect {
      *
      */
     private void auction( Player currentPlayer ) {
+        System.out.println(title);
         System.out.println("==========================================================================================");
         System.out.println("==================================AUCTION BEGINS==========================================");
         System.out.println("==========================================================================================");
@@ -79,23 +79,28 @@ public class Utility extends TileEffect {
 
         //for each player that isn't the current player
         for( Player bidder: super.board.turnOrder ) {
-            if( bidder != currentPlayer && bidder.CanBuy() ){
+            if (bidder != currentPlayer && bidder.CanBuy()) {
                 int bid = 0;
                 boolean wishToBid = false;
                 boolean valid = false;
 
                 //ask if want to purchase
                 String question = bidder.getName() + ", do you want to make a bid (yes/no)?";
-                wishToBid = yesNoInput( question );
-                if( wishToBid ) {
+                if (bidder.isAiAgent()) {
+                    wishToBid = false;//TODO temp for testing to be removed
+                    System.out.println("no");
+                } else {
+                    wishToBid = yesNoInput(question);
+                }
+                if (wishToBid) {
 
-                    Scanner userInputScanner = new Scanner( System.in );
+                    Scanner userInputScanner = new Scanner(System.in);
 
-                    while(!valid){
+                    while (!valid) {
 
                         System.out.println("Please make a bid:");
                         bid = userInputScanner.nextInt();
-                        if( bid > bidder.getMoney() ) {
+                        if (bid > bidder.getMoney()) {
                             System.out.println("Sorry, you have don't have that much money. Please bid again or enter 0 to cancel bid");
                         } else {
                             valid = true;
@@ -166,20 +171,23 @@ public class Utility extends TileEffect {
      */
     private void purchase( Player currentPlayer) {
 
-        boolean wishToPurchase = false; //flag for purchase choice
+        boolean wishToPurchase; //flag for purchase choice
 
         String message = currentPlayer.getName() + ", do you want to make a purchase (yes/no)?";
 
-        wishToPurchase = yesNoInput( message );
-
-        if( wishToPurchase ){
-            if( cost > currentPlayer.getMoney() ){
+        if (!currentPlayer.isAiAgent()) {
+            wishToPurchase = yesNoInput(message);
+        } else {
+            wishToPurchase = currentPlayer.decide(this);
+        }
+        if (wishToPurchase) {
+            if (cost > currentPlayer.getMoney()) {
                 //no purchase can be made, trigger auction
                 System.out.println("Sorry, you can't afford this");
-                auction( currentPlayer );
+                auction(currentPlayer);
             } else {
                 //deduct purchase cost from player
-                currentPlayer.deductAmount( cost );
+                currentPlayer.deductAmount(cost);
                 //transfer ownership
                 owner = currentPlayer;
                 currentPlayer.addAsset(this);

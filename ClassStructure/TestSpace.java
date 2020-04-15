@@ -40,12 +40,12 @@ public class TestSpace {
 
         Board b = new Board(order, board, pot, opp);
         //player creation
-        Player ayman = new Player("Ayman", Token.HATSTAND, b);
-        Player danny = new Player("Danny", Token.CAT, b);
-        Player jacob = new Player("Jacob", Token.BOOT, b);
-        Player calvin = new Player("Calvin", Token.SMARTPHONE, b);
-        Player callum = new Player("Callum", Token.SPOON, b);
-        Player tom = new Player("Tom", Token.GOBLET, b);
+        Player ayman = new Player("Ayman", Token.HATSTAND, b, true);
+        Player danny = new Player("Danny", Token.CAT, b, true);
+        Player jacob = new Player("Jacob", Token.BOOT, b, true);
+        Player calvin = new Player("Calvin", Token.SMARTPHONE, b, true);
+        Player callum = new Player("Callum", Token.SPOON, b, true);
+        Player tom = new Player("Tom", Token.GOBLET, b, true);
         //load players into turn order
         order.add(ayman);
         order.add(danny);
@@ -53,8 +53,9 @@ public class TestSpace {
         order.add(calvin);
         order.add(callum);
         order.add(tom);
+
         try {
-            b.gameLoop();
+            b.testLoop();
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("An error occurred in game execution");

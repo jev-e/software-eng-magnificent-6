@@ -1,5 +1,6 @@
 package ClassStructure;
 
+import java.util.LinkedList;
 import java.util.Scanner;
 
 /**
@@ -65,19 +66,12 @@ public class Property extends BoardTile{
      */
     @Override
     public void activeEffect(Player currentPlayer) {
-        /*Involves checks for hotels and houses
-         * if there is a full set
-         * if the property is mortgaged
-         * purchase functionality if not owned
-         */
-        //is there an owner?
-        if( owner != null && owner != currentPlayer && !mortgaged && !owner.isInJail()){
+        if (owner != null && owner != currentPlayer && !mortgaged && !owner.isInJail()) {
             //there is an owner that is allowed to collect rent,so collect rent
-            collectRent( currentPlayer );
-        } else if( owner != currentPlayer ){
-            //no owner, can possibly purchase property
-            if( currentPlayer.CanBuy()){
-                purchase( currentPlayer );
+            collectRent(currentPlayer);
+        } else if (owner == null) {
+            if (currentPlayer.CanBuy()) {
+                purchase(currentPlayer);
             }
         }
     }
@@ -113,6 +107,8 @@ public class Property extends BoardTile{
 
     /**
      * Function to sell houses and hotels on a property.
+     * //TODO change to sell houses or hotels evenly across properties in the set
+     *
      * @return Either the cost of the building or 0 if their is no buildings to sell.
      */
     public int sellHouseOrHotel(){
@@ -172,13 +168,11 @@ public class Property extends BoardTile{
         if ( developed ) {
             return (0);
         } else if( mortgaged ){
-            owner.getAssets().remove( this );
-            owner = null;
+            owner.removeAsset(this);
             mortgaged = false;
             return(this.cost/2);
         } else {
-            owner.getAssets().remove( this );
-            owner = null;
+            owner.removeAsset(this);
             return (this.cost);
         }
     }
@@ -187,31 +181,37 @@ public class Property extends BoardTile{
      * Runs an auction for the players to purchase the property. Each player makes an (optional) bid and the highest
      * bidding player purchases the property
      */
-    private void auction( Player currentPlayer ) {
+    private void auction(Player currentPlayer) {
+        System.out.println(title);
         System.out.println("==========================================================================================");
         System.out.println("==================================AUCTION BEGINS==========================================");
         System.out.println("==========================================================================================");
         Player highestBidder = null;
         int highestBid = 0;
         //for each player that isn't the current player
-        for( Player bidder: board.turnOrder ) {
-            if( bidder != currentPlayer && bidder.CanBuy() && !bidder.isInJail() ){
+        for (Player bidder : board.turnOrder) {
+            if (bidder != currentPlayer && bidder.CanBuy() && !bidder.isInJail()) {
                 int bid = 0;
                 boolean wishToBid = false;
                 boolean valid = false;
 
                 //ask if want to purchase
                 String question = bidder.getName() + ", do you want to make a bid (yes/no)?";
-                wishToBid = yesNoInput( question );
-                if( wishToBid ) {
+                if (bidder.isAiAgent()) {
+                    wishToBid = false;//TODO temp for testing to be removed
+                    System.out.println("no");
+                } else {
+                    wishToBid = yesNoInput(question);
+                }
+                if (wishToBid) {
 
-                    Scanner userInputScanner = new Scanner( System.in );
+                    Scanner userInputScanner = new Scanner(System.in);
 
-                    while(!valid){
+                    while (!valid) {
 
                         System.out.println("Please make a bid:");
                         bid = userInputScanner.nextInt();
-                        if( bid > bidder.getMoney() ) {
+                        if (bid > bidder.getMoney()) {
                             System.out.println("Sorry, you have don't have that much money. Please bid again or enter 0 to cancel bid");
                         } else {
                             valid = true;
@@ -287,19 +287,21 @@ public class Property extends BoardTile{
 
         String message = currentPlayer.getName() + ", do you want to make a purchase (yes/no)?";
 
-        wishToPurchase = yesNoInput( message );
-        System.out.println(wishToPurchase);
-        if( wishToPurchase ){
-            if( cost > currentPlayer.getMoney() ){
+        if (!currentPlayer.isAiAgent()) {
+            wishToPurchase = yesNoInput(message);
+        } else {
+            wishToPurchase = currentPlayer.decide(this);
+        }
+        if (wishToPurchase) {
+            if (cost > currentPlayer.getMoney()) {
                 //no purchase can be made, trigger auction
                 System.out.println("Sorry, you can't afford this");
                 auction(currentPlayer);
-                System.out.println("Auction ended, can;t afford");
+                System.out.println("Auction ended, can't afford");
             } else {
                 //deduct purchase cost from player
-                currentPlayer.deductAmount( cost );
+                currentPlayer.deductAmount(cost);
                 //transfer ownership
-                owner = currentPlayer;
                 currentPlayer.addAsset(this);
                 currentPlayer.completeSetProperties(); //purchase has been made, update complete set flags
                 System.out.println("You have purchased " + title + " for £" + cost);
@@ -349,39 +351,106 @@ public class Property extends BoardTile{
      * Increments housesNo, removes money from players account. A check will have already been performed to ensure
      * sufficient funds, updates rent amount
      *
+     * @return true|false based on successful purchase
      */
-    public void purchaseHouse() {
-        if( housesNo <= 4) {
+    public boolean purchaseHouse() {
+        if (canBuyHouse()) {
             housesNo++;
-            if( housesNo == 1 ){
+            if (housesNo == 1) {
                 developed = true;
                 updateRent();
             }
-            owner.deductAmount( group.getBuildingCost() );
+            owner.deductAmount(group.getBuildingCost());
             rent += buildingRents[housesNo - 1];
-            System.out.println("House purchased for " + title  + ", the new rent is: £" + rent);
+            System.out.println("House purchased for " + title + ", the new rent is: £" + rent);
+            return true;
         } else {
-            System.out.println("house limit reached");
+            return false;
         }
     }
 
     /**
      * Increments hotelNo, removes money from players account. A check will have already been performed to ensure
      * sufficient funds
+     *
+     * @return true|false based on successful purchase
      */
-    public void purchaseHotel() {
-        if( housesNo == 4) {
+    public boolean purchaseHotel() {
+        if (canBuyHotel()) {
             //'sell' 4 houses
             hotelNo = 1;
             housesNo = 0;
-            owner.deductAmount( group.getBuildingCost() );
+            owner.deductAmount(group.getBuildingCost());
             rent += hotelRent;
             System.out.println("Hotel purchased for " + title + ", the new rent is: £" + rent);
-        } else if (hotelNo == 1){
-            System.out.println("hotel limit reached");
+            return true;
         } else {
-            System.out.println("not enough houses");
+            return false;
         }
+    }
+
+    public boolean canBuyHouse() {
+        int desiredCount = housesNo + 1;//user wants to add one more house
+        if (desiredCount > 4) {
+            return false;//House limit reached
+        } else {
+            LinkedList<Property> setMembers = new LinkedList<>();
+            LinkedList<Integer> houseCounts = new LinkedList<>();
+            for (Object item : owner.getAssets()) {
+                if (item instanceof Property && ((Property) item).getGroup() == group) {//if item is member of this set
+                    setMembers.add((Property) item);//add item to set
+                }
+            }
+            for (Property property : setMembers) {//fetch the house counts
+                if (property.equals(this)) {
+                    houseCounts.add(desiredCount);//this tile desired count is being tested
+                } else if (property.getHotelNo() == 1) {
+                    houseCounts.add(4);//hotel is treated like 4 houses
+                } else {
+                    houseCounts.add(property.getHousesNo());//get how houses on tile
+                }
+            }
+            for (int countA : houseCounts) {
+                for (int countB : houseCounts) {
+                    if (Math.abs(countA - countB) > 1) {//if the difference between building is greater than 1
+                        return false;//building violation
+                    }
+                }
+            }
+        }
+        return true;//no violations found can build
+    }
+
+    public boolean canBuyHotel() {
+        int desiredCount = 4;//user wants to exchange 4 houses for a hotel
+        if (housesNo != 4 || hotelNo == 1) {
+            return false;//Not enough houses ore hotel already built
+        } else {
+            LinkedList<Property> setMembers = new LinkedList<>();
+            LinkedList<Integer> houseCounts = new LinkedList<>();
+            for (Object item : owner.getAssets()) {
+                if (item instanceof Property && ((Property) item).getGroup() == group) {//if item is member of this set
+                    setMembers.add((Property) item);//add item to set
+                }
+            }
+            for (Property property : setMembers) {//fetch the house counts
+                if (property.equals(this)) {
+                    houseCounts.add(desiredCount);//this tile desired count is being tested
+                } else if (property.getHotelNo() == 1) {
+                    houseCounts.add(4);//hotel is treated like 4 houses
+                } else {
+                    houseCounts.add(property.getHousesNo());//get how houses on tile
+                }
+            }
+            for (int countA : houseCounts) {
+                for (int countB : houseCounts) {
+                    if (Math.abs(countA - countB) > 1) {//if the difference between building is greater than 1
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
     }
 
     public Group getGroup() {

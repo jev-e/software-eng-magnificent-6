@@ -1,5 +1,9 @@
 package ClassStructure;
+import com.fasterxml.jackson.databind.annotation.JsonAppend;
+import sun.plugin.javascript.navig.Link;
+
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author Ayman Bensreti, Calvin Boreham
@@ -17,14 +21,17 @@ public class Player {
     private int jailTime; //counter to indicate how many turns a player has spent in jail
     private Board board; //board the player is playing on
     private int lastRoll;//For use in utility functions
+    private boolean aiAgent;//flag for control method (userInput|Agent response)
+    private Trait personality;
 
     /**
      * Sets players name and token and initialises the players starting assets
-     * @param name player name
+     *
+     * @param name  player name
      * @param token one of token enum
      * @param board the current board being played
      */
-    public Player(String name, Token token, Board board) {
+    public Player(String name, Token token, Board board, boolean aiAgent) {
         this.name = name;
         this.token = token;
         currentPos = 0;
@@ -33,8 +40,12 @@ public class Player {
         assets = new LinkedList<>();
         canBuy = false;
         inJail = false;
+        this.aiAgent = aiAgent; //by default assumed human player
         this.jailTime = 0;
         this.board = board;
+        if (aiAgent) {
+            personality = new Trait();//generate personality
+        }
     }
 
     /**
@@ -65,10 +76,14 @@ public class Player {
         }else{
             //find player net worth
             int netWorth = netWorth();
-            if( netWorth >= amount){
+            if (netWorth >= amount) {
                 //can pay after asset selling, trigger it
                 //owner money will be updated
-                assetSelling( amount - money ); //amount to be raised in excess of current money holdings
+                if (!isAiAgent()) {
+                    assetSelling(amount - money);
+                } else {
+                    agentSellAssets(amount - money);
+                }
                 //pay amount
                 payPlayerAmount(-amount);
                 payableAmount = amount; //update payable amount to full amount
@@ -85,10 +100,19 @@ public class Player {
 
     /**
      * Adds an item(Property|Station|Utility|Card) to players assets
+     * updates owner for non card assets
+     *
      * @param item one of (Property|Station|Utility|Card) to be added
      */
     public void addAsset(Object item) {
         assets.add(item);
+        if (item instanceof Property) {
+            ((Property) item).setOwner(this);
+        } else if (item instanceof Station) {
+            ((Station) item).setOwner(this);
+        } else if (item instanceof Utility) {
+            ((Utility) item).setOwner(this);
+        }
     }
 
     /**
@@ -96,6 +120,13 @@ public class Player {
      * @param item one of (Property|Station|Utility|Card)
      */
     public void removeAsset(Object item) {
+        if (item instanceof Property) {
+            ((Property) item).setOwner(null);
+        } else if (item instanceof Station) {
+            ((Station) item).setOwner(null);
+        } else if (item instanceof Utility) {
+            ((Utility) item).setOwner(null);
+        }
         assets.remove(item);
     }
 
@@ -173,13 +204,27 @@ public class Player {
 
     /**
      * Setter for player board
+     *
      * @param board the board currently in play
      */
-    public void setBoard(Board board) { this.board = board; }
+    public void setBoard(Board board) {
+        this.board = board;
+    }
 
+    public boolean isAiAgent() {
+        return aiAgent;
+    }
+
+    public void setAiAgent(boolean aiAgent) {
+        this.aiAgent = aiAgent;
+        if (isAiAgent()) {
+            personality = new Trait();//generate traits
+        }
+    }
 
     /**
      * Fetches the players assets list
+     *
      * @return a list of items(Property|Station|Utility|Card)
      */
     public LinkedList<Object> getAssets() {
@@ -223,47 +268,66 @@ public class Player {
         inJail = true;//sets player in jail
         GetOutOfJail getOutOfJail = null;
         setCurrentPos(10);
-        for(Object item: assets) {//looks for a get out of jail free card
-            if(item instanceof GetOutOfJail) {
+        for (Object item : assets) {//looks for a get out of jail free card
+            if (item instanceof GetOutOfJail) {
                 getOutOfJail = (GetOutOfJail) item;//if found getOutOfJail is set to this card
             }//If the player has two the first one is used
         }
         //Player choice here
-        Scanner userIn = new Scanner(System.in);
-        int choice;
-        boolean selected = false;
-        while (!selected) {//Repeat until an option is selected
-            System.out.println(name + " " + token.getSymbol());
-            System.out.println("Type the number of the option you would like to select");
-            System.out.println("1. Serve Jail time\n2. Pay £50 bail");
-            if(getOutOfJail != null) {
-                System.out.println("3. Use get out of jail free card");//only display option is player has card
+        if (!isAiAgent()) {//if human player
+            Scanner userIn = new Scanner(System.in);
+            int choice;
+            boolean selected = false;
+            while (!selected) {//Repeat until an option is selected
+                System.out.println(name + " " + token.getSymbol());
+                System.out.println("Type the number of the option you would like to select");
+                System.out.println("1. Serve Jail time\n2. Pay £50 bail");
+                if (getOutOfJail != null) {
+                    System.out.println("3. Use get out of jail free card");//only display option is player has card
+                }
+                choice = userIn.nextInt();
+                switch (choice) {
+                    case 1:
+                        //Do nothing player serves time
+                        selected = true;
+                        break;
+                    case 2:
+                        if (money > 50) {//If the player has the funds take the amount and remove them from jail
+                            deductAmount(50);
+                            leaveJail();
+                            selected = true;//note a selection has been made
+                        } else {
+                            System.out.println("Insufficient funds");
+                        }
+                        break;
+                    case 3:
+                        if (getOutOfJail != null) {//check player has card for text version, will be impossible in GUI
+                            getOutOfJail.playCard();//play get out of jail free card
+                            selected = true;
+                        }
+                        break;
+                    default:
+                        System.out.println("Invalid Input");
+                        break;
+                }
             }
-            choice = userIn.nextInt();
-            switch (choice) {
-                case 1:
-                    //Do nothing player serves time
-                    selected = true;
-                    break;
-                case 2:
-                    if(money > 50) {//If the player has the funds take the amount and remove them from jail
+        } else {
+            if (getOutOfJail != null) {
+                getOutOfJail.playCard();//AI uses card
+            } else if (!personality.isPatient()) {//AI is not patient
+                if (personality.isCautious()) {
+                    if (cautiousWillBuy(50)) {//checks if AI will pay bail
                         deductAmount(50);
                         leaveJail();
-                        selected = true;//note a selection has been made
-                    }else{
-                        System.out.println("Insufficient funds");
                     }
-                    break;
-                case 3:
-                    if(getOutOfJail != null) {//check player has card for text version, will be impossible in GUI
-                        getOutOfJail.playCard();//play get out of jail free card
-                        selected = true;
+                } else {
+                    if (ThreadLocalRandom.current().nextDouble(0, 1) > 0.5) {//coin flip
+                        deductAmount(50);
+                        leaveJail();//pay bail based on coin flip
                     }
-                    break;
-                default:
-                    System.out.println("Invalid Input");
-                    break;
+                }
             }
+            //otherwise do nothing and serve time
         }
     }
 
@@ -377,11 +441,14 @@ public class Player {
                 System.out.println("Please enter an asset name or type cancel: ");
                 assetChoice = userInputScanner.nextLine(); //fetch user input
 
-                if( !(assetChoice.toLowerCase().equals("cancel"))){
-                    for (Object asset : assets ) {
-                        if (((BoardTile)asset).title.toLowerCase().equals(assetChoice.toLowerCase())) {
+                if (!(assetChoice.toLowerCase().equals("cancel"))) {
+                    for (Object asset : assets) {
+                        if (asset instanceof GetOutOfJail) {
+                            continue;//skip cards
+                        }
+                        if (((BoardTile) asset).title.toLowerCase().equals(assetChoice.toLowerCase())) {
                             System.out.println("You have selected property: " + ((BoardTile) asset).title); //normalise
-                            tradeAssets.add( asset ); //temporary store asset
+                            tradeAssets.add(asset); //temporary store asset
                             found = true; //user input reflects a possible property
                         }
                     }
@@ -389,7 +456,7 @@ public class Player {
                     cancel = true;
                 }
 
-                if( cancel ){
+                if (cancel) {
                     break;
                 } else if (found) {
                     valid = true;
@@ -429,18 +496,68 @@ public class Player {
             //normalise input
             decision = decision.toLowerCase();
 
-            if( decision.equals( "no" )){
+            if (decision.equals("no")) {
                 userDecision = false;
                 valid = true;
-            }else if( decision.equals( "yes" )){
+            } else if (decision.equals("yes")) {
                 userDecision = true;
                 valid = true;
-            }else {
+            } else {
                 System.out.println("Sorry, please try again (you need to type yes OR no)");
             }
         }
 
         return userDecision;
+    }
+
+    public void developProperties() {
+        Scanner userIn = new Scanner(System.in);
+        boolean develop;
+        boolean goAgain = true;
+        if (improvableProperties() == 0) {
+            return;//no properties to develop
+        }
+        if (!isAiAgent()) {
+            develop = yesNoInput("Do you want to make an improvement? (yes/no)");
+            if (develop) {
+                while (goAgain) {
+                    improvableProperties();
+                    Property toBeImproved = selectProperty();
+                    System.out.println("1. Buy house | 2. Buy Hotel");
+                    int choice = userIn.nextInt();
+                    while (choice != 1 && choice != 2) {
+                        System.out.println("Invalid selection");
+                        choice = userIn.nextInt();
+                    }
+                    if (choice == 1) {
+                        if (money > toBeImproved.getGroup().getBuildingCost()) {
+                            if (!toBeImproved.purchaseHouse()) {
+                                System.out.println("building violation");
+                            }
+                        } else {
+                            System.out.println("insufficient funds");
+                            goAgain = false;
+                        }
+                    } else {
+                        if (money > toBeImproved.getGroup().getBuildingCost()) {
+                            if (!toBeImproved.purchaseHotel()) {
+                                System.out.println("building violation");
+                            }
+                        } else {
+                            System.out.println("insufficient funds");
+                            goAgain = false;
+                            continue;//end loop here
+                        }
+                    }
+                    goAgain = yesNoInput("Go again?");
+                }
+            }
+        } else {
+            //AI decision
+            if (decideDevelop()) {
+                agentDevelopProperties();//AI developing logic
+            }
+        }
     }
 
     /**
@@ -450,7 +567,7 @@ public class Player {
     public void propertyImprovement() {
 
         //ArrayList<Property> improvableProperties = new ArrayList<>();
-        Scanner userInputScanner = new Scanner( System.in );
+        Scanner userInputScanner = new Scanner(System.in);
         int count = improvableProperties();
 
         //check if we have any properties as this contains a lot of looping
@@ -694,23 +811,28 @@ public class Player {
     private void bankrupt() {
         //remove player from turnorder
         System.out.println(name + " has been removed from the game");
-        board.turnOrder.remove( this );
+        board.turnOrder.remove(this);
+        board.repeat = false;//TODO test change to prevent repeat turn after bankrupt
         //transfer all assets to bank ownership
-        for( Object asset : assets ){
-            if( asset instanceof GetOutOfJail ){
+        for (Object asset : assets) {
+            if (asset instanceof GetOutOfJail) {
                 ((GetOutOfJail) asset).returnCard();
-            } else if( asset instanceof Property){
-                ((Property) asset).setOwner( null );
-            } else if( asset instanceof Station){
-                ((Station) asset).setOwner( null );
-            } else if( asset instanceof Utility){
-                ((Utility) asset).setOwner( null );
+            } else if (asset instanceof Property) {
+                ((Property) asset).setOwner(null);
+                System.out.print(((Property) asset).title + " ");
+            } else if (asset instanceof Station) {
+                ((Station) asset).setOwner(null);
+                System.out.print(((Station) asset).title + " ");
+            } else if (asset instanceof Utility) {
+                ((Utility) asset).setOwner(null);
+                System.out.print(((Utility) asset).title + " ");
             }
-            System.out.println("All assets of " + name + " have been returned to the bank's ownership");
         }
-        assets = new LinkedList<>();//clear their asset list
+        System.out.println();
+        assets = new LinkedList<>();//resets asset list
+        System.out.println("All assets of " + name + " have been returned to the bank's ownership");
         System.out.println("Players left in the game:");
-        for( Player pp : board.turnOrder ){
+        for (Player pp : board.turnOrder) {
             System.out.println(pp.getName());
         }
     }
@@ -1057,15 +1179,358 @@ public class Player {
      */
     public void leaveGame() {
         //ask user
-        boolean confirm = yesNoInput("Do you want to leave the game?");
-        boolean possible;
+        if (!isAiAgent()) {//ask human players only
+            boolean confirm = yesNoInput("Do you want to leave the game?");
+            boolean possible;
 
-        //get user votes
-        if( confirm ){
-            possible = board.getLeaveVotes( this );
-            if( possible ){
-                bankrupt(); //remove from turn order and transfer all assets
+            //get user votes
+            if (confirm) {
+                possible = board.getLeaveVotes(this);
+                if (possible) {
+                    bankrupt(); //remove from turn order and transfer all assets
+                }
             }
         }
+    }
+
+    /*
+     ---------Artificial Agent Methods---------
+     For jail decisions see jail method
+     */
+
+    public Trait getPersonality() {
+        return personality;
+    }
+
+    /**
+     * Cautious personality cost verses network assessment
+     *
+     * @param cost amount of money to decide about
+     * @return true|false spend|don't spend
+     */
+    public boolean cautiousWillBuy(int cost) {
+        double threshold = cost;
+        double cash = money;
+        threshold = 1 - (cost / cash);//cost/cash = 1 when cost=cash
+        double roll = ThreadLocalRandom.current().nextDouble(0, 1);
+        if (roll < threshold) {
+            //When net worth is high and cost is low threshold will be almost 1 and random number will likely be lower
+            //System.out.println("threshold = " + threshold + " roll = " + roll);
+            return true;
+        }
+        //System.out.println("threshold = " + threshold + " roll = " + roll);
+        return false;//When cost is high and net worth is low threshold is low and random number will likely be higher
+    }
+
+    /**
+     * Property purchase decision for AI
+     *
+     * @param property property to decide based on
+     * @return true|false buy|do not buy
+     */
+    public boolean decide(Property property) {
+        if (money < property.getCost()) {
+            return false;//AI cannot afford the property
+        } else if (money > 3000) {//TODO tune this value, requires testing
+            return true;//player has a lot of assets always buy
+        } else if (personality.hasTwoSetAffinity()) {
+
+            if (property.getGroup() == Group.BROWN || property.getGroup() == Group.DEEP_BLUE) {
+                return true;//buy this property AI has affinity for it
+            }
+        } else if (personality.isPlanner()) {
+            if (personality.getGroupA() == null) {
+                personality.setGroupA(property.getGroup());//assign purchased property group to one of groups to track
+                return true; //purchase property
+            } else if (personality.getGroupB() == null) {
+                personality.setGroupB(property.getGroup());//assign purchased property group to one of groups to track
+                return true; //purchase property
+
+            } else if (personality.getGroupC() == null) {
+                personality.setGroupC(property.getGroup());//assign purchased property group to one of groups to track
+                return true; //purchase property
+            } else {
+                Group propGroup = property.getGroup();
+                if (propGroup == personality.getGroupA() || propGroup == personality.getGroupB() || propGroup == personality.getGroupC()) {
+                    return true;//property is a member of AIs plan groups so buy tile
+                }
+            }
+        } else if (personality.isCautious()) {
+            return cautiousWillBuy(property.getCost());//performs cost against net worth judgement
+        } else if (personality.isWildCard()) {
+            if (ThreadLocalRandom.current().nextDouble(0, 1) > 0.2) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return true;//player has money buy
+        }
+        return false;
+    }
+
+    /**
+     * AI purchase decision on train stations
+     *
+     * @param station
+     * @return
+     */
+    public boolean decide(Station station) {
+        if (money < station.getCost()) {
+            return false;//cannot afford tile
+        } else if (personality.hasTrainAffinity()) {
+            return true;//player has affinity for stations
+        } else if (personality.isCautious()) {
+            return cautiousWillBuy(station.getCost());//cost net worth judgement
+        } else if (personality.isWildCard()) {
+            if (ThreadLocalRandom.current().nextDouble(0, 1) > 0.2) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return true;//player has money buy
+        }
+    }
+
+    /**
+     * AI purchase decision on train stations
+     *
+     * @param utility
+     * @return
+     */
+    public boolean decide(Utility utility) {
+        if (money < utility.getCost()) {
+            return false;//cannot afford tile
+        } else if (personality.hasUtilityAffinity()) {
+            return true;//player has affinity for utilities
+        } else if (personality.isCautious()) {
+            return cautiousWillBuy(utility.getCost());//cost net worth judgement
+        } else if (personality.isWildCard()) {
+            if (ThreadLocalRandom.current().nextDouble(0, 1) > 0.2) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return true;//player has money buy
+        }
+    }
+
+    /**
+     * Trade decision making
+     *
+     * @param give    what the AI will give
+     * @param receive what the AI will receive
+     * @return true|false accept|decline
+     */
+    public boolean decide(LinkedList<Object> give, LinkedList<Object> receive) {
+        return false;//TODO currently rejects all trades
+    }
+
+    /**
+     * AI decision to pay £10 tax or draw opportunity knocks
+     *
+     * @return tax = true, draw = false
+     */
+    public boolean payTaxOrDraw() {
+        if (money < 10) {
+            return false;//Can't afford to pay draw a card
+        } else if (personality.isCautious()) {
+            return cautiousWillBuy(10);//based on net worth cost ratio
+        } else if (personality.isWildCard()) {
+            return false;//wild cards take chances
+        }
+        if (ThreadLocalRandom.current().nextDouble(0, 1) > 0.5) {//coin flip for remaining personalities
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * AI development decision
+     *
+     * @return
+     */
+    public boolean decideDevelop() {
+        if (personality.isInvestor()) {
+            return true;//investors will always attempt to develop
+        } else if (personality.isCautious()) {
+            return cautiousWillBuy(125);//cost verses net worth using average building cost
+        } else {
+            if (ThreadLocalRandom.current().nextDouble(0, 1) > 0.5) {//coin flip for remaining personalities
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+
+    /**
+     * Property developing procedure for AI
+     */
+    public void agentDevelopProperties() {
+        LinkedList<Property> properties = new LinkedList<>();
+        for (Object item : assets) {
+            if (item instanceof Property) {
+                if (((Property) item).isCompletedSet() && ((Property) item).getHotelNo() != 1) {
+                    properties.add((Property) item);//add development ready tiles
+                }
+            }
+        }
+        boolean loop;
+        if (personality.isInvestor()) {
+            loop = true;
+            boolean housePurchased;
+            boolean hotelPurchased;
+            while (loop && money > properties.peekFirst().getGroup().getBuildingCost()) {//while can develop
+                hotelPurchased = false;
+                housePurchased = false;
+                for (Property p : properties) {
+                    if (p.purchaseHouse()) {
+                        housePurchased = true;
+                        break;//building purchased exit loop
+                    } else if (p.purchaseHotel()) {
+                        hotelPurchased = true;
+                        break;//building purchased exit loop
+                    }
+                }
+                if (!hotelPurchased && !housePurchased) {
+                    loop = false;//failed to buy house or hotel end development
+                } else if (money < 100) {
+                    loop = false;
+                }
+            }
+        } else if (personality.isCautious()) {
+            while (cautiousWillBuy(properties.peekFirst().getGroup().getBuildingCost())) {//while willing to spend
+                for (Property p : properties) {
+                    if (p.purchaseHouse()) {
+                        break;//building successfully purchased end for loop
+                    } else if (p.purchaseHotel()) {
+                        break;//building successfully purchased end for loop
+                    }
+                }
+            }
+        } else {
+            //wild card and no trait random actions
+            while (ThreadLocalRandom.current().nextDouble(0, 1) > 0.5 && money > properties.peekFirst().getGroup().getBuildingCost()) {//while coin flip successful
+                for (Property p : properties) {//attempt to build 1 building
+                    if (p.purchaseHouse()) {
+                        break;//building successfully purchased end for loop
+                    } else if (p.purchaseHotel()) {
+                        break;//building successfully purchased end for loop
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Sell building for AI agent.
+     * When provided a developed property group buildings will be sold within building restrictions
+     *
+     * @param group property group with buildings to sell
+     * @return the amount from the sale
+     */
+    public int agentSellBuilding(Group group) {
+        int houseCount = 0;
+        Property hasMostHouses = null;
+        for (Object item : assets) {
+            if (item instanceof Property && ((Property) item).getGroup() == group) {//property of desired
+                if (((Property) item).getHotelNo() == 1) {
+                    return ((Property) item).sellHouseOrHotel();//sell hotel
+                } else {
+                    if (houseCount < ((Property) item).getHousesNo()) {
+                        houseCount = ((Property) item).getHousesNo();
+                        hasMostHouses = (Property) item;
+                    }
+                }
+            }
+        }
+        if (hasMostHouses != null) {
+            return hasMostHouses.sellHouseOrHotel();
+        } else {
+            return 0;//nothing was sold
+        }
+    }
+
+    /**
+     * //TODO add priority order based on traits
+     * Sell a single item to raise funds
+     *
+     * @return amount raised from sale
+     */
+    public int agentSellItem() {
+        //Sell utilities
+        for (Object item : assets) {
+            if (item instanceof Utility) {
+                return ((Utility) item).sellUtility();
+            }
+        }
+        //sell stations
+        for (Object item : assets) {
+            if (item instanceof Station) {
+                return ((Station) item).sellStation();
+            }
+        }
+        //sell non set properties
+        for (Object item : assets) {
+            if (item instanceof Property) {
+                if (!((Property) item).isCompletedSet()) {
+                    if (((Property) item).getOwner() == null) {
+                        System.out.println(((Property) item).title);
+                    }
+                    return ((Property) item).sellProperty();
+                }
+            }
+        }
+        //sell buildings
+        for (Object item : assets) {
+            if (item instanceof Property) {
+                if (((Property) item).isCompletedSet()) {
+                    int buildingSaleAmount = agentSellBuilding(((Property) item).getGroup());//try to sell building
+                    if (buildingSaleAmount != 0) {
+                        return buildingSaleAmount;//building sold return amount
+                    }
+                }
+            }
+        }
+        //sell set properties
+        for (Object item : assets) {
+            if (item instanceof Property) {
+                if (((Property) item).isCompletedSet()) {
+                    int propertyAmount = ((Property) item).sellProperty();//sell property
+                    completeSetProperties();
+                    return propertyAmount;
+                }
+            }
+        }
+        return 0;//Could not sell item
+    }
+
+    public void agentSellAssets(int amount) {
+        System.out.println("Raise £" + amount + " funds");
+        int amountRaised = 0;//amount from selling assets
+        int count = 0;
+        while (amountRaised < amount) {
+            count++;
+            amountRaised += agentSellItem();
+            if (count > 200) {//TODO remove after asset selling bug found
+                for (Object item : assets) {
+                    if (item instanceof Property) {
+                        System.out.println(((Property) item).getTitle());
+                    } else if (item instanceof Station) {
+                        System.out.println(((Station) item).getTitle());
+                    } else if (item instanceof Utility) {
+                        System.out.println(((Utility) item).getTitle());
+                    }
+                }
+                System.exit(10);//Asset selling issue
+            }
+        }
+        payPlayerAmount(amountRaised);//give AI agent amount raised
+        completeSetProperties();
+        System.out.println("Amount raised £" + amountRaised);
     }
 }
