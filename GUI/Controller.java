@@ -1,5 +1,6 @@
 package GUI;
 
+import ClassStructure.Board;
 import javafx.fxml.Initializable;
 import java.net.URL;
 import java.util.ArrayList;
@@ -64,6 +65,8 @@ public class Controller implements Initializable {
     private ComboBox gameMode;
 
     @FXML private Label diceRoll = new Label();
+    @FXML private ChoiceBox playerSelector = new ChoiceBox();
+    @FXML private Button mortgageBtn = new Button();
 
     //@FXML private Button addPlayer = new Button();
 
@@ -702,7 +705,7 @@ public class Controller implements Initializable {
     }
 
     public void rollDice(ActionEvent event) throws IOException{
-
-
+        Random rand = new Random();
+        diceRoll.setText("21");
     }
 }
