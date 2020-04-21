@@ -15,6 +15,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.Node;
@@ -22,19 +23,18 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-
 import java.io.IOException;
 
 public class Controller implements Initializable {
 
-    private Label setupTitle;
+    @FXML Label setupTitle;
+
     private static int totalPlayerSize = 0;
     private static int playerSize = 0;
     private static int aiSize = 0;
+    private static int randomSeed = 0;
 
-    private static VBox alignPlayer;
-    private static VBox alignAI;
-    // Change!! dont know how to implement it better at this time
+    // Player setup (choosing tokens and players name)
     private Spinner spinP1;
     private Spinner spinP2;
     private Spinner spinP3;
@@ -49,6 +49,7 @@ public class Controller implements Initializable {
     private TextField nameP5;
     private TextField nameP6;
 
+    // AI setup (name randomly chosen for each Ai)
     private Spinner spinAI1;
     private Spinner spinAI2;
     private Spinner spinAI3;
@@ -63,135 +64,23 @@ public class Controller implements Initializable {
     private TextField nameAI5;
     private TextField nameAI6;
 
-    private Button generateGame;
+
+    // Vbox containing the approriate spinner and textfield for each player and AI
+    private static VBox playerAmount = new VBox(10);
+    private static VBox aiAmount = new VBox(10);
+
     private ComboBox gameMode;
+    private Button generateGame;
 
-    @FXML private Button diceRoll1 = new Button();
-
-    // This is called when the GUI is loading
+    // This is called every time a new scene is built
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         // Label used in setup scene for the title
         setupTitle = new Label();
         setupTitle.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;");
         setupTitle.setText("Property Tycoon Setup\n");
-        // Initializing players' spinner and textfield
-        spinP1 = new Spinner <String>();
-        // Making the arrows on the spinner HORIZONTAL (rather than vertical)
-        spinP1.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
-        nameP1 = new TextField();
-        nameP1.setStyle("-fx-font-size: 14px");
-        nameP1.setPromptText("Enter players' 1 name");
 
-        spinP2 = new Spinner <String>();
-        // Making the arrows on the spinner HORIZONTAL (rather than vertical)
-        spinP2.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
-        nameP2 = new TextField();
-        nameP2.setStyle("-fx-font-size: 14px");
-        nameP2.setPromptText("Enter players' 2 name");
-
-        spinP3 = new Spinner <String>();
-        // Making the arrows on the spinner HORIZONTAL (rather than vertical)
-        spinP3.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
-        nameP3 = new TextField();
-        nameP3.setStyle("-fx-font-size: 14px");
-        nameP3.setPromptText("Enter players' 3 name");
-
-        spinP4 = new Spinner <String>();
-        // Making the arrows on the spinner HORIZONTAL (rather than vertical)
-        spinP4.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
-        nameP4 = new TextField();
-        nameP4.setStyle("-fx-font-size: 14px");
-        nameP4.setPromptText("Enter players' 4 name");
-
-        spinP5 = new Spinner <String>();
-        // Making the arrows on the spinner HORIZONTAL (rather than vertical)
-        spinP5.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
-        nameP5 = new TextField();
-        nameP5.setStyle("-fx-font-size: 14px");
-        nameP5.setPromptText("Enter players' 5 name");
-
-        spinP6 = new Spinner <String>();
-        // Making the arrows on the spinner HORIZONTAL (rather than vertical)
-        spinP6.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
-        nameP6 = new TextField();
-        nameP6.setStyle("-fx-font-size: 14px");
-        nameP6.setPromptText("Enter players' 6 name");
-
-        // Initializing AIs' spinner and textfield
-        // A array-list containing all the possible name for the AI (randomly generated)
-        ArrayList<String> nameAI = new ArrayList<String>(); // Contains 6 names (possibly 6 AIs' playing)
-        nameAI.add("Bob");
-        nameAI.add("Fred");
-        nameAI.add("Alex");
-        nameAI.add("Jess");
-        nameAI.add("Annie");
-        nameAI.add("Adel");
-
-        Random rand = new Random();
-        //rand.setSeed(5);
-        int randomIndex = rand.nextInt(nameAI.size());
-        String tempName = nameAI.get(randomIndex);
-
-        spinAI1 = new Spinner <String>();
-        // Making the arrows on the spinner HORIZONTAL (rather than vertical)
-        spinAI1.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
-        nameAI1 = new TextField();
-        nameAI1.setStyle("-fx-font-size: 14px");
-        nameAI1.setText(tempName);
-        // Remove the AI's name that been assigned so no duplicate name at one time
-        nameAI.remove(randomIndex);
-
-        randomIndex = rand.nextInt(nameAI.size());
-        tempName = nameAI.get(randomIndex);
-        spinAI2 = new Spinner <String>();
-        // Making the arrows on the spinner HORIZONTAL (rather than vertical)
-        spinAI2.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
-        nameAI2 = new TextField();
-        nameAI2.setStyle("-fx-font-size: 14px");
-        nameAI2.setText(tempName);
-        nameAI.remove(randomIndex);
-
-        randomIndex = rand.nextInt(nameAI.size());
-        tempName = nameAI.get(randomIndex);
-        spinAI3 = new Spinner <String>();
-        // Making the arrows on the spinner HORIZONTAL (rather than vertical)
-        spinAI3.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
-        nameAI3 = new TextField();
-        nameAI3.setStyle("-fx-font-size: 14px");
-        nameAI3.setText(tempName);
-        nameAI.remove(randomIndex);
-
-        randomIndex = rand.nextInt(nameAI.size());
-        tempName = nameAI.get(randomIndex);
-        spinAI4 = new Spinner <String>();
-        // Making the arrows on the spinner HORIZONTAL (rather than vertical)
-        spinAI4.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
-        nameAI4 = new TextField();
-        nameAI4.setStyle("-fx-font-size: 14px");
-        nameAI4.setText(tempName);
-        nameAI.remove(randomIndex);
-
-        randomIndex = rand.nextInt(nameAI.size());
-        tempName = nameAI.get(randomIndex);
-        spinAI5 = new Spinner <String>();
-        // Making the arrows on the spinner HORIZONTAL (rather than vertical)
-        spinAI5.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
-        nameAI5 = new TextField();
-        nameAI5.setStyle("-fx-font-size: 14px");
-        nameAI5.setText(tempName);
-        nameAI.remove(randomIndex);
-
-        randomIndex = rand.nextInt(nameAI.size());
-        tempName = nameAI.get(randomIndex);
-        spinAI6 = new Spinner <String>();
-        // Making the arrows on the spinner HORIZONTAL (rather than vertical)
-        spinAI6.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
-        nameAI6 = new TextField();
-        nameAI6.setStyle("-fx-font-size: 14px");
-        nameAI6.setText(tempName);
-        nameAI.remove(randomIndex);
-
+        // Button in setup scene (When clicked, switch from setup scene to board scene)
         generateGame = new Button("Generate Game");
         // CSS for the generate game button
         generateGame.setPrefSize(170,30);
@@ -200,35 +89,85 @@ public class Controller implements Initializable {
             // When clicked, switch to game board scene
             try {
                 // Fetch and see if player chose the normal game version or abridged
-                String mode = gameMode.getValue().toString(); ;
-                gameBoardSceneChange(e);
+                //String mode = gameMode.getValue().toString();
+                //System.out.println(nameP1.getText());
+                setupToBoardScene(e);
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
         });
+    }
+    
+    /***
+     * Change to the auctioning popup screen if 'auction' has been clicked from buyProperty()
+     * @throws IOException
+     */
+    public void auctionSceneChange() throws IOException{
+        Parent gameBoardParent = FXMLLoader.load(getClass().getResource("gameBoardScene.fxml"));
+        Scene gameScene  = new Scene(gameBoardParent);
+        System.out.println(nameP1.getText());
 
-        // Setting up the choice box so players can select the game mode either normal or abridged
-        gameMode = new ComboBox();
-        gameMode.getItems().addAll("Normal", "Abridged");
-        // Setting the default value for game mode to be normal
-        gameMode.setValue("Normal");
+        Stage stage = new Stage();
+        Parent root;
+
+        root = FXMLLoader.load(getClass().getResource("auctionScene.fxml"));
+        stage.setScene(new Scene(root));
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.showAndWait();
     }
 
     /***
-     * A new window appears showing the number that they have rolled
+     * If player land on a unowned property, ask player or AI if they would like to buy it
+     * @throws IOException
      */
-    public void diceRoll(ActionEvent event){
-        // testing purpose
-        int x = 2;
-        int y = 2;
+    public void buyProperty() throws IOException {
+        // Fetch data to see if property is owned by a player
+        boolean unownedProperty = true;
+        // Fetch the property name
+        String propertyName = "bob valley";
+        int propertyValue = 500;
+        ButtonType buyProperty = new ButtonType("Buy Property");
+        ButtonType auctionProperty = new ButtonType("Auction");
 
+        if(unownedProperty == true){
+            Alert propertyMessage = new Alert(AlertType.NONE);
+            propertyMessage.setHeaderText("Do you want to buy " + propertyName + "?");
+            propertyMessage.setContentText(propertyName + " would cost £" + propertyValue);
+            propertyMessage.getButtonTypes().addAll(buyProperty,auctionProperty);
+            Optional<ButtonType> option = propertyMessage.showAndWait();
+
+            // Implement with logic!!!!!!!!!!!!!!!!!!!!!!!!!!
+            if(option.get() == buyProperty){
+                // After clicking the "Buy Property" button from the popup
+                System.out.println("you Payed $500");
+            }else if(option.get() == auctionProperty){
+                // After clicking the "Auction" button from the popup
+                System.out.println("Auction");
+                auctionSceneChange();
+            }
+        }else{
+            // If property is owned then pay rent!!!!
+            System.out.println("Pay rent £200");
+        }
+    }
+
+    /***
+     * If two dices rolled the same number, allow the user the roll again
+     * @param event If roll button is clicked, a new window appears showing you all the options that you can choose from
+     * @throws IOException
+     */
+    public void diceRoll(ActionEvent event) throws IOException {
+        int diceOne = 2;
+        int diceTwo = 3;
         // Allow the user to roll again if both the dices == same
         ButtonType rollAgain = new ButtonType("Reroll");
-        if(x == y){
+        if(diceOne == diceTwo){
             Alert diceMessage = new Alert(AlertType.NONE);
             diceMessage.setTitle("Dice Generated");
-            diceMessage.setHeaderText("Your first dice rolled a " + x + " and the second rolled a " + y);
+            diceMessage.setHeaderText("Your first dice rolled a " + diceOne + " and the second rolled a " + diceTwo);
             diceMessage.setContentText("Roll again");
+            // IMPLEMENT LATER OPTION TO BUY
+            //buyProperty();
             diceMessage.getButtonTypes().add(rollAgain);
             Optional<ButtonType> option = diceMessage.showAndWait();
             // After clicking the "Reroll" button from the popup
@@ -242,17 +181,18 @@ public class Controller implements Initializable {
         }else{ // dice one and dice two != same
             Alert diceMessage = new Alert(AlertType.INFORMATION);
             diceMessage.setTitle("Dice Generated");
-            diceMessage.setHeaderText("You rolled a " + x + " and a " + y);
+            diceMessage.setHeaderText("You rolled a " + diceOne + " and a " + diceTwo);
             diceMessage.showAndWait();
+            buyProperty();
         }
     }
 
     /**
      * Switch scene from setup when "Generate Game" button is clicked
-     * @param event
+     * @param event When "generate game"" button is clicked, switch scene from setup to the game board scene
      * @throws IOException
      */
-    public void gameBoardSceneChange(ActionEvent event) throws IOException {
+    public void setupToBoardScene(ActionEvent event) throws IOException {
         Parent gameBoardParent = FXMLLoader.load(getClass().getResource("gameBoardScene.fxml"));
         Scene gameScene  = new Scene(gameBoardParent);
 
@@ -264,8 +204,8 @@ public class Controller implements Initializable {
     }
 
     /**
-     *  Recreate the same scene but adding a addition spinner and textfield (add spinner and textfield for AI)
-     * @param event
+     *  Recreate the same scene but adding a addition spinner and textfield (add spinner and textfield for the player)
+     * @param event Recreate scene with the appropriate amount of spinners and textfield
      * @throws IOException
      */
     public void addNewPlayer(ActionEvent event) throws IOException {
@@ -275,41 +215,43 @@ public class Controller implements Initializable {
         VBox setup = new VBox(10);
         setup.setAlignment(Pos.TOP_CENTER);
 
+        // Increase the total player size by one
         totalPlayerSize++;
         // playerSize is used a index
         playerSize++;
 
-        VBox alignAddPlayer = new VBox();
-        alignAddPlayer = addPlayerSetup();
+        // Fetches the right amount of spinners and textfield (retrieving the Hbox from the function)
+        playerAmount = addPlayerSetup();
+        playerAmount.setAlignment(Pos.TOP_CENTER);
+        // Create and initialize gamemode (either normal or abridge)
+        initializeGameMode();
 
         if (totalPlayerSize == playerSize && playerSize < 2) {
             // Check if only players has been added
             setup.getChildren().addAll(
-                    setupTitle, alignAddPlayer,setupParent
+                    setupTitle, playerAmount,setupParent
             );
         }else if(totalPlayerSize == playerSize && playerSize != 6){
             // Check if only players has been added and if player size > 2 allow the game to start
             setup.getChildren().addAll(
-                    setupTitle, alignAddPlayer, gameMode, generateGame, setupParent
+                    setupTitle, playerAmount, gameMode, generateGame, setupParent
             );
         }else if(totalPlayerSize == playerSize && totalPlayerSize == 6) {
             // Check if only players has been added and if player size == 6, then disable add players and AI button
             setup.getChildren().addAll(
-                    setupTitle, alignAddPlayer, gameMode, generateGame
+                    setupTitle, playerAmount, gameMode, generateGame
             );
         }else if(totalPlayerSize != playerSize && totalPlayerSize < 6){
             // Check if both AIs and players has been added and allow the options to add in more players and AIs
             setup.getChildren().addAll(
-                    setupTitle, alignAddPlayer, alignAI, gameMode, generateGame, setupParent
+                    setupTitle, playerAmount, aiAmount, gameMode, generateGame, setupParent
             );
         }else if(totalPlayerSize != playerSize && totalPlayerSize == 6){
             // Check if AIs and players has been added and if totalPlayerSize == 6, then disable add players and AI button
             setup.getChildren().addAll(
-                    setupTitle, alignAddPlayer, alignAI, gameMode, generateGame
+                    setupTitle, playerAmount, aiAmount, gameMode, generateGame
             );
         }
-        alignPlayer = alignAddPlayer;
-
         //String bob = gameMode.getValue().toString(); //!!!! assigned to a variable later on (value converted to string atm)
         Scene setupScene  = new Scene(setup,370,420);
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
@@ -317,12 +259,65 @@ public class Controller implements Initializable {
         window.show();
     }
 
+    /**
+     *  Recreate the same scene but adding a addition spinner and textfield (add spinner and textfield for the AI)
+     * @param event Recreate scene with the appropriate amount of spinners and textfield
+     * @throws IOException
+     */
+    public void addNewAI(ActionEvent event) throws IOException {
+        // Grab the code from setupScene (Add player and Add AI button)
+        Parent setupParent = FXMLLoader.load(getClass().getResource("setupScene.fxml"));
+        // Used to add title (label), playerSetup (spinner and textfield), setupParent (Add player and Add AI)
+        VBox setup = new VBox(10);
+        setup.setAlignment(Pos.TOP_CENTER);
+
+        // Increase the total player size by one
+        totalPlayerSize++;
+        // aiSize is used a index
+        aiSize++;
+
+        // Fetches the right amount of spinners and textfield (retrieving the Hbox from the function)
+        aiAmount = addAISetup();
+        aiAmount.setAlignment(Pos.TOP_CENTER);
+        // Create and initialize gamemode (either normal or abridge)
+        initializeGameMode();
+
+        if (totalPlayerSize == aiSize && aiSize < 2) {
+            setup.getChildren().addAll(
+                    setupTitle, aiAmount, setupParent
+            );
+        }else if(totalPlayerSize == aiSize && aiSize != 6){
+            setup.getChildren().addAll(
+                    setupTitle, aiAmount, gameMode, generateGame, setupParent
+            );
+        }else if(totalPlayerSize == aiSize && totalPlayerSize == 6) {
+            setup.getChildren().addAll(
+                    setupTitle, aiAmount, gameMode, generateGame
+            );
+        }else if(totalPlayerSize != aiSize && totalPlayerSize < 6){
+            setup.getChildren().addAll(
+                    setupTitle, playerAmount, aiAmount, gameMode, generateGame, setupParent
+            );
+        }else if(totalPlayerSize != playerSize && totalPlayerSize == 6){
+            setup.getChildren().addAll(
+                    setupTitle, playerAmount, aiAmount, gameMode, generateGame
+            );
+        }
+        Scene setupScene  = new Scene(setup,370,420);
+        Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
+        window.setScene(setupScene);
+        window.show();
+    }
+
     /***
-     *
-     * @return VBox which setup the spinner and textfield for each players'
+     * @return VBox which return the appropriate amount of spinners and textfield for all the players
      */
     public VBox addPlayerSetup() {
-        // Used to add token choice (spinner) and players name (text field) for each players
+        // Initialize players spinners and textfield
+        initializePlayer();
+
+        // Used to add token choice (spinner) and players name (text field)
+        // Uses a different Hbox depending on the number of players
         HBox playerSetup1 = new HBox(10);
         playerSetup1.setAlignment(Pos.BOTTOM_CENTER);
         HBox playerSetup2 = new HBox(10);
@@ -337,7 +332,6 @@ public class Controller implements Initializable {
         playerSetup6.setAlignment(Pos.BOTTOM_CENTER);
 
         VBox alignPlayer = new VBox(10);
-        alignPlayer.setAlignment(Pos.TOP_CENTER);
 
         // Making a list of tokens that the user could choose from
         ObservableList<String> tokenName = FXCollections.observableArrayList(
@@ -356,6 +350,7 @@ public class Controller implements Initializable {
                 tokenChoice1 = new SpinnerValueFactory.ListSpinnerValueFactory<>(tokenName);
                 tokenChoice1.setValue("Boot");
                 spinP1.setValueFactory(tokenChoice1);
+
                 SpinnerValueFactory<String> tokenChoice2 = new SpinnerValueFactory.ListSpinnerValueFactory<>(tokenName);
                 tokenChoice2.setValue("Boot");
                 spinP2.setValueFactory(tokenChoice2);
@@ -475,58 +470,18 @@ public class Controller implements Initializable {
     }
 
     /***
-     * Recreate the same scene but adding a addition spinner and textfield (add spinner and textfield for AI)
-     * @param event
-     * @throws IOException
-     */
-    public void addNewAI(ActionEvent event) throws IOException {
-        // Grab the code from setupScene (Add player and Add AI button)
-        Parent setupParent = FXMLLoader.load(getClass().getResource("setupScene.fxml"));
-        // Used to add title (label), playerSetup (spinner and textfield), setupParent (Add player and Add AI)
-        VBox setup = new VBox(10);
-        setup.setAlignment(Pos.TOP_CENTER);
-
-        totalPlayerSize++;
-        // playerSize is used a index
-        aiSize++;
-
-        VBox alignAddAi = new VBox();
-        alignAddAi = addAISetup();
-
-        if (totalPlayerSize == aiSize && aiSize < 2) {
-            setup.getChildren().addAll(
-                    setupTitle, alignAddAi, setupParent
-            );
-        }else if(totalPlayerSize == aiSize && aiSize != 6){
-            setup.getChildren().addAll(
-                    setupTitle, alignAddAi, gameMode, generateGame, setupParent
-            );
-        }else if(totalPlayerSize == aiSize && totalPlayerSize == 6) {
-            setup.getChildren().addAll(
-                    setupTitle, alignAddAi, gameMode, generateGame
-            );
-        }else if(totalPlayerSize != aiSize && totalPlayerSize < 6){
-            setup.getChildren().addAll(
-                    setupTitle, alignPlayer, alignAddAi, gameMode, generateGame, setupParent
-            );
-        }else if(totalPlayerSize != playerSize && totalPlayerSize == 6){
-            setup.getChildren().addAll(
-                    setupTitle, alignPlayer, alignAddAi, gameMode, generateGame
-            );
-        }
-        alignAI = alignAddAi;
-
-        Scene setupScene  = new Scene(setup,370,420);
-        Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
-        window.setScene(setupScene);
-        window.show();
-    }
-
-    /***
      *
-     * @return VBox which setup the spinner and textfield for each AIs' sadasdshakjdashdkjashdsajkhasjk
+     * @return VBox which return the appropriate amount of spinners and textfield for all the AIs
      */
     public VBox addAISetup() {
+        // Generate a random seed for the AIs name
+        if(aiSize == 1){
+            Random rand = new Random();
+            randomSeed = rand.nextInt();
+        }
+        // Initialize AIs spinners and textfield
+        initializeAI(randomSeed);
+
         // Used to add token choice (spinner) and players name (text field) for each players
         HBox aiSetup1 = new HBox(10);
         aiSetup1.setAlignment(Pos.BOTTOM_CENTER);
@@ -542,7 +497,6 @@ public class Controller implements Initializable {
         aiSetup6.setAlignment(Pos.BOTTOM_CENTER);
 
         VBox alignAI = new VBox(10);
-        alignAI.setAlignment(Pos.TOP_CENTER);
 
         // Making a list of tokens that the user could choose from
         ObservableList<String> tokenName = FXCollections.observableArrayList(
@@ -708,11 +662,150 @@ public class Controller implements Initializable {
         return alignAI;
     }
 
-    /**
-     * Switch scene from main menu to setup (where the game is setup) when Start button is clicked
-     * @param event
+    /***
+     * Initialize combo box with the elements normal and abridged but default value to normal game mode
      */
-    public void setupSceneChange(ActionEvent event) throws IOException {
+    public void initializeGameMode(){
+        gameMode = new ComboBox();
+        // Setting up the choice box so players can select the game mode either normal or abridged
+        gameMode.getItems().addAll("Normal", "Abridged");
+        gameMode.setPrefWidth(170);
+        gameMode.setPrefHeight(30);
+        // Setting the default value for game mode to be normal
+        gameMode.setValue("Normal");
+    }
+
+    /***
+     * Initialize players spinner and textfield with a default value
+     */
+    public void initializePlayer(){
+        // Initializing players' spinner and textfield
+        spinP1 = new Spinner <String>();
+        // Making the arrows on the spinner HORIZONTAL (rather than vertical)
+        spinP1.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
+        nameP1 = new TextField();
+        nameP1.setStyle("-fx-font-size: 14px");
+        nameP1.setPromptText("Enter players' 1 name");
+
+        spinP2 = new Spinner <String>();
+        // Making the arrows on the spinner HORIZONTAL (rather than vertical)
+        spinP2.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
+        nameP2 = new TextField();
+        nameP2.setStyle("-fx-font-size: 14px");
+        nameP2.setPromptText("Enter players' 2 name");
+
+        spinP3 = new Spinner <String>();
+        // Making the arrows on the spinner HORIZONTAL (rather than vertical)
+        spinP3.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
+        nameP3 = new TextField();
+        nameP3.setStyle("-fx-font-size: 14px");
+        nameP3.setPromptText("Enter players' 3 name");
+
+        spinP4 = new Spinner <String>();
+        // Making the arrows on the spinner HORIZONTAL (rather than vertical)
+        spinP4.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
+        nameP4 = new TextField();
+        nameP4.setStyle("-fx-font-size: 14px");
+        nameP4.setPromptText("Enter players' 4 name");
+
+        spinP5 = new Spinner <String>();
+        // Making the arrows on the spinner HORIZONTAL (rather than vertical)
+        spinP5.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
+        nameP5 = new TextField();
+        nameP5.setStyle("-fx-font-size: 14px");
+        nameP5.setPromptText("Enter players' 5 name");
+
+        spinP6 = new Spinner <String>();
+        // Making the arrows on the spinner HORIZONTAL (rather than vertical)
+        spinP6.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
+        nameP6 = new TextField();
+        nameP6.setStyle("-fx-font-size: 14px");
+        nameP6.setPromptText("Enter players' 6 name");
+    }
+
+    /***
+     * Initialize AIs spinner and textfield with a default value
+     */
+    public void initializeAI(int randomSeed){
+        // Initializing AIs' spinner and textfield
+        // A array-list containing all the possible name for the AI (randomly generated)
+        ArrayList<String> nameAI = new ArrayList<String>(); // Contains 6 names (possibly 6 AIs' playing)
+        nameAI.add("Bob");
+        nameAI.add("Fred");
+        nameAI.add("Alex");
+        nameAI.add("Jess");
+        nameAI.add("Annie");
+        nameAI.add("Adel");
+
+        Random rand = new Random();
+        rand.setSeed(randomSeed);
+        int randomIndex = rand.nextInt(nameAI.size());
+        String tempName = nameAI.get(randomIndex);
+
+        spinAI1 = new Spinner <String>();
+        // Making the arrows on the spinner HORIZONTAL (rather than vertical)
+        spinAI1.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
+        nameAI1 = new TextField();
+        nameAI1.setStyle("-fx-font-size: 14px");
+        nameAI1.setText(tempName);
+        // Remove the AI's name that been assigned so no duplicate name at one time
+        nameAI.remove(randomIndex);
+
+        randomIndex = rand.nextInt(nameAI.size());
+        tempName = nameAI.get(randomIndex);
+        spinAI2 = new Spinner <String>();
+        // Making the arrows on the spinner HORIZONTAL (rather than vertical)
+        spinAI2.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
+        nameAI2 = new TextField();
+        nameAI2.setStyle("-fx-font-size: 14px");
+        nameAI2.setText(tempName);
+        nameAI.remove(randomIndex);
+
+        randomIndex = rand.nextInt(nameAI.size());
+        tempName = nameAI.get(randomIndex);
+        spinAI3 = new Spinner <String>();
+        // Making the arrows on the spinner HORIZONTAL (rather than vertical)
+        spinAI3.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
+        nameAI3 = new TextField();
+        nameAI3.setStyle("-fx-font-size: 14px");
+        nameAI3.setText(tempName);
+        nameAI.remove(randomIndex);
+
+        randomIndex = rand.nextInt(nameAI.size());
+        tempName = nameAI.get(randomIndex);
+        spinAI4 = new Spinner <String>();
+        // Making the arrows on the spinner HORIZONTAL (rather than vertical)
+        spinAI4.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
+        nameAI4 = new TextField();
+        nameAI4.setStyle("-fx-font-size: 14px");
+        nameAI4.setText(tempName);
+        nameAI.remove(randomIndex);
+
+        randomIndex = rand.nextInt(nameAI.size());
+        tempName = nameAI.get(randomIndex);
+        spinAI5 = new Spinner <String>();
+        // Making the arrows on the spinner HORIZONTAL (rather than vertical)
+        spinAI5.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
+        nameAI5 = new TextField();
+        nameAI5.setStyle("-fx-font-size: 14px");
+        nameAI5.setText(tempName);
+        nameAI.remove(randomIndex);
+
+        randomIndex = rand.nextInt(nameAI.size());
+        tempName = nameAI.get(randomIndex);
+        spinAI6 = new Spinner <String>();
+        // Making the arrows on the spinner HORIZONTAL (rather than vertical)
+        spinAI6.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
+        nameAI6 = new TextField();
+        nameAI6.setStyle("-fx-font-size: 14px");
+        nameAI6.setText(tempName);
+        nameAI.remove(randomIndex);
+    }
+
+    /**
+     * @param event When "start" button is clicked, switch scene from main menu to the setup scene
+     */
+    public void mainToSetupScene(ActionEvent event) throws IOException {
         Parent setupParent = FXMLLoader.load(getClass().getResource("setupScene.fxml"));
         VBox setup = new VBox(10);
         setup.setAlignment(Pos.TOP_CENTER);
@@ -727,24 +820,9 @@ public class Controller implements Initializable {
     }
 
     /**
-     * Switch scene from main menu to rules
-     * @param event
+     * @param event When "main menu" button is clicked, switch scene from rules to main menu
      */
-    public void ruleSceneChange(ActionEvent event) throws IOException {
-        Parent ruleParent = FXMLLoader.load(getClass().getResource("ruleScene.fxml"));
-        Scene ruleScene  = new Scene(ruleParent);
-
-        // Grab stage information and change scene to setup
-        Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
-        window.setScene(ruleScene);
-        window.show();
-    }
-
-    /**
-     * Switch scene from rules to main menu
-     * @param event
-     */
-    public void mainSceneChange(ActionEvent event) throws IOException {
+    public void ruleToMainScene(ActionEvent event) throws IOException {
         Parent mainParent = FXMLLoader.load(getClass().getResource("mainMenu.fxml"));
         Scene mainScene  = new Scene(mainParent);
 
@@ -755,8 +833,20 @@ public class Controller implements Initializable {
     }
 
     /**
-     * When "exit" button is clicked, exit application
-     * @param event
+     * @param event When "rules" button is clicked, switch scene from main menu to rules
+     */
+    public void mainToRuleScene(ActionEvent event) throws IOException {
+        Parent ruleParent = FXMLLoader.load(getClass().getResource("ruleScene.fxml"));
+        Scene ruleScene  = new Scene(ruleParent);
+
+        // Grab stage information and change scene to setup
+        Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
+        window.setScene(ruleScene);
+        window.show();
+    }
+
+    /**
+     * @param event When "exit" button is clicked, exit application
      */
     public void quit(ActionEvent event){
         Platform.exit();

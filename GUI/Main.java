@@ -8,9 +8,9 @@ import javafx.stage.Stage;
 
 
 public class Main extends Application {
-
     @Override
     public void start(Stage primaryStage) throws Exception{
+        // Set to the main-menu screen (start, rule and quit button)
         Parent root = FXMLLoader.load(getClass().getResource("mainMenu.fxml"));
         primaryStage.setTitle("Property Tycoon");
         primaryStage.setScene(new Scene(root,300,275));

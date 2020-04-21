@@ -11,9 +11,9 @@
             <Font name="System Bold" size="14.0" />
          </font>
       </Label>
-      <TextArea fx:id="rulesTextArea" layoutX="64.0" layoutY="24.0" prefHeight="200.0" prefWidth="275.0" text="Rules1:&#10;Rules2:&#10;Rules3: &#10;" />
-      <Button layoutX="163.0" layoutY="328.0" minHeight="30.0" minWidth="50.0" mnemonicParsing="false" onAction="#mainSceneChange" text="Main Menu" />
+      <TextArea layoutX="64.0" layoutY="24.0" prefHeight="200.0" prefWidth="275.0" text="Rules1:&#10;Rules2:&#10;Rules3: &#10;" />
+      <Button layoutX="163.0" layoutY="328.0" minHeight="30.0" minWidth="50.0" mnemonicParsing="false" onAction="#ruleToMainScene" text="Main Menu" />
       <Button layoutX="262.0" layoutY="328.0" minHeight="30.0" minWidth="50.0" mnemonicParsing="false" onAction="#quit" prefHeight="30.0" prefWidth="77.0" text="Quit" />
-      <Button layoutX="64.0" layoutY="328.0" minHeight="30.0" minWidth="50.0" mnemonicParsing="false" onAction="#setupSceneChange" prefHeight="30.0" prefWidth="77.0" text="Start" />
+      <Button layoutX="64.0" layoutY="328.0" minHeight="30.0" minWidth="50.0" mnemonicParsing="false" onAction="#mainToSetupScene" prefHeight="30.0" prefWidth="77.0" text="Start" />
    </children>
 </AnchorPane>
