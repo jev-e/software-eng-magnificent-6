@@ -42,12 +42,12 @@ public class Controller implements Initializable {
     private Spinner spinP5;
     private Spinner spinP6;
 
-    private TextField nameP1;
-    private TextField nameP2;
-    private TextField nameP3;
-    private TextField nameP4;
-    private TextField nameP5;
-    private TextField nameP6;
+    private TextField txtP1;
+    private TextField txtP2;
+    private TextField txtP3;
+    private TextField txtP4;
+    private TextField txtP5;
+    private TextField txtP6;
 
     // AI setup (name randomly chosen for each Ai)
     private Spinner spinAI1;
@@ -57,20 +57,51 @@ public class Controller implements Initializable {
     private Spinner spinAI5;
     private Spinner spinAI6;
 
-    private TextField nameAI1;
-    private TextField nameAI2;
-    private TextField nameAI3;
-    private TextField nameAI4;
-    private TextField nameAI5;
-    private TextField nameAI6;
+    private TextField txtAI1;
+    private TextField txtAI2;
+    private TextField txtAI3;
+    private TextField txtAI4;
+    private TextField txtAI5;
+    private TextField txtAI6;
 
+    // Players name and token that they have chosen
+    private String nameP1;
+    private String nameP2;
+    private String nameP3;
+    private String nameP4;
+    private String nameP5;
+    private String nameP6;
+
+    private String tokenP1;
+    private String tokenP2;
+    private String tokenP3;
+    private String tokenP4;
+    private String tokenP5;
+    private String tokenP6;
+
+    // AIs name and token that they have been assigned
+    private String nameAI1;
+    private String nameAI2;
+    private String nameAI3;
+    private String nameAI4;
+    private String nameAI5;
+    private String nameAI6;
+
+    private String tokenAI1;
+    private String tokenAI2;
+    private String tokenAI3;
+    private String tokenAI4;
+    private String tokenAI5;
+    private String tokenAI6;
 
     // Vbox containing the approriate spinner and textfield for each player and AI
     private static VBox playerAmount = new VBox(10);
     private static VBox aiAmount = new VBox(10);
 
     private ComboBox gameMode;
-    private Button generateGame;
+    private String mode;
+    // Button in setup scene (When clicked, switch from setup scene to board scene)
+    private Button generateGame = new Button("Generate Game");
 
     // This is called every time a new scene is built
     @Override
@@ -80,33 +111,15 @@ public class Controller implements Initializable {
         setupTitle.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;");
         setupTitle.setText("Property Tycoon Setup\n");
 
-        // Button in setup scene (When clicked, switch from setup scene to board scene)
-        generateGame = new Button("Generate Game");
         // CSS for the generate game button
         generateGame.setPrefSize(170,30);
-        // Change to the generated game scene when clicked
-        generateGame.setOnAction(e -> {
-            // When clicked, switch to game board scene
-            try {
-                // Fetch and see if player chose the normal game version or abridged
-                //String mode = gameMode.getValue().toString();
-                //System.out.println(nameP1.getText());
-                setupToBoardScene(e);
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-        });
     }
-    
+
     /***
      * Change to the auctioning popup screen if 'auction' has been clicked from buyProperty()
      * @throws IOException
      */
     public void auctionSceneChange() throws IOException{
-        Parent gameBoardParent = FXMLLoader.load(getClass().getResource("gameBoardScene.fxml"));
-        Scene gameScene  = new Scene(gameBoardParent);
-        System.out.println(nameP1.getText());
-
         Stage stage = new Stage();
         Parent root;
 
@@ -140,6 +153,8 @@ public class Controller implements Initializable {
             if(option.get() == buyProperty){
                 // After clicking the "Buy Property" button from the popup
                 System.out.println("you Payed $500");
+                System.out.println(nameP1);
+                System.out.println(nameP2);
             }else if(option.get() == auctionProperty){
                 // After clicking the "Auction" button from the popup
                 System.out.println("Auction");
@@ -159,6 +174,7 @@ public class Controller implements Initializable {
     public void diceRoll(ActionEvent event) throws IOException {
         int diceOne = 2;
         int diceTwo = 3;
+
         // Allow the user to roll again if both the dices == same
         ButtonType rollAgain = new ButtonType("Reroll");
         if(diceOne == diceTwo){
@@ -184,6 +200,136 @@ public class Controller implements Initializable {
             diceMessage.setHeaderText("You rolled a " + diceOne + " and a " + diceTwo);
             diceMessage.showAndWait();
             buyProperty();
+        }
+    }
+
+    /***
+     * Used to set the players name and tokens that they have chose to the appropriate variable
+     */
+    public void setPlayerInfo(){
+        switch(playerSize){
+            case 1:
+                // Assign player ones name and tokens that they have selected
+                nameP1 = txtP1.getText();
+                tokenP1 = (String) spinP1.getValue();
+                break;
+            case 2:
+                nameP1 = txtP1.getText();
+                tokenP1 = (String) spinP1.getValue();
+                nameP2 = txtP2.getText();
+                tokenP2 = (String) spinP2.getValue();
+                break;
+            case 3:
+                nameP1 = txtP1.getText();
+                tokenP1 = (String) spinP1.getValue();
+                nameP2 = txtP2.getText();
+                tokenP2 = (String) spinP2.getValue();
+                nameP3 = txtP3.getText();
+                tokenP3 = (String) spinP3.getValue();
+                break;
+            case 4:
+                nameP1 = txtP1.getText();
+                tokenP1 = (String) spinP1.getValue();
+                nameP2 = txtP2.getText();
+                tokenP2 = (String) spinP2.getValue();
+                nameP3 = txtP3.getText();
+                tokenP3 = (String) spinP3.getValue();
+                nameP4 = txtP4.getText();
+                tokenP4 = (String) spinP4.getValue();
+                break;
+            case 5:
+                nameP1 = txtP1.getText();
+                tokenP1 = (String) spinP1.getValue();
+                nameP2 = txtP2.getText();
+                tokenP2 = (String) spinP2.getValue();
+                nameP3 = txtP3.getText();
+                tokenP3 = (String) spinP3.getValue();
+                nameP4 = txtP4.getText();
+                tokenP4 = (String) spinP4.getValue();
+                nameP5 = txtP5.getText();
+                tokenP5 = (String) spinP5.getValue();
+                break;
+            case 6:
+                nameP1 = txtP1.getText();
+                tokenP1 = (String) spinP1.getValue();
+                nameP2 = txtP2.getText();
+                tokenP2 = (String) spinP2.getValue();
+                nameP3 = txtP3.getText();
+                tokenP3 = (String) spinP3.getValue();
+                nameP4 = txtP4.getText();
+                tokenP4 = (String) spinP4.getValue();
+                nameP5 = txtP5.getText();
+                tokenP5 = (String) spinP5.getValue();
+                nameP6 = txtP6.getText();
+                tokenP6 = (String) spinP6.getValue();
+                break;
+            default:
+                break;
+        }
+    }
+
+    /***
+     * Used to set the ais name and tokens that they have been assigned to the appropriate variable
+     */
+    public void setAiInfo(){
+        switch(aiSize){
+            case 1:
+                // Assign player ones name and tokens that they have selected
+                nameAI1 = txtAI1.getText();
+                tokenAI1 = (String) spinAI1.getValue();
+                break;
+            case 2:
+                nameAI1 = txtAI1.getText();
+                tokenAI1 = (String) spinAI1.getValue();
+                nameAI2 = txtAI2.getText();
+                tokenAI2 = (String) spinAI2.getValue();
+                break;
+            case 3:
+                nameAI1 = txtAI1.getText();
+                tokenAI1 = (String) spinAI1.getValue();
+                nameAI2 = txtAI2.getText();
+                tokenAI2 = (String) spinAI2.getValue();
+                nameAI3 = txtAI3.getText();
+                tokenAI3 = (String) spinAI3.getValue();
+                break;
+            case 4:
+                nameAI1 = txtAI1.getText();
+                tokenAI1 = (String) spinAI1.getValue();
+                nameAI2 = txtAI2.getText();
+                tokenAI2 = (String) spinAI2.getValue();
+                nameAI3 = txtAI3.getText();
+                tokenAI3 = (String) spinAI3.getValue();
+                nameAI4 = txtAI4.getText();
+                tokenAI4 = (String) spinAI4.getValue();
+                break;
+            case 5:
+                nameAI1 = txtAI1.getText();
+                tokenAI1 = (String) spinAI1.getValue();
+                nameAI2 = txtAI2.getText();
+                tokenAI2 = (String) spinAI2.getValue();
+                nameAI3 = txtAI3.getText();
+                tokenAI3 = (String) spinAI3.getValue();
+                nameAI4 = txtAI4.getText();
+                tokenAI4 = (String) spinAI4.getValue();
+                nameAI5 = txtAI5.getText();
+                tokenAI5 = (String) spinAI5.getValue();
+                break;
+            case 6:
+                nameAI1 = txtAI1.getText();
+                tokenAI1 = (String) spinAI1.getValue();
+                nameAI2 = txtAI2.getText();
+                tokenAI2 = (String) spinAI2.getValue();
+                nameAI3 = txtAI3.getText();
+                tokenAI3 = (String) spinAI3.getValue();
+                nameAI4 = txtAI4.getText();
+                tokenAI4 = (String) spinAI4.getValue();
+                nameAI5 = txtAI5.getText();
+                tokenAI5 = (String) spinAI5.getValue();
+                nameAI6 = txtAI6.getText();
+                tokenAI6 = (String) spinAI6.getValue();
+                break;
+            default:
+                break;
         }
     }
 
@@ -214,6 +360,20 @@ public class Controller implements Initializable {
         // Used to add title (label), playerSetup (spinner and textfield), setupParent (Add player and Add AI)
         VBox setup = new VBox(10);
         setup.setAlignment(Pos.TOP_CENTER);
+
+        // Change to the generated game scene when clicked
+        generateGame.setOnAction(e -> {
+            // When clicked, switch to game board scene
+            try {
+                // Fetch and see if player chose the normal game version or abridged
+                mode = gameMode.getValue().toString();
+                setPlayerInfo();
+                setAiInfo();
+                setupToBoardScene(e);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        });
 
         // Increase the total player size by one
         totalPlayerSize++;
@@ -270,6 +430,20 @@ public class Controller implements Initializable {
         // Used to add title (label), playerSetup (spinner and textfield), setupParent (Add player and Add AI)
         VBox setup = new VBox(10);
         setup.setAlignment(Pos.TOP_CENTER);
+
+        // Change to the generated game scene when clicked
+        generateGame.setOnAction(e -> {
+            // When clicked, switch to game board scene
+            try {
+                // Fetch and see if player chose the normal game version or abridged
+                mode = gameMode.getValue().toString();
+                setPlayerInfo();
+                setAiInfo();
+                setupToBoardScene(e);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        });
 
         // Increase the total player size by one
         totalPlayerSize++;
@@ -343,7 +517,7 @@ public class Controller implements Initializable {
                 SpinnerValueFactory<String> tokenChoice1 = new SpinnerValueFactory.ListSpinnerValueFactory<>(tokenName);
                 tokenChoice1.setValue("Boot");
                 spinP1.setValueFactory(tokenChoice1);
-                playerSetup1.getChildren().addAll(spinP1, nameP1);
+                playerSetup1.getChildren().addAll(spinP1, txtP1);
                 alignPlayer.getChildren().add(playerSetup1);
                 break;
             case 2:
@@ -355,8 +529,8 @@ public class Controller implements Initializable {
                 tokenChoice2.setValue("Boot");
                 spinP2.setValueFactory(tokenChoice2);
 
-                playerSetup1.getChildren().addAll(spinP1, nameP1);
-                playerSetup2.getChildren().addAll(spinP2, nameP2);
+                playerSetup1.getChildren().addAll(spinP1, txtP1);
+                playerSetup2.getChildren().addAll(spinP2, txtP2);
                 alignPlayer.getChildren().addAll(playerSetup1,playerSetup2);
                 break;
             case 3:
@@ -372,9 +546,9 @@ public class Controller implements Initializable {
                 tokenChoice3.setValue("Boot");
                 spinP3.setValueFactory(tokenChoice3);
 
-                playerSetup1.getChildren().addAll(spinP1, nameP1);
-                playerSetup2.getChildren().addAll(spinP2, nameP2);
-                playerSetup3.getChildren().addAll(spinP3, nameP3);
+                playerSetup1.getChildren().addAll(spinP1, txtP1);
+                playerSetup2.getChildren().addAll(spinP2, txtP2);
+                playerSetup3.getChildren().addAll(spinP3, txtP3);
                 alignPlayer.getChildren().addAll(playerSetup1,playerSetup2,playerSetup3);
                 break;
             case 4:
@@ -394,10 +568,10 @@ public class Controller implements Initializable {
                 tokenChoice4.setValue("Boot");
                 spinP4.setValueFactory(tokenChoice4);
 
-                playerSetup1.getChildren().addAll(spinP1, nameP1);
-                playerSetup2.getChildren().addAll(spinP2, nameP2);
-                playerSetup3.getChildren().addAll(spinP3, nameP3);
-                playerSetup4.getChildren().addAll(spinP4, nameP4);
+                playerSetup1.getChildren().addAll(spinP1, txtP1);
+                playerSetup2.getChildren().addAll(spinP2, txtP2);
+                playerSetup3.getChildren().addAll(spinP3, txtP3);
+                playerSetup4.getChildren().addAll(spinP4, txtP4);
                 alignPlayer.getChildren().addAll(playerSetup1,playerSetup2,playerSetup3,playerSetup4);
                 break;
             case 5:
@@ -421,11 +595,11 @@ public class Controller implements Initializable {
                 tokenChoice5.setValue("Boot");
                 spinP5.setValueFactory(tokenChoice5);
 
-                playerSetup1.getChildren().addAll(spinP1, nameP1);
-                playerSetup2.getChildren().addAll(spinP2, nameP2);
-                playerSetup3.getChildren().addAll(spinP3, nameP3);
-                playerSetup4.getChildren().addAll(spinP4, nameP4);
-                playerSetup5.getChildren().addAll(spinP5, nameP5);
+                playerSetup1.getChildren().addAll(spinP1, txtP1);
+                playerSetup2.getChildren().addAll(spinP2, txtP2);
+                playerSetup3.getChildren().addAll(spinP3, txtP3);
+                playerSetup4.getChildren().addAll(spinP4, txtP4);
+                playerSetup5.getChildren().addAll(spinP5, txtP5);
                 alignPlayer.getChildren().addAll(
                         playerSetup1,playerSetup2,playerSetup3,playerSetup4,playerSetup5
                 );
@@ -455,12 +629,12 @@ public class Controller implements Initializable {
                 tokenChoice6.setValue("Boot");
                 spinP6.setValueFactory(tokenChoice6);
 
-                playerSetup1.getChildren().addAll(spinP1, nameP1);
-                playerSetup2.getChildren().addAll(spinP2, nameP2);
-                playerSetup3.getChildren().addAll(spinP3, nameP3);
-                playerSetup4.getChildren().addAll(spinP4, nameP4);
-                playerSetup5.getChildren().addAll(spinP5, nameP5);
-                playerSetup6.getChildren().addAll(spinP6, nameP6);
+                playerSetup1.getChildren().addAll(spinP1, txtP1);
+                playerSetup2.getChildren().addAll(spinP2, txtP2);
+                playerSetup3.getChildren().addAll(spinP3, txtP3);
+                playerSetup4.getChildren().addAll(spinP4, txtP4);
+                playerSetup5.getChildren().addAll(spinP5, txtP5);
+                playerSetup6.getChildren().addAll(spinP6, txtP6);
                 alignPlayer.getChildren().addAll(
                         playerSetup1,playerSetup2,playerSetup3,playerSetup4,playerSetup5,playerSetup6
                 );
@@ -509,9 +683,9 @@ public class Controller implements Initializable {
                 tokenChoice1.setValue("Boot");
                 spinAI1.setValueFactory(tokenChoice1);
                 // Prevent players from changing the AI's name
-                nameAI1.setEditable(false);
+                txtAI1.setEditable(false);
 
-                aiSetup1.getChildren().addAll(spinAI1, nameAI1);
+                aiSetup1.getChildren().addAll(spinAI1, txtAI1);
                 alignAI.getChildren().add(aiSetup1);
                 break;
             case 2:
@@ -523,11 +697,11 @@ public class Controller implements Initializable {
                 tokenChoice2.setValue("Boot");
                 spinAI2.setValueFactory(tokenChoice2);
                 // Prevent players from changing the AI's name
-                nameAI1.setEditable(false);
-                nameAI2.setEditable(false);
+                txtAI1.setEditable(false);
+                txtAI2.setEditable(false);
 
-                aiSetup1.getChildren().addAll(spinAI1, nameAI1);
-                aiSetup2.getChildren().addAll(spinAI2, nameAI2);
+                aiSetup1.getChildren().addAll(spinAI1, txtAI1);
+                aiSetup2.getChildren().addAll(spinAI2, txtAI2);
                 alignAI.getChildren().addAll(aiSetup1,aiSetup2);
                 break;
             case 3:
@@ -543,13 +717,13 @@ public class Controller implements Initializable {
                 tokenChoice3.setValue("Boot");
                 spinAI3.setValueFactory(tokenChoice3);
                 // Prevent players from changing the AI's name
-                nameAI1.setEditable(false);
-                nameAI2.setEditable(false);
-                nameAI3.setEditable(false);
+                txtAI1.setEditable(false);
+                txtAI2.setEditable(false);
+                txtAI3.setEditable(false);
 
-                aiSetup1.getChildren().addAll(spinAI1, nameAI1);
-                aiSetup2.getChildren().addAll(spinAI2, nameAI2);
-                aiSetup3.getChildren().addAll(spinAI3, nameAI3);
+                aiSetup1.getChildren().addAll(spinAI1, txtAI1);
+                aiSetup2.getChildren().addAll(spinAI2, txtAI2);
+                aiSetup3.getChildren().addAll(spinAI3, txtAI3);
                 alignAI.getChildren().addAll(aiSetup1,aiSetup2,aiSetup3);
                 break;
             case 4:
@@ -569,15 +743,15 @@ public class Controller implements Initializable {
                 tokenChoice4.setValue("Boot");
                 spinAI4.setValueFactory(tokenChoice4);
                 // Prevent players from changing the AI's name
-                nameAI1.setEditable(false);
-                nameAI2.setEditable(false);
-                nameAI3.setEditable(false);
-                nameAI4.setEditable(false);
+                txtAI1.setEditable(false);
+                txtAI2.setEditable(false);
+                txtAI3.setEditable(false);
+                txtAI4.setEditable(false);
 
-                aiSetup1.getChildren().addAll(spinAI1, nameAI1);
-                aiSetup2.getChildren().addAll(spinAI2, nameAI2);
-                aiSetup3.getChildren().addAll(spinAI3, nameAI3);
-                aiSetup4.getChildren().addAll(spinAI4, nameAI4);
+                aiSetup1.getChildren().addAll(spinAI1, txtAI1);
+                aiSetup2.getChildren().addAll(spinAI2, txtAI2);
+                aiSetup3.getChildren().addAll(spinAI3, txtAI3);
+                aiSetup4.getChildren().addAll(spinAI4, txtAI4);
                 alignAI.getChildren().addAll(aiSetup1,aiSetup2,aiSetup3,aiSetup4);
                 break;
             case 5:
@@ -601,17 +775,17 @@ public class Controller implements Initializable {
                 tokenChoice5.setValue("Boot");
                 spinAI5.setValueFactory(tokenChoice5);
                 // Prevent players from changing the AI's name
-                nameAI1.setEditable(false);
-                nameAI2.setEditable(false);
-                nameAI3.setEditable(false);
-                nameAI4.setEditable(false);
-                nameAI5.setEditable(false);
+                txtAI1.setEditable(false);
+                txtAI2.setEditable(false);
+                txtAI3.setEditable(false);
+                txtAI4.setEditable(false);
+                txtAI5.setEditable(false);
 
-                aiSetup1.getChildren().addAll(spinAI1, nameAI1);
-                aiSetup2.getChildren().addAll(spinAI2, nameAI2);
-                aiSetup3.getChildren().addAll(spinAI3, nameAI3);
-                aiSetup4.getChildren().addAll(spinAI4, nameAI4);
-                aiSetup5.getChildren().addAll(spinAI5, nameAI5);
+                aiSetup1.getChildren().addAll(spinAI1, txtAI1);
+                aiSetup2.getChildren().addAll(spinAI2, txtAI2);
+                aiSetup3.getChildren().addAll(spinAI3, txtAI3);
+                aiSetup4.getChildren().addAll(spinAI4, txtAI4);
+                aiSetup5.getChildren().addAll(spinAI5, txtAI5);
                 alignAI.getChildren().addAll(
                         aiSetup1,aiSetup2,aiSetup3,aiSetup4,aiSetup5
                 );
@@ -641,19 +815,19 @@ public class Controller implements Initializable {
                 tokenChoice6.setValue("Boot");
                 spinAI6.setValueFactory(tokenChoice6);
                 // Prevent players from changing the AI's name
-                nameAI1.setEditable(false);
-                nameAI2.setEditable(false);
-                nameAI3.setEditable(false);
-                nameAI4.setEditable(false);
-                nameAI5.setEditable(false);
-                nameAI6.setEditable(false);
+                txtAI1.setEditable(false);
+                txtAI2.setEditable(false);
+                txtAI3.setEditable(false);
+                txtAI4.setEditable(false);
+                txtAI5.setEditable(false);
+                txtAI6.setEditable(false);
 
-                aiSetup1.getChildren().addAll(spinAI1, nameAI1);
-                aiSetup2.getChildren().addAll(spinAI2, nameAI2);
-                aiSetup3.getChildren().addAll(spinAI3, nameAI3);
-                aiSetup4.getChildren().addAll(spinAI4, nameAI4);
-                aiSetup5.getChildren().addAll(spinAI5, nameAI5);
-                aiSetup6.getChildren().addAll(spinAI6, nameAI6);
+                aiSetup1.getChildren().addAll(spinAI1, txtAI1);
+                aiSetup2.getChildren().addAll(spinAI2, txtAI2);
+                aiSetup3.getChildren().addAll(spinAI3, txtAI3);
+                aiSetup4.getChildren().addAll(spinAI4, txtAI4);
+                aiSetup5.getChildren().addAll(spinAI5, txtAI5);
+                aiSetup6.getChildren().addAll(spinAI6, txtAI6);
                 alignAI.getChildren().addAll(
                         aiSetup1,aiSetup2,aiSetup3,aiSetup4,aiSetup5,aiSetup6
                 );
@@ -683,44 +857,44 @@ public class Controller implements Initializable {
         spinP1 = new Spinner <String>();
         // Making the arrows on the spinner HORIZONTAL (rather than vertical)
         spinP1.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
-        nameP1 = new TextField();
-        nameP1.setStyle("-fx-font-size: 14px");
-        nameP1.setPromptText("Enter players' 1 name");
+        txtP1 = new TextField();
+        txtP1.setStyle("-fx-font-size: 14px");
+        txtP1.setPromptText("Enter players' 1 name");
 
         spinP2 = new Spinner <String>();
         // Making the arrows on the spinner HORIZONTAL (rather than vertical)
         spinP2.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
-        nameP2 = new TextField();
-        nameP2.setStyle("-fx-font-size: 14px");
-        nameP2.setPromptText("Enter players' 2 name");
+        txtP2 = new TextField();
+        txtP2.setStyle("-fx-font-size: 14px");
+        txtP2.setPromptText("Enter players' 2 name");
 
         spinP3 = new Spinner <String>();
         // Making the arrows on the spinner HORIZONTAL (rather than vertical)
         spinP3.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
-        nameP3 = new TextField();
-        nameP3.setStyle("-fx-font-size: 14px");
-        nameP3.setPromptText("Enter players' 3 name");
+        txtP3 = new TextField();
+        txtP3.setStyle("-fx-font-size: 14px");
+        txtP3.setPromptText("Enter players' 3 name");
 
         spinP4 = new Spinner <String>();
         // Making the arrows on the spinner HORIZONTAL (rather than vertical)
         spinP4.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
-        nameP4 = new TextField();
-        nameP4.setStyle("-fx-font-size: 14px");
-        nameP4.setPromptText("Enter players' 4 name");
+        txtP4 = new TextField();
+        txtP4.setStyle("-fx-font-size: 14px");
+        txtP4.setPromptText("Enter players' 4 name");
 
         spinP5 = new Spinner <String>();
         // Making the arrows on the spinner HORIZONTAL (rather than vertical)
         spinP5.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
-        nameP5 = new TextField();
-        nameP5.setStyle("-fx-font-size: 14px");
-        nameP5.setPromptText("Enter players' 5 name");
+        txtP5 = new TextField();
+        txtP5.setStyle("-fx-font-size: 14px");
+        txtP5.setPromptText("Enter players' 5 name");
 
         spinP6 = new Spinner <String>();
         // Making the arrows on the spinner HORIZONTAL (rather than vertical)
         spinP6.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
-        nameP6 = new TextField();
-        nameP6.setStyle("-fx-font-size: 14px");
-        nameP6.setPromptText("Enter players' 6 name");
+        txtP6 = new TextField();
+        txtP6.setStyle("-fx-font-size: 14px");
+        txtP6.setPromptText("Enter players' 6 name");
     }
 
     /***
@@ -745,9 +919,9 @@ public class Controller implements Initializable {
         spinAI1 = new Spinner <String>();
         // Making the arrows on the spinner HORIZONTAL (rather than vertical)
         spinAI1.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
-        nameAI1 = new TextField();
-        nameAI1.setStyle("-fx-font-size: 14px");
-        nameAI1.setText(tempName);
+        txtAI1 = new TextField();
+        txtAI1.setStyle("-fx-font-size: 14px");
+        txtAI1.setText(tempName);
         // Remove the AI's name that been assigned so no duplicate name at one time
         nameAI.remove(randomIndex);
 
@@ -756,9 +930,9 @@ public class Controller implements Initializable {
         spinAI2 = new Spinner <String>();
         // Making the arrows on the spinner HORIZONTAL (rather than vertical)
         spinAI2.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
-        nameAI2 = new TextField();
-        nameAI2.setStyle("-fx-font-size: 14px");
-        nameAI2.setText(tempName);
+        txtAI2 = new TextField();
+        txtAI2.setStyle("-fx-font-size: 14px");
+        txtAI2.setText(tempName);
         nameAI.remove(randomIndex);
 
         randomIndex = rand.nextInt(nameAI.size());
@@ -766,9 +940,9 @@ public class Controller implements Initializable {
         spinAI3 = new Spinner <String>();
         // Making the arrows on the spinner HORIZONTAL (rather than vertical)
         spinAI3.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
-        nameAI3 = new TextField();
-        nameAI3.setStyle("-fx-font-size: 14px");
-        nameAI3.setText(tempName);
+        txtAI3 = new TextField();
+        txtAI3.setStyle("-fx-font-size: 14px");
+        txtAI3.setText(tempName);
         nameAI.remove(randomIndex);
 
         randomIndex = rand.nextInt(nameAI.size());
@@ -776,9 +950,9 @@ public class Controller implements Initializable {
         spinAI4 = new Spinner <String>();
         // Making the arrows on the spinner HORIZONTAL (rather than vertical)
         spinAI4.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
-        nameAI4 = new TextField();
-        nameAI4.setStyle("-fx-font-size: 14px");
-        nameAI4.setText(tempName);
+        txtAI4 = new TextField();
+        txtAI4.setStyle("-fx-font-size: 14px");
+        txtAI4.setText(tempName);
         nameAI.remove(randomIndex);
 
         randomIndex = rand.nextInt(nameAI.size());
@@ -786,9 +960,9 @@ public class Controller implements Initializable {
         spinAI5 = new Spinner <String>();
         // Making the arrows on the spinner HORIZONTAL (rather than vertical)
         spinAI5.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
-        nameAI5 = new TextField();
-        nameAI5.setStyle("-fx-font-size: 14px");
-        nameAI5.setText(tempName);
+        txtAI5 = new TextField();
+        txtAI5.setStyle("-fx-font-size: 14px");
+        txtAI5.setText(tempName);
         nameAI.remove(randomIndex);
 
         randomIndex = rand.nextInt(nameAI.size());
@@ -796,9 +970,9 @@ public class Controller implements Initializable {
         spinAI6 = new Spinner <String>();
         // Making the arrows on the spinner HORIZONTAL (rather than vertical)
         spinAI6.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
-        nameAI6 = new TextField();
-        nameAI6.setStyle("-fx-font-size: 14px");
-        nameAI6.setText(tempName);
+        txtAI6 = new TextField();
+        txtAI6.setStyle("-fx-font-size: 14px");
+        txtAI6.setText(tempName);
         nameAI.remove(randomIndex);
     }
 
