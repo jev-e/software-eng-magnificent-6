@@ -1,4 +1,9 @@
 package ClassStructure;
+
+import javafx.util.Pair;
+
+import java.time.Duration;
+import java.time.Instant;
 import java.util.*;
 /**
  * @author Ayman Bensreti, Calvin Boreham
@@ -16,6 +21,11 @@ public class Board {
     private int timeLimit = 5;
     Timer timer;
     boolean timeUp = false;
+    HashMap<String, ArrayList<Pair>> dataStore; //key : playerName value: networths at each turn in game
+    private Instant start;
+    private Instant finished;
+    public long timeElapsed;
+
 
     /**
      * Board constructor that fetches version choice from user input
@@ -32,6 +42,10 @@ public class Board {
         turns = 0;
         taxPot = 0;
         repeat =  false;
+
+        dataStore = new HashMap<>();
+
+
 
         //fetch version choice from user
         this.version = chooseVersion();
@@ -360,24 +374,31 @@ public class Board {
     }
 
     public void testLoop() {
+        start = Instant.now();
         displayAsString();
         Collections.shuffle(turnOrder);
+        for( Player p: turnOrder ){
+            System.out.println(p.getName());
+            dataStore.put(p.getName(), new ArrayList<>());
+        }
         turns = 0;
         while (turnOrder.size() > 1) {
             if (turns > 1000) {
                 break;//TODO Remove this
             }
+            turns++;
             for (int i = 0; i < turnOrder.size(); i++) {
                 Player currentPlayer = turnOrder.get(i);
                 if (currentPlayer == null) {
                     continue;//skip players that have been removed from turn order
                 } else if (currentPlayer.isInJail()) {
                     tiles.get(10).activeEffect(currentPlayer);//Activate the jail tile to serve time
+                    storeData(currentPlayer, currentPlayer.netWorth());
                     continue;//move to next turn
                 }
                 int count = 0;
+
                 do {
-                    turns++;
                     count++;
                     repeat = false;
                     if (!currentPlayer.isAiAgent()) {//get input from player
@@ -398,9 +419,17 @@ public class Board {
                             currentPlayer.leaveGame();
                             currentPlayer.unMortgage();
                             trade(currentPlayer);
+
                         }
                         currentPlayer.developProperties();
+                        if( !repeat ){
+                            storeData(currentPlayer, currentPlayer.netWorth());
+                        }
+
+
+
                     }
+
                 } while (repeat);
             }
         }
@@ -467,6 +496,7 @@ public class Board {
                         tiles.get(10).activeEffect(p);//Activate the jail tile to serve time
                     }
                 }
+
             }
             if( timeUp ){
                 System.out.println("Time limit reached");
@@ -490,9 +520,15 @@ public class Board {
      */
     private void gameOver() throws Exception {
 
+        finished = Instant.now();
+        timeElapsed = Duration.between(start, finished).toMillis();
         Player winner = null;
 
         if (version.equals("abridged") && timeUp) { //time limit up on abridged game
+            //need to sort in terms of networth
+            //copy players into arraylist
+
+
             int maxNetWorth = 0;
             for (Player player : turnOrder) {
                 if (player.netWorth() > maxNetWorth) {
@@ -500,6 +536,8 @@ public class Board {
                     winner = player;
                 }
             }
+
+
         } else if (version.equals("full") && turnOrder.size() == 1) { //full game end
             System.out.println("Game over");
             winner = turnOrder.peekFirst();
@@ -513,9 +551,16 @@ public class Board {
 
         assert winner != null;
         System.out.println(winner.getName() + " has won the game with a net worth of " + winner.netWorth());
+        storeData( winner, winner.netWorth() );
         if (winner.isAiAgent()) {
             System.out.println(winner.getPersonality());//TODO remove this, trait balancing inspection
         }
+        for( String key: dataStore.keySet() ){
+            System.out.println(dataStore.get(key).size() + " " + key + " " + dataStore.get(key).toString());
+        }
+
+
+
     }
 
     /**
@@ -688,6 +733,11 @@ public class Board {
             }
         }
         return choice;
+    }
+
+    public void storeData( Player p, int netWorth ){
+        Pair pair = new Pair( turns, netWorth);
+        dataStore.get(p.getName()).add(pair);
     }
 
 

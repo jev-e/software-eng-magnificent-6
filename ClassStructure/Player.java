@@ -813,8 +813,10 @@ public class Player {
     private void bankrupt() {
         //remove player from turnorder
         System.out.println(name + " has been removed from the game");
+
         board.turnOrder.remove(this);
         board.repeat = false;//TODO test change to prevent repeat turn after bankrupt
+
         //transfer all assets to bank ownership
         for (Object asset : assets) {
             if (asset instanceof GetOutOfJail) {

@@ -36,17 +36,6 @@
     </orderEntry>
     <orderEntry type="module-library">
       <library>
-        <CLASSES />
-        <JAVADOC />
-        <NATIVE>
-          <root url="file://$USER_HOME$/javafx-sdk-11.0.2" />
-        </NATIVE>
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="library" name="javafx-swt" level="application" />
-    <orderEntry type="module-library">
-      <library>
         <CLASSES>
           <root url="jar://$MODULE_DIR$/Jackson/jackson-annotations-2.10.0.jar!/" />
         </CLASSES>
@@ -72,5 +61,6 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="JavaFX11" level="application" />
   </component>
 </module>

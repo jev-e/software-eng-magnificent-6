@@ -1,6 +1,5 @@
 package ClassStructure;
 
-import java.util.List;
 import java.util.Random;
 
 public class Trait {
@@ -12,9 +11,9 @@ public class Trait {
     private boolean cautious;//spending proportional to money owned | always chooses to pay over draw
     private boolean investor;//develops properties whenever possible
     private boolean twoSetAffinity;//will always purchase Brown and Deep Blue properties
-    private Group plannerGroupA = null;//groups for planner to keep track of
-    private Group plannerGroupB = null;
-    private Group plannerGroupC = null;
+    private Group plannerPropertyGroupA = null;//groups for planner to keep track of
+    private Group plannerPropertyGroupB = null;
+    private Group plannerPropertyGroupC = null;
 
     /**
      * Randomly generates traits for AI agent
@@ -119,27 +118,27 @@ public class Trait {
     }
 
     public Group getGroupA() {
-        return plannerGroupA;
+        return plannerPropertyGroupA;
     }
 
-    public void setGroupA(Group group) {
-        plannerGroupA = group;
+    public void setGroupA(Group propertyGroup) {
+        plannerPropertyGroupA = propertyGroup;
     }
 
     public Group getGroupB() {
-        return plannerGroupB;
+        return plannerPropertyGroupB;
     }
 
-    public void setGroupB(Group group) {
-        plannerGroupB = group;
+    public void setGroupB(Group propertyGroup) {
+        plannerPropertyGroupB = propertyGroup;
     }
 
     public Group getGroupC() {
-        return plannerGroupC;
+        return plannerPropertyGroupC;
     }
 
-    public void setGroupC(Group group) {
-        plannerGroupC = group;
+    public void setGroupC(Group propertyGroup) {
+        plannerPropertyGroupC = propertyGroup;
     }
 
     public void setPatient(boolean patient) {
