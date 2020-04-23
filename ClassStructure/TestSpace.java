@@ -54,12 +54,14 @@ public class TestSpace {
         order.add(callum);
         order.add(tom);
 
+
         try {
             b.testLoop();
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("An error occurred in game execution");
         }
+
     }
 }
 

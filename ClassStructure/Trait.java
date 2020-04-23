@@ -55,6 +55,7 @@ public class Trait {
         //maintain mutually exclusive traits
         if (wildCard) {
             cautious = false;//cannot be wild and cautious
+            planner = false;
         } else if (cautious) {
             wildCard = false;//cannot be wild and cautious
             investor = false;//cannot obey cautious strategy and investor
@@ -62,6 +63,7 @@ public class Trait {
             cautious = false;//cannot obey cautious strategy and investor
         } else if (planner) {
             twoSetAffinity = false;//cannot prefer brown and deep blue and be a planner
+            wildCard = false;
         } else if (twoSetAffinity) {
             planner = false;//
         }

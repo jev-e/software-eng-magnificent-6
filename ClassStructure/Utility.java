@@ -87,8 +87,12 @@ public class Utility extends TileEffect {
                 //ask if want to purchase
                 String question = bidder.getName() + ", do you want to make a bid (yes/no)?";
                 if (bidder.isAiAgent()) {
-                    wishToBid = false;//TODO temp for testing to be removed
-                    System.out.println("no");
+                    bid = bidder.auctionDecide(this, highestBid);
+                    if (bid > highestBid) {//if agent does not wish to bid, bid = 0
+                        highestBid = bid;
+                        highestBidder = bidder;
+                    }
+                    System.out.println(bidder.getName() + " bids:£" + bid);
                 } else {
                     wishToBid = yesNoInput(question);
                 }

@@ -107,7 +107,6 @@ public class Property extends BoardTile{
 
     /**
      * Function to sell houses and hotels on a property.
-     * //TODO change to sell houses or hotels evenly across properties in the set
      *
      * @return Either the cost of the building or 0 if their is no buildings to sell.
      */
@@ -198,8 +197,12 @@ public class Property extends BoardTile{
                 //ask if want to purchase
                 String question = bidder.getName() + ", do you want to make a bid (yes/no)?";
                 if (bidder.isAiAgent()) {
-                    wishToBid = false;//TODO temp for testing to be removed
-                    System.out.println("no");
+                    bid = bidder.auctionDecide(this, highestBid);
+                    if (bid > highestBid) {//if agent does not wish to bid, bid = 0
+                        highestBid = bid;
+                        highestBidder = bidder;
+                    }
+                    System.out.println(bidder.getName() + " bids:£" + bid);
                 } else {
                     wishToBid = yesNoInput(question);
                 }
@@ -391,8 +394,8 @@ public class Property extends BoardTile{
 
     public boolean canBuyHouse() {
         int desiredCount = housesNo + 1;//user wants to add one more house
-        if (desiredCount > 4) {
-            return false;//House limit reached
+        if (desiredCount > 4 || !(isCompletedSet())) {
+            return false;//House limit reached or property cant be developed on
         } else {
             LinkedList<Property> setMembers = new LinkedList<>();
             LinkedList<Integer> houseCounts = new LinkedList<>();
@@ -423,7 +426,7 @@ public class Property extends BoardTile{
 
     public boolean canBuyHotel() {
         int desiredCount = 4;//user wants to exchange 4 houses for a hotel
-        if (housesNo != 4 || hotelNo == 1) {
+        if (housesNo != 4 || hotelNo == 1 || !(isCompletedSet())) {
             return false;//Not enough houses ore hotel already built
         } else {
             LinkedList<Property> setMembers = new LinkedList<>();

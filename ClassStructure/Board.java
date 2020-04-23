@@ -360,13 +360,11 @@ public class Board {
     }
 
     public void testLoop() {
+        int retirePoint = 300;
         displayAsString();
         Collections.shuffle(turnOrder);
         turns = 0;
         while (turnOrder.size() > 1) {
-            if (turns > 1000) {
-                break;//TODO Remove this
-            }
             for (int i = 0; i < turnOrder.size(); i++) {
                 Player currentPlayer = turnOrder.get(i);
                 if (currentPlayer == null) {
@@ -398,6 +396,12 @@ public class Board {
                             currentPlayer.leaveGame();
                             currentPlayer.unMortgage();
                             trade(currentPlayer);
+                        } else {
+                            currentPlayer.initiateTrade();
+                            if (turns > retirePoint && turnOrder.size() > 4) {
+                                retirePoint += 100;
+                                currentPlayer.agentRetire();
+                            }
                         }
                         currentPlayer.developProperties();
                     }
@@ -420,7 +424,6 @@ public class Board {
         displayAsString();
         //Player pool for use in end game screen to be removed
         Collections.shuffle(turnOrder);//randomises the player turn order
-        LinkedList<Player> playerPool = (LinkedList<Player>) turnOrder.clone();
 
         while (turnOrder.size() != 1) {
             for (Player p : turnOrder) {
@@ -503,6 +506,7 @@ public class Board {
         } else if (version.equals("full") && turnOrder.size() == 1) { //full game end
             System.out.println("Game over");
             winner = turnOrder.peekFirst();
+            System.out.println("Turns : " + turns);
         } else if (version.equals("abridged") && turnOrder.size() == 1) { //abridged game ended like a full game
             System.out.println("Game over before time limit reached");
             winner = turnOrder.peekFirst();
@@ -513,9 +517,6 @@ public class Board {
 
         assert winner != null;
         System.out.println(winner.getName() + " has won the game with a net worth of " + winner.netWorth());
-        if (winner.isAiAgent()) {
-            System.out.println(winner.getPersonality());//TODO remove this, trait balancing inspection
-        }
     }
 
     /**

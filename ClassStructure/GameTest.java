@@ -480,29 +480,41 @@ class GameTest {
 
     /**
      * Test of trade function, insures maintains complete set flags
-     * current bug with ownership
-     * Test to be complete after user input redesign
-     *
      * @throws IOException file error
      */
     @Test
     public void tradeTest() throws IOException {
-//        jsonDataBoard();//read data
-//        String input = "yes" + System.getProperty("line.separator") + "Danny" + System.getProperty("line.separator");
-//        Player firstPlayer = board.turnOrder.getFirst();//get player
-//        Player secondPlayer = board.turnOrder.get(1);//get second player
-//        ((Property)board.tiles.get(1)).setOwner(firstPlayer);
-//        firstPlayer.addAsset(board.tiles.get(1));
-//        ((Property)board.tiles.get(3)).setOwner(secondPlayer);
-//        secondPlayer.addAsset(board.tiles.get(3));
-//        System.setIn(new ByteArrayInputStream(input.getBytes()));
-//        board.trade(firstPlayer);
+        jsonDataBoard();//read data
+        Player firstPlayer = board.turnOrder.get(0);
+        Player secondPlayer = board.turnOrder.get(1);
+        firstPlayer.setAiAgent(true);
+        secondPlayer.setAiAgent(true);
+        firstPlayer.getPersonality().setTrainAffinity(true);//likes trains
+        firstPlayer.getPersonality().setTwoSetAffinity(false);//doesn't prefer brown and deep blue tiles
+        firstPlayer.getPersonality().setPlanner(false);
+        firstPlayer.getPersonality().setWildCard(false);
+        secondPlayer.getPersonality().setTwoSetAffinity(true);//reverse of other player
+        secondPlayer.getPersonality().setTrainAffinity(false);
+        secondPlayer.getPersonality().setPlanner(false);
+        secondPlayer.getPersonality().setWildCard(false);
+        Property crapper = (Property) board.tiles.get(1);
+        Station falmer = (Station) board.tiles.get(25);
+        firstPlayer.addAsset(crapper);
+        secondPlayer.addAsset(falmer);
+        firstPlayer.initiateTrade();
+        assertTrue(falmer.getOwner() == firstPlayer);
+        assertTrue(crapper.getOwner() == secondPlayer);
+        Property angel = (Property) board.tiles.get(6);
+        Property potts = (Property) board.tiles.get(9);
+        Property gangsters = (Property) board.tiles.get(3);
+        firstPlayer.addAsset(angel);
+        secondPlayer.addAsset(potts);
+        firstPlayer.addAsset(gangsters);
+        firstPlayer.initiateTrade();
     }
 
     /**
      * Test of auction asset handling and logic
-     * To be tested after user  input redesign
-     *
      * @throws IOException
      */
     @Test
@@ -545,11 +557,38 @@ class GameTest {
         assertEquals(1, ((Property) board.tiles.get(1)).getHotelNo());
     }
 
+    /**
+     * @throws IOException
+     */
+    @Test
+    public void agentBuildingSellingTest() throws IOException {
+        jsonDataBoard();
+        Player currentPlayer = board.turnOrder.getFirst();
+        currentPlayer.setAiAgent(true);
+        currentPlayer.getPersonality().setInvestor(true);
+        currentPlayer.addAsset(tileSet.get(6));//weeping
+        currentPlayer.addAsset(tileSet.get(8));//potts
+        currentPlayer.addAsset(tileSet.get(9));//Nardole
+        currentPlayer.completeSetProperties();
+        currentPlayer.agentDevelopProperties();
+        ((Property) tileSet.get(9)).sellHouseOrHotel();
+        assertTrue(((Property) tileSet.get(9)).isDeveloped());
+        ((Property) tileSet.get(9)).sellHouseOrHotel();
+        ((Property) tileSet.get(9)).sellHouseOrHotel();
+        ((Property) tileSet.get(9)).sellHouseOrHotel();
+        ((Property) tileSet.get(9)).sellHouseOrHotel();
+        assertFalse(((Property) tileSet.get(9)).isDeveloped());
+        System.out.println(currentPlayer.netWorth());
+    }
+
+    /**
+     * @throws IOException
+     */
     @Test
     public void agentPurchaseTest() throws IOException {
         jsonDataBoard();
         Player player = board.turnOrder.peekFirst();
-        player.setAiAgent(true);//player is not AI
+        player.setAiAgent(true);//player is now AI
         player.setCurrentPos(39);
         player.setCurrentPos(1);
         player.passGo();//check to switch canPurchase true
@@ -606,6 +645,11 @@ class GameTest {
         }
     }
 
+    /**
+     * basic asset selling
+     *
+     * @throws IOException
+     */
     @Test
     public void agentAssetSelling() throws IOException {
         jsonDataBoard();
@@ -631,5 +675,30 @@ class GameTest {
                 assertFalse(((Property) item).isCompletedSet());
             }
         }
+    }
+
+    /**
+     * Testing the case where agent has multiple developed properties
+     *
+     * @throws IOException
+     */
+    @Test
+    public void assetSellingManyDeveloped() throws IOException {
+        jsonDataBoard();
+        Player currentPlayer = board.turnOrder.getFirst();
+        currentPlayer.setMoney(2300);
+        currentPlayer.setAiAgent(true);
+        currentPlayer.getPersonality().setInvestor(true);
+        currentPlayer.addAsset(tileSet.get(1));//crapper
+        currentPlayer.addAsset(tileSet.get(6));//weeping
+        currentPlayer.addAsset(tileSet.get(8));//potts
+        currentPlayer.addAsset(tileSet.get(9));//Nardole
+        currentPlayer.addAsset(tileSet.get(16));//cooper
+        currentPlayer.addAsset(tileSet.get(18));//wolowitz
+        currentPlayer.addAsset(tileSet.get(19));//penny
+        currentPlayer.completeSetProperties();
+        currentPlayer.agentDevelopProperties();
+        System.out.println(currentPlayer.netWorth());
+        currentPlayer.deductAmount(3100);
     }
 }

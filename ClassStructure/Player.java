@@ -818,14 +818,16 @@ public class Player {
             if (asset instanceof GetOutOfJail) {
                 ((GetOutOfJail) asset).returnCard();
             } else if (asset instanceof Property) {
+                ((Property) asset).setCompletedSet(false);
+                ((Property) asset).setDeveloped(false);
+                ((Property) asset).setHotelNo(0);
+                ((Property) asset).setHousesNo(0);
+                ((Property) asset).updateRent();
                 ((Property) asset).setOwner(null);
-                System.out.print(((Property) asset).title + " ");
             } else if (asset instanceof Station) {
                 ((Station) asset).setOwner(null);
-                System.out.print(((Station) asset).title + " ");
             } else if (asset instanceof Utility) {
                 ((Utility) asset).setOwner(null);
-                System.out.print(((Utility) asset).title + " ");
             }
         }
         System.out.println();
@@ -1198,6 +1200,11 @@ public class Player {
      For jail decisions see jail method
      */
 
+    /**
+     * Gets the traits of an AI for testing purposes potential to add traits that update during the game
+     *
+     * @return Trait object Agents personality setup
+     */
     public Trait getPersonality() {
         return personality;
     }
@@ -1229,28 +1236,28 @@ public class Player {
      * @return true|false buy|do not buy
      */
     public boolean decide(Property property) {
+        Group propGroup = property.getGroup();
         if (money < property.getCost()) {
             return false;//AI cannot afford the property
-        } else if (money > 3000) {//TODO tune this value, requires testing
-            return true;//player has a lot of assets always buy
+        } else if (money > 1000) {//TODO tune this value, requires testing
+            return true;//player has a lot of money always buy
         } else if (personality.hasTwoSetAffinity()) {
 
-            if (property.getGroup() == Group.BROWN || property.getGroup() == Group.DEEP_BLUE) {
+            if (propGroup == Group.BROWN || propGroup == Group.DEEP_BLUE) {
                 return true;//buy this property AI has affinity for it
             }
         } else if (personality.isPlanner()) {
             if (personality.getGroupA() == null) {
-                personality.setGroupA(property.getGroup());//assign purchased property group to one of groups to track
+                personality.setGroupA(propGroup);//assign purchased property group to one of groups to track
                 return true; //purchase property
             } else if (personality.getGroupB() == null) {
-                personality.setGroupB(property.getGroup());//assign purchased property group to one of groups to track
+                personality.setGroupB(propGroup);//assign purchased property group to one of groups to track
                 return true; //purchase property
 
             } else if (personality.getGroupC() == null) {
-                personality.setGroupC(property.getGroup());//assign purchased property group to one of groups to track
+                personality.setGroupC(propGroup);//assign purchased property group to one of groups to track
                 return true; //purchase property
             } else {
-                Group propGroup = property.getGroup();
                 if (propGroup == personality.getGroupA() || propGroup == personality.getGroupB() || propGroup == personality.getGroupC()) {
                     return true;//property is a member of AIs plan groups so buy tile
                 }
@@ -1263,7 +1270,7 @@ public class Player {
             } else {
                 return false;
             }
-        } else {
+        } else {//no driving trait
             return true;//player has money buy
         }
         return false;
@@ -1278,6 +1285,8 @@ public class Player {
     public boolean decide(Station station) {
         if (money < station.getCost()) {
             return false;//cannot afford tile
+        } else if (money > 1000) {//TODO tune this value, requires testing
+            return true;//player has a lot of money always buy
         } else if (personality.hasTrainAffinity()) {
             return true;//player has affinity for stations
         } else if (personality.isCautious()) {
@@ -1293,6 +1302,19 @@ public class Player {
         }
     }
 
+    //TODO remove this once bug is no longer seen
+    public void bugCheck() {
+        for (Object item : assets) {
+            if (item instanceof Property) {
+                if (!(((Property) item).isCompletedSet()) && ((Property) item).isDeveloped()) {
+                    System.out.println("Bugged asset " + ((Property) item).getTitle());
+                    System.out.println("Owner:" + ((Property) item).getOwner().getName());
+                    System.exit(44);//development error
+                }
+            }
+        }
+    }
+
     /**
      * AI purchase decision on train stations
      *
@@ -1302,6 +1324,8 @@ public class Player {
     public boolean decide(Utility utility) {
         if (money < utility.getCost()) {
             return false;//cannot afford tile
+        } else if (money > 1000) {//TODO tune this value, requires testing
+            return true;//player has a lot of money always buy
         } else if (personality.hasUtilityAffinity()) {
             return true;//player has affinity for utilities
         } else if (personality.isCautious()) {
@@ -1318,14 +1342,246 @@ public class Player {
     }
 
     /**
-     * Trade decision making
+     * Creates a list of all assets owned by other players that are can be traded
      *
-     * @param give    what the AI will give
-     * @param receive what the AI will receive
+     * @return object list of (Station|Utility|Property)*
+     */
+    public LinkedList<Object> ownedAssets() {
+        LinkedList<Object> owned = new LinkedList<>();
+        for (Player p : board.turnOrder) {
+            if (p != this) {//ignore this agent
+                for (Object item : p.getAssets()) {
+                    if (item instanceof Property) {
+                        if (!(((Property) item).isCompletedSet())) {//do not include complete set items
+                            owned.add(item);
+                        }
+                    } else if (item instanceof Station) {
+                        owned.add(item);
+                    } else if (item instanceof Utility) {
+                        owned.add(item);
+                    }
+                }
+            }
+        }
+        return owned;
+    }
+
+    /**
+     * Create a list of each asset the agent wants that other players own
+     *
+     * @return item list (Station|Utility|Property) owned assets
+     */
+    public LinkedList<Object> wantedItems() {
+        LinkedList<Object> wanted = new LinkedList<>();
+        for (Object item : ownedAssets()) {//for each item owned by another player
+            if (item instanceof Property) {
+                Group itemGroup = ((Property) item).getGroup();
+                if (personality.hasTwoSetAffinity()) {
+                    if (itemGroup == Group.BROWN || itemGroup == Group.DEEP_BLUE) {
+                        wanted.add(item);
+                    }
+                } else if (personality.isPlanner()) {
+                    if (itemGroup == personality.getGroupA() || itemGroup == personality.getGroupB() || itemGroup == personality.getGroupC()) {
+                        wanted.add(item);
+                    }
+                } else if (hasGroupMember(itemGroup)) {
+                    wanted.add(item);
+                }
+            } else if (item instanceof Station) {
+                if (personality.hasTrainAffinity()) {
+                    wanted.add(item);
+                }
+            } else if (item instanceof Utility) {
+                if (personality.hasUtilityAffinity()) {
+                    wanted.add(item);
+                }
+            }
+        }
+        return wanted;
+    }
+
+    public void initiateTrade() {
+        LinkedList<Object> offerItems = willTrade();//items agent is willing to trade
+        LinkedList<Object> desiredItems = wantedItems();//items agent wants that another player owns
+        //if agent has items it is willing to trade
+        if (offerItems.size() > 0 && desiredItems.size() > 0) {
+            Collections.shuffle(offerItems);//randomise offer and desired order and pick first in each
+            Collections.shuffle(desiredItems);
+            LinkedList<Object> give = new LinkedList<>();
+            LinkedList<Object> take = new LinkedList<>();
+            Object desiredItem = desiredItems.removeFirst();
+            give.add(offerItems.removeFirst());
+            take.add(desiredItem);
+            Player tradeTarget = null;
+            if (desiredItem instanceof Property) {
+                tradeTarget = ((Property) desiredItem).getOwner();
+            } else if (desiredItem instanceof Station) {
+                tradeTarget = ((Station) desiredItem).getOwner();
+            } else if (desiredItem instanceof Utility) {
+                tradeTarget = ((Utility) desiredItem).getOwner();
+            }
+            //AI agents only offer trades to other AIs
+            if (tradeTarget.isAiAgent()) {
+                if (tradeTarget.decide(take, give)) {
+                    Object get = take.getFirst();
+                    Object lose = give.getFirst();
+                    tradeTarget.removeAsset(get);//remove asset from target player
+                    addAsset(get);//get the desired item
+                    removeAsset(lose);//remove item from lost
+                    tradeTarget.addAsset(lose);//give item in return
+                    System.out.println(name + " traded " + ((BoardTile) get).getTitle() + " for " + ((BoardTile) lose).getTitle() + " with " + tradeTarget.getName());
+                    completeSetProperties();
+                    tradeTarget.completeSetProperties();
+                }
+            }
+        }
+    }
+
+    /**
+     * List of assets that the AI agent is willing to part with
+     *
+     * @return assets that agent will trade (Station|Utility|Property)*
+     */
+    public LinkedList<Object> willTrade() {
+        LinkedList<Object> tradeAssets = new LinkedList<>();
+        for (Object item : assets) {
+            if (item instanceof Property) {
+                Group itemGroup = ((Property) item).getGroup();
+                if (!(((Property) item).isCompletedSet())) {//do not add complete set properties
+                    if (personality.hasTwoSetAffinity()) {
+                        if (itemGroup == Group.BROWN || itemGroup == Group.DEEP_BLUE) {
+                            continue;//has affinity skip property
+                        }
+                    } else if (personality.isPlanner()) {
+                        if (itemGroup == personality.getGroupA() || itemGroup == personality.getGroupB() || itemGroup == personality.getGroupC()) {
+                            continue;//has affinity skip property
+                        }
+                    }
+                    tradeAssets.add(item);//Has no affinity add property
+                }
+            } else if (item instanceof Station) {
+                if (!(personality.hasTrainAffinity())) {
+                    tradeAssets.add(item);//no affinity for stations add to list
+                }
+            } else if (item instanceof Utility) {
+                if (!(personality.hasUtilityAffinity())) {
+                    tradeAssets.add(item);//no affinity for Utilities add to list
+                }
+            }//else item is a card ignore it
+        }
+        return tradeAssets;
+    }
+
+    public boolean hasGroupMember(Group g) {
+        for (Object item : assets) {
+            if (item instanceof Property) {
+                if (((Property) item).getGroup() == g) {
+                    return true;//player has property of group g
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Trade decision making
+     * Agent will only accept 1 item for 1 item trades
+     * Agent will only accept items that they have an affinity
+     * if Agent is wild card they will accept trades Chaotically given trade no other trait interaction has occurred
+     *
+     * @param give    what the AI will give to player
+     * @param receive what the AI will receive get from player
      * @return true|false accept|decline
      */
     public boolean decide(LinkedList<Object> give, LinkedList<Object> receive) {
-        return false;//TODO currently rejects all trades
+        if (give.size() != 1 || receive.size() != 1) {
+            return false;//only accepts 1 for 1 trades
+        }
+        Object lose = give.getFirst();//1 for 1 trade valid set these objects
+        Object get = receive.getFirst();
+        if (!willTrade().contains(lose)) {//if lose is not an item agent is willing to trade
+            return false;
+        } else if (get instanceof Property) {
+            Group getGroup = ((Property) get).getGroup();
+            if (lose instanceof Property && ((Property) lose).getGroup() == getGroup) {
+                return false;//no point swapping tiles of same group
+            }
+            if (personality.hasTwoSetAffinity()) {
+                if (getGroup == Group.BROWN || getGroup == Group.DEEP_BLUE) {
+                    return true;//Agent has affinity for item
+                }
+            } else if (personality.isPlanner()) {
+                if (getGroup == personality.getGroupA() || getGroup == personality.getGroupB() || getGroup == personality.getGroupC()) {
+                    return true;//Agent has planned to collect properties of this group
+                }
+            } else {
+                if (hasGroupMember(getGroup)) {
+                    return true;//player has one or more of these Properties
+                }
+            }
+        } else if (get instanceof Station) {
+            if (personality.hasTrainAffinity()) {
+                return true;//Agent has affinity for item
+            }
+        } else if (get instanceof Utility) {
+            if (personality.hasUtilityAffinity()) {
+                return true;//Agent has affinity for item
+            }
+        }
+        if (personality.isWildCard()) {
+            if (ThreadLocalRandom.current().nextDouble(0, 1) > 0.5) {//coin flip for remaining personalities
+                return true;
+            } else {
+                return false;
+            }
+        }
+        return true; //default
+    }
+
+    /**
+     * Decision to bid on an item in auction
+     *
+     * @param item       Property|Utility|Station that is up for auction
+     * @param highestBid The current highest bid to help the agent decide if they want to out bid
+     * @return The amount the agent is bidding, 0 indicates no bid
+     */
+    public int auctionDecide(Object item, int highestBid) {
+        if (highestBid + 50 > money) {
+            return 0;//Agent does not have enough to out bid
+        } else if (item instanceof Station) {
+            if (personality.hasTrainAffinity()) {//check for train affinity
+                return highestBid + 50;//place bid for item
+            }
+        } else if (item instanceof Utility) {
+            if (personality.hasUtilityAffinity()) {//check for utility affinity
+                return highestBid + 50;
+            }
+        } else if (item instanceof Property) {
+            Group itemGroup = ((Property) item).getGroup();
+            if (personality.hasTwoSetAffinity()) {//Check for property preference
+                if (itemGroup == Group.BROWN || itemGroup == Group.DEEP_BLUE) {
+                    return highestBid + 50;
+                }
+            } else if (personality.isPlanner()) {
+                if (itemGroup == personality.getGroupA() || itemGroup == personality.getGroupA() || itemGroup == personality.getGroupA()) {
+                    return highestBid + 50;
+                }
+            } else if (personality.isCautious()) {
+                if (cautiousWillBuy(highestBid + 50)) {//cost judgement based on current money
+                    return highestBid + 50;
+                }
+            } else if (personality.isWildCard()) {
+                if (ThreadLocalRandom.current().nextDouble(0, 1) > 0.5) {//coin flip
+                    return highestBid + 50;
+                }
+            } else {//No driving trait
+                if (money > 1000) {//always bid if money is high
+                    return highestBid + 50;
+                }
+            }
+
+        }
+        return 0; //No bid was made
     }
 
     /**
@@ -1351,11 +1607,13 @@ public class Player {
     /**
      * AI development decision
      *
-     * @return
+     * @return true|false develop|don't develop
      */
     public boolean decideDevelop() {
         if (personality.isInvestor()) {
             return true;//investors will always attempt to develop
+        } else if (money > 1500) {//TODO tune this value, requires testing
+            return true;//player has a lot of money develop
         } else if (personality.isCautious()) {
             return cautiousWillBuy(125);//cost verses net worth using average building cost
         } else {
@@ -1375,10 +1633,12 @@ public class Player {
         for (Object item : assets) {
             if (item instanceof Property) {
                 if (((Property) item).isCompletedSet() && ((Property) item).getHotelNo() != 1) {
+                    System.out.print("|" + ((Property) item).title + "|");
                     properties.add((Property) item);//add development ready tiles
                 }
             }
         }
+        System.out.println();
         boolean loop;
         if (personality.isInvestor()) {
             loop = true;
@@ -1424,6 +1684,7 @@ public class Player {
                 }
             }
         }
+        bugCheck();
     }
 
     /**
@@ -1455,8 +1716,18 @@ public class Player {
         }
     }
 
+    public boolean hasDeveloped(Group g) {
+        for (Object item : assets) {
+            if (item instanceof Property && ((Property) item).getGroup() == g) {
+                if (((Property) item).isDeveloped()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     /**
-     * //TODO add priority order based on traits
      * Sell a single item to raise funds
      *
      * @return amount raised from sale
@@ -1465,32 +1736,35 @@ public class Player {
         //Sell utilities
         for (Object item : assets) {
             if (item instanceof Utility) {
+                System.out.println(((Utility) item).getTitle() + " sold");
                 return ((Utility) item).sellUtility();
             }
         }
         //sell stations
         for (Object item : assets) {
             if (item instanceof Station) {
+                System.out.println(((Station) item).getTitle() + " sold");
                 return ((Station) item).sellStation();
             }
         }
         //sell non set properties
         for (Object item : assets) {
             if (item instanceof Property) {
-                if (!((Property) item).isCompletedSet()) {
-                    if (((Property) item).getOwner() == null) {
-                        System.out.println(((Property) item).title);
-                    }
-                    return ((Property) item).sellProperty();
+                if (!(((Property) item).isCompletedSet())) {
+                    int propertyAmount = ((Property) item).sellProperty();
+                    completeSetProperties();
+                    System.out.println(((Property) item).getTitle() + " sold");
+                    return propertyAmount;
                 }
             }
         }
         //sell buildings
         for (Object item : assets) {
-            if (item instanceof Property) {
+            if (item instanceof Property && hasDeveloped(((Property) item).getGroup())) {
                 if (((Property) item).isCompletedSet()) {
                     int buildingSaleAmount = agentSellBuilding(((Property) item).getGroup());//try to sell building
                     if (buildingSaleAmount != 0) {
+                        System.out.println("building sold");
                         return buildingSaleAmount;//building sold return amount
                     }
                 }
@@ -1499,9 +1773,10 @@ public class Player {
         //sell set properties
         for (Object item : assets) {
             if (item instanceof Property) {
-                if (((Property) item).isCompletedSet()) {
+                if (((Property) item).isCompletedSet() && !(((Property) item).isDeveloped())) {
                     int propertyAmount = ((Property) item).sellProperty();//sell property
                     completeSetProperties();
+                    System.out.println(((Property) item).getTitle() + " sold");
                     return propertyAmount;
                 }
             }
@@ -1509,28 +1784,48 @@ public class Player {
         return 0;//Could not sell item
     }
 
+    /**
+     * Asset Selling loop for agent
+     * Sells items one at a time until funds have been raised
+     *
+     * @param amount amount to be raised
+     */
     public void agentSellAssets(int amount) {
-        System.out.println("Raise £" + amount + " funds");
         int amountRaised = 0;//amount from selling assets
         int count = 0;
         while (amountRaised < amount) {
             count++;
             amountRaised += agentSellItem();
-            if (count > 200) {//TODO remove after asset selling bug found
+            if (count > 500) {//TODO remove after asset selling bug found
                 for (Object item : assets) {
                     if (item instanceof Property) {
                         System.out.println(((Property) item).getTitle());
+                        System.out.println("is developed:" + ((Property) item).isDeveloped());
+                        System.out.println("is complete:" + ((Property) item).isCompletedSet());
+                        System.out.println("Houses:" + ((Property) item).getHousesNo());
+                        System.out.println("Hotels:" + ((Property) item).getHotelNo());
+                        System.out.println("Owner: " + ((Property) item).getOwner().getName());
                     } else if (item instanceof Station) {
                         System.out.println(((Station) item).getTitle());
                     } else if (item instanceof Utility) {
                         System.out.println(((Utility) item).getTitle());
                     }
                 }
+                System.out.println(name + " net worth " + netWorth());
                 System.exit(10);//Asset selling issue
             }
         }
         payPlayerAmount(amountRaised);//give AI agent amount raised
         completeSetProperties();
         System.out.println("Amount raised £" + amountRaised);
+    }
+
+    public void agentRetire() {
+        for (Player p : board.turnOrder) {
+            if (!p.isAiAgent()) {
+                return;//Only allow agents to retire if this is an AI game
+            }
+        }
+        bankrupt();//Ai agent leaves game
     }
 }
