@@ -525,10 +525,6 @@ public class Board {
         Player winner = null;
 
         if (version.equals("abridged") && timeUp) { //time limit up on abridged game
-            //need to sort in terms of networth
-            //copy players into arraylist
-
-
             int maxNetWorth = 0;
             for (Player player : turnOrder) {
                 if (player.netWorth() > maxNetWorth) {
