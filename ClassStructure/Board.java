@@ -374,6 +374,7 @@ public class Board {
     }
 
     public void testLoop() {
+        int retirePoint = 300;
         start = Instant.now();
         displayAsString();
         Collections.shuffle(turnOrder);
@@ -383,9 +384,6 @@ public class Board {
         }
         turns = 0;
         while (turnOrder.size() > 1) {
-            if (turns > 1000) {
-                break;//TODO Remove this
-            }
             turns++;
             for (int i = 0; i < turnOrder.size(); i++) {
                 Player currentPlayer = turnOrder.get(i);
@@ -402,7 +400,7 @@ public class Board {
                     count++;
                     repeat = false;
                     if (!currentPlayer.isAiAgent()) {//get input from player
-                        try {
+                        try {//TODO remove this for GUI loop
                             System.in.read();
                         } catch (Exception e) {
                             System.out.println("Error in press next");
@@ -420,17 +418,25 @@ public class Board {
                             currentPlayer.unMortgage();
                             trade(currentPlayer);
 
+                        } else {
+                            currentPlayer.initiateTrade();
+                            if (turns > retirePoint && turnOrder.size() > 4) {
+                                retirePoint += 100;
+                                currentPlayer.agentRetire();
+                            }
                         }
                         currentPlayer.developProperties();
-                        if( !repeat ){
+                        if (!repeat) {
                             storeData(currentPlayer, currentPlayer.netWorth());
                         }
-
-
-
                     }
 
                 } while (repeat);
+            }
+            if (timeUp) {
+                System.out.println("Time limit reached");
+                System.out.println(version);
+                break;
             }
         }
         try {

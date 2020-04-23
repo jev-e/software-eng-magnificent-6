@@ -1,5 +1,6 @@
 package ClassStructure;
 
+import java.util.List;
 import java.util.Random;
 
 public class Trait {
@@ -11,9 +12,9 @@ public class Trait {
     private boolean cautious;//spending proportional to money owned | always chooses to pay over draw
     private boolean investor;//develops properties whenever possible
     private boolean twoSetAffinity;//will always purchase Brown and Deep Blue properties
-    private Group plannerPropertyGroupA = null;//groups for planner to keep track of
-    private Group plannerPropertyGroupB = null;
-    private Group plannerPropertyGroupC = null;
+    private Group plannerGroupA = null;//groups for planner to keep track of
+    private Group plannerGroupB = null;
+    private Group plannerGroupC = null;
 
     /**
      * Randomly generates traits for AI agent
@@ -54,6 +55,7 @@ public class Trait {
         //maintain mutually exclusive traits
         if (wildCard) {
             cautious = false;//cannot be wild and cautious
+            planner = false;
         } else if (cautious) {
             wildCard = false;//cannot be wild and cautious
             investor = false;//cannot obey cautious strategy and investor
@@ -61,6 +63,7 @@ public class Trait {
             cautious = false;//cannot obey cautious strategy and investor
         } else if (planner) {
             twoSetAffinity = false;//cannot prefer brown and deep blue and be a planner
+            wildCard = false;
         } else if (twoSetAffinity) {
             planner = false;//
         }
@@ -118,27 +121,27 @@ public class Trait {
     }
 
     public Group getGroupA() {
-        return plannerPropertyGroupA;
+        return plannerGroupA;
     }
 
-    public void setGroupA(Group propertyGroup) {
-        plannerPropertyGroupA = propertyGroup;
+    public void setGroupA(Group group) {
+        plannerGroupA = group;
     }
 
     public Group getGroupB() {
-        return plannerPropertyGroupB;
+        return plannerGroupB;
     }
 
-    public void setGroupB(Group propertyGroup) {
-        plannerPropertyGroupB = propertyGroup;
+    public void setGroupB(Group group) {
+        plannerGroupB = group;
     }
 
     public Group getGroupC() {
-        return plannerPropertyGroupC;
+        return plannerGroupC;
     }
 
-    public void setGroupC(Group propertyGroup) {
-        plannerPropertyGroupC = propertyGroup;
+    public void setGroupC(Group group) {
+        plannerGroupC = group;
     }
 
     public void setPatient(boolean patient) {
