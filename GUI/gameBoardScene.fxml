@@ -5,6 +5,7 @@
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Spinner?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -255,7 +256,7 @@
                               </ImageView>
                            </left>
                         </BorderPane>
-                        <BorderPane fx:id="turnEnd" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: mediumaquamarine; -fx-border-radius: 20; -fx-background-radius: 20; -fx-border-color: black; -fx-border-width: 5;" styleClass="boxes" visible="false">
+                        <BorderPane fx:id="turnEnd" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: mediumaquamarine; -fx-border-radius: 20; -fx-background-radius: 20; -fx-border-color: black; -fx-border-width: 5;" styleClass="boxes">
                            <center>
                               <Label text="Next turn: next Player" textFill="WHITE" BorderPane.alignment="CENTER">
                                  <font>
@@ -364,7 +365,7 @@
                               </VBox>
                            </center>
                         </BorderPane>
-                        <BorderPane fx:id="sellProp" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: mediumaquamarine; -fx-border-radius: 20; -fx-background-radius: 20; -fx-border-color: black; -fx-border-width: 5;" styleClass="boxes" visible="false">
+                        <BorderPane fx:id="sellProp" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: mediumaquamarine; -fx-border-radius: 20; -fx-background-radius: 20; -fx-border-color: black; -fx-border-width: 5;" styleClass="boxes">
                            <bottom>
                               <HBox fx:id="sellProp" alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="30.0" BorderPane.alignment="CENTER">
                                  <children>
@@ -387,7 +388,7 @@
                               </ListView>
                            </center>
                         </BorderPane>
-                        <BorderPane fx:id="mortgageProp" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: mediumaquamarine; -fx-border-radius: 20; -fx-background-radius: 20; -fx-border-color: black; -fx-border-width: 5;" styleClass="boxes" visible="false">
+                        <BorderPane fx:id="mortgageProp" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: mediumaquamarine; -fx-border-radius: 20; -fx-background-radius: 20; -fx-border-color: black; -fx-border-width: 5;" styleClass="boxes">
                            <bottom>
                               <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="30.0" BorderPane.alignment="CENTER">
                                  <children>
@@ -410,7 +411,7 @@
                               </ListView>
                            </center>
                         </BorderPane>
-                        <BorderPane fx:id="unmortgageProp" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: mediumaquamarine; -fx-border-radius: 20; -fx-background-radius: 20; -fx-border-color: black; -fx-border-width: 5;" styleClass="boxes" visible="false">
+                        <BorderPane fx:id="unmortgageProp" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: mediumaquamarine; -fx-border-radius: 20; -fx-background-radius: 20; -fx-border-color: black; -fx-border-width: 5;" styleClass="boxes">
                            <bottom>
                               <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="30.0" BorderPane.alignment="CENTER">
                                  <children>
@@ -446,31 +447,127 @@
                               </HBox>
                            </bottom>
                            <center>
-                              <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                              <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="20.0" BorderPane.alignment="CENTER">
                                  <children>
-                                    <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
+                                    <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0">
                                        <children>
-                                          <Label text="Player 1" textFill="WHITE">
+                                          <Label fx:id="player1" text="Player 1" textFill="WHITE">
                                              <font>
                                                 <Font name="System Bold" size="24.0" />
                                              </font>
                                           </Label>
                                           <ListView prefHeight="200.0" prefWidth="200.0" />
+                                          <Spinner />
+                                          <Button mnemonicParsing="false" text="Confirm">
+                                             <font>
+                                                <Font name="System Bold" size="18.0" />
+                                             </font>
+                                          </Button>
                                        </children>
                                     </VBox>
-                                    <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" />
-                                    <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
+                                    <VBox alignment="CENTER" prefHeight="443.0" prefWidth="127.0">
                                        <children>
-                                          <Label text="Player 2" textFill="WHITE">
+                                          <Label text="Select player:" textAlignment="CENTER" textFill="WHITE" wrapText="true">
+                                             <font>
+                                                <Font name="System Bold" size="18.0" />
+                                             </font>
+                                          </Label>
+                                          <ChoiceBox prefWidth="150.0" />
+                                       </children></VBox>
+                                    <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0">
+                                       <children>
+                                          <Label fx:id="player2" textFill="WHITE">
                                              <font>
                                                 <Font name="System Bold" size="24.0" />
                                              </font>
                                           </Label>
                                           <ListView prefHeight="200.0" prefWidth="200.0" />
+                                          <Spinner />
+                                          <Button mnemonicParsing="false" text="Confirm">
+                                             <font>
+                                                <Font name="System Bold" size="18.0" />
+                                             </font>
+                                          </Button>
                                        </children>
                                     </VBox>
                                  </children>
                               </HBox>
+                           </center>
+                        </BorderPane>
+                        <BorderPane fx:id="payMoney" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: mediumaquamarine; -fx-border-radius: 20; -fx-background-radius: 20; -fx-border-color: black; -fx-border-width: 5;" styleClass="boxes" visible="false">
+                           <bottom>
+                              <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="30.0" BorderPane.alignment="CENTER">
+                                 <children>
+                                    <Button fx:id="rentBtn" mnemonicParsing="false" style="-fx-background-color: slategray;" text="Pay">
+                                       <font>
+                                          <Font size="24.0" />
+                                       </font>
+                                    </Button>
+                                 </children>
+                              </HBox>
+                           </bottom>
+                           <center>
+                              <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+                                 <children>
+                                    <Label text="You've landed on PropName. You must pay £0.00 to PlayerName." textAlignment="CENTER" textFill="WHITE" wrapText="true">
+                                       <font>
+                                          <Font name="System Bold" size="24.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                              </VBox>
+                           </center>
+                        </BorderPane>
+                        <BorderPane fx:id="auction" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: mediumaquamarine; -fx-border-radius: 20; -fx-background-radius: 20; -fx-border-color: black; -fx-border-width: 5;" styleClass="boxes" visible="false">
+                           <center>
+                              <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="20.0" BorderPane.alignment="CENTER">
+                                 <children>
+                                    <Label text="Player Name" textFill="WHITE">
+                                       <font>
+                                          <Font name="System Bold" size="24.0" />
+                                       </font>
+                                    </Label>
+                                    <Spinner editable="true" />
+                                    <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="30.0">
+                                       <children>
+                                          <Button mnemonicParsing="false" text="Bid">
+                                             <font>
+                                                <Font name="System Bold" size="24.0" />
+                                             </font>
+                                          </Button>
+                                          <Button mnemonicParsing="false" text="Decline">
+                                             <font>
+                                                <Font name="System Bold" size="24.0" />
+                                             </font>
+                                          </Button>
+                                       </children>
+                                    </HBox>
+                                 </children>
+                              </VBox>
+                           </center>
+                        </BorderPane>
+                        <BorderPane fx:id="getMoney" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: mediumaquamarine; -fx-border-radius: 20; -fx-background-radius: 20; -fx-border-color: black; -fx-border-width: 5;" styleClass="boxes" visible="false">
+                           <bottom>
+                              <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="30.0" BorderPane.alignment="CENTER">
+                                 <children>
+                                    <Button fx:id="contBtn" mnemonicParsing="false" text="Continue">
+                                       <font>
+                                          <Font size="24.0" />
+                                       </font>
+                                    </Button>
+                                 </children>
+                              </HBox>
+                           </bottom>
+                           <center>
+                              <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+                                 <children>
+                                    <Label fx:id="gainLabel" text="You reicved £ Money" textFill="WHITE">
+                                       <font>
+                                          <Font name="System Bold" size="24.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                              </VBox>
                            </center>
                         </BorderPane>
                      </children>
