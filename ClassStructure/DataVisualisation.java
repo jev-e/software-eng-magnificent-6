@@ -29,6 +29,13 @@ public class DataVisualisation extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+        endGameSummary(primaryStage);
+    }
+
+    /**
+     * Creates end game summary screen
+     */
+    private void endGameSummary( Stage primaryStage ) {
         primaryStage.setTitle("Game Summary");
 
         //defining the axes
@@ -37,34 +44,32 @@ public class DataVisualisation extends Application {
         final NumberAxis yAxis = new NumberAxis();
         yAxis.setLabel("Net-Worth");
 
+        //define setup
         VBox root = new VBox();
         Scene scene = new Scene(root, 800, 600);
-
+        //align
         root.setAlignment(Pos.CENTER);
-
-
-
-
-        final LineChart<Number,Number> lineChart =
-                new LineChart<Number,Number>(xAxis,yAxis);
+        //create line chart
+        final LineChart<Number,Number> lineChart = new LineChart<Number,Number>(xAxis,yAxis);
+        //graph styling
         xAxis.setTickUnit(1);
-
         lineChart.setTitle("Net-Worth Over Turns");
-        //defining a series
+        lineChart.setCreateSymbols(false);
 
+        //defining a series
         for(String key : b.dataStore.keySet()){
+            //for each player
             XYChart.Series series = new XYChart.Series();
             series.setName( key );
             for( int ii = 0; ii < b.dataStore.get(key).size(); ii++ ){
+                //for each turn:net worth pair
                 series.getData().add(new XYChart.Data<>( b.dataStore.get(key).get(ii).getKey(), b.dataStore.get(key).get(ii).getValue()));
             }
-
             lineChart.getData().add(series);
         }
-        lineChart.setCreateSymbols(false);
-
-
         root.getChildren().add(lineChart);
+
+        //other stats
         Text text = new Text("Turns taken: " + b.turns);
         root.getChildren().add(text);
         Text timing = new Text("Length of game: " + b.timeElapsed + "ms");
@@ -76,9 +81,9 @@ public class DataVisualisation extends Application {
         primaryStage.show();
     }
 
-
-
-
+    /**
+     * Plays game for demo purpose, needs to happen elsewhere in real thing
+     */
     @Override
     public void init() {
             //launch and play the game
