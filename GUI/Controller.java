@@ -13,6 +13,7 @@ import javafx.application.Platform;
 import javafx.scene.Parent;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -64,9 +65,20 @@ public class Controller implements Initializable {
     private Button generateGame;
     private ComboBox gameMode;
 
+    //Tom's controls for the game board scene
     @FXML private Label diceRoll = new Label();
     @FXML private ChoiceBox playerSelector = new ChoiceBox();
     @FXML private Button mortgageBtn = new Button();
+    @FXML private Button tradeBtn = new Button();
+    //Controls for trade Screen
+    @FXML private BorderPane tradeScreen = new BorderPane();
+    @FXML private ListView player1Props = new ListView();
+    @FXML private ListView player2Props = new ListView();
+    @FXML private ChoiceBox playerBX = new ChoiceBox();
+    @FXML private Label player1 = new Label();
+    @FXML private Label player2 = new Label();
+
+
 
     //@FXML private Button addPlayer = new Button();
 
@@ -702,6 +714,12 @@ public class Controller implements Initializable {
      */
     public void quit(ActionEvent event){
         Platform.exit();
+    }
+
+    public void goToTrade(ActionEvent event){
+        tradeScreen.setVisible(true);
+        player1.setText("Tom Jones");
+        player1Props.getItems().addAll("Gang");
     }
 
     public void rollDice(ActionEvent event) throws IOException{
