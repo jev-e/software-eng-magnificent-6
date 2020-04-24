@@ -23,6 +23,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+
+import javax.swing.*;
 import java.io.IOException;
 
 public class Controller implements Initializable {
@@ -35,19 +37,19 @@ public class Controller implements Initializable {
     private static int randomSeed = 0;
 
     // Player setup (choosing tokens and players name)
-    private Spinner spinP1;
-    private Spinner spinP2;
-    private Spinner spinP3;
-    private Spinner spinP4;
-    private Spinner spinP5;
-    private Spinner spinP6;
+    private Spinner spinP1 = new Spinner <String>();
+    private Spinner spinP2 = new Spinner <String>();
+    private Spinner spinP3 = new Spinner <String>();
+    private Spinner spinP4 = new Spinner <String>();
+    private Spinner spinP5 = new Spinner <String>();
+    private Spinner spinP6 = new Spinner <String>();
 
-    private TextField txtP1;
-    private TextField txtP2;
-    private TextField txtP3;
-    private TextField txtP4;
-    private TextField txtP5;
-    private TextField txtP6;
+    private TextField txtP1 = new TextField();
+    private TextField txtP2 = new TextField();
+    private TextField txtP3 = new TextField();
+    private TextField txtP4 = new TextField();
+    private TextField txtP5 = new TextField();
+    private TextField txtP6 = new TextField();
 
     // AI setup (name randomly chosen for each Ai)
     private Spinner spinAI1;
@@ -115,6 +117,11 @@ public class Controller implements Initializable {
         generateGame.setPrefSize(170,30);
     }
 
+    public void bid(ActionEvent event){
+        System.out.println(nameAI1);
+        System.out.println(nameAI2);
+    }
+
     /***
      * Change to the auctioning popup screen if 'auction' has been clicked from buyProperty()
      * @throws IOException
@@ -153,8 +160,6 @@ public class Controller implements Initializable {
             if(option.get() == buyProperty){
                 // After clicking the "Buy Property" button from the popup
                 System.out.println("you Payed $500");
-                System.out.println(nameP1);
-                System.out.println(nameP2);
             }else if(option.get() == auctionProperty){
                 // After clicking the "Auction" button from the popup
                 System.out.println("Auction");
@@ -341,7 +346,6 @@ public class Controller implements Initializable {
     public void setupToBoardScene(ActionEvent event) throws IOException {
         Parent gameBoardParent = FXMLLoader.load(getClass().getResource("gameBoardScene.fxml"));
         Scene gameScene  = new Scene(gameBoardParent);
-
         // Grab stage information and change scene to setup
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         window.setScene(gameScene);
@@ -444,7 +448,6 @@ public class Controller implements Initializable {
                 ex.printStackTrace();
             }
         });
-
         // Increase the total player size by one
         totalPlayerSize++;
         // aiSize is used a index
@@ -854,45 +857,33 @@ public class Controller implements Initializable {
      */
     public void initializePlayer(){
         // Initializing players' spinner and textfield
-        spinP1 = new Spinner <String>();
         // Making the arrows on the spinner HORIZONTAL (rather than vertical)
         spinP1.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
-        txtP1 = new TextField();
         txtP1.setStyle("-fx-font-size: 14px");
         txtP1.setPromptText("Enter players' 1 name");
 
-        spinP2 = new Spinner <String>();
         // Making the arrows on the spinner HORIZONTAL (rather than vertical)
         spinP2.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
-        txtP2 = new TextField();
         txtP2.setStyle("-fx-font-size: 14px");
         txtP2.setPromptText("Enter players' 2 name");
 
-        spinP3 = new Spinner <String>();
         // Making the arrows on the spinner HORIZONTAL (rather than vertical)
         spinP3.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
-        txtP3 = new TextField();
         txtP3.setStyle("-fx-font-size: 14px");
         txtP3.setPromptText("Enter players' 3 name");
 
-        spinP4 = new Spinner <String>();
         // Making the arrows on the spinner HORIZONTAL (rather than vertical)
         spinP4.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
-        txtP4 = new TextField();
         txtP4.setStyle("-fx-font-size: 14px");
         txtP4.setPromptText("Enter players' 4 name");
 
-        spinP5 = new Spinner <String>();
         // Making the arrows on the spinner HORIZONTAL (rather than vertical)
         spinP5.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
-        txtP5 = new TextField();
         txtP5.setStyle("-fx-font-size: 14px");
         txtP5.setPromptText("Enter players' 5 name");
 
-        spinP6 = new Spinner <String>();
         // Making the arrows on the spinner HORIZONTAL (rather than vertical)
         spinP6.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
-        txtP6 = new TextField();
         txtP6.setStyle("-fx-font-size: 14px");
         txtP6.setPromptText("Enter players' 6 name");
     }
