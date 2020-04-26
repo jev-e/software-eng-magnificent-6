@@ -119,6 +119,10 @@ public class Board {
         }
     }
 
+    public Board() {
+
+    }
+
     /**
      * Asks user to choose between abridged and full version
      * @return decision one of "full" or "abridged"

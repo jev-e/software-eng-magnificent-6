@@ -226,7 +226,7 @@
                               </Label>
                            </center>
                         </BorderPane>
-                        <BorderPane fx:id="turnStart" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: mediumaquamarine; -fx-border-radius: 20; -fx-background-radius: 20; -fx-border-color: black; -fx-border-width: 5;" styleClass="boxes" visible="false">
+                        <BorderPane fx:id="turnStart" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: mediumaquamarine; -fx-border-radius: 20; -fx-background-radius: 20; -fx-border-color: black; -fx-border-width: 5;" styleClass="boxes">
                            <bottom>
                               <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="30.0" BorderPane.alignment="CENTER">
                                  <children>
@@ -239,7 +239,7 @@
                               </HBox>
                            </bottom>
                            <right>
-                              <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="213.0" prefWidth="288.0" text="Player's Name" textAlignment="CENTER" textFill="WHITE" wrapText="true" BorderPane.alignment="CENTER">
+                              <Label fx:id="curPlayerLbl" alignment="CENTER" contentDisplay="CENTER" prefHeight="213.0" prefWidth="288.0" text="Player's Name" textAlignment="CENTER" textFill="WHITE" wrapText="true" BorderPane.alignment="CENTER">
                                  <font>
                                     <Font name="System Bold" size="36.0" />
                                  </font>
@@ -434,7 +434,7 @@
                               </ListView>
                            </center>
                         </BorderPane>
-                        <BorderPane fx:id="tradeScreen" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: mediumaquamarine; -fx-border-radius: 20; -fx-background-radius: 20; -fx-border-color: black; -fx-border-width: 5;" styleClass="boxes">
+                        <BorderPane fx:id="tradeScreen" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: mediumaquamarine; -fx-border-radius: 20; -fx-background-radius: 20; -fx-border-color: black; -fx-border-width: 5;" styleClass="boxes" visible="false">
                            <bottom>
                               <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="30.0" BorderPane.alignment="CENTER">
                                  <children>
