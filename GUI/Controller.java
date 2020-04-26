@@ -52,19 +52,19 @@ public class Controller implements Initializable {
     private TextField txtP6 = new TextField();
 
     // AI setup (name randomly chosen for each Ai)
-    private Spinner spinAI1;
-    private Spinner spinAI2;
-    private Spinner spinAI3;
-    private Spinner spinAI4;
-    private Spinner spinAI5;
-    private Spinner spinAI6;
+    private Spinner spinAI1 = new Spinner <String>();;
+    private Spinner spinAI2 = new Spinner <String>();;
+    private Spinner spinAI3 = new Spinner <String>();;
+    private Spinner spinAI4 = new Spinner <String>();;
+    private Spinner spinAI5 = new Spinner <String>();;
+    private Spinner spinAI6 = new Spinner <String>();;
 
-    private TextField txtAI1;
-    private TextField txtAI2;
-    private TextField txtAI3;
-    private TextField txtAI4;
-    private TextField txtAI5;
-    private TextField txtAI6;
+    private TextField txtAI1 = new TextField();
+    private TextField txtAI2 = new TextField();
+    private TextField txtAI3 = new TextField();
+    private TextField txtAI4 = new TextField();
+    private TextField txtAI5 = new TextField();
+    private TextField txtAI6 = new TextField();
 
     // Players name and token that they have chosen
     private String nameP1;
@@ -371,6 +371,7 @@ public class Controller implements Initializable {
             try {
                 // Fetch and see if player chose the normal game version or abridged
                 mode = gameMode.getValue().toString();
+                // Assigning the textfield to a name and token variable
                 setPlayerInfo();
                 setAiInfo();
                 setupToBoardScene(e);
@@ -388,6 +389,7 @@ public class Controller implements Initializable {
         playerAmount = addPlayerSetup();
         playerAmount.setAlignment(Pos.TOP_CENTER);
         // Create and initialize gamemode (either normal or abridge)
+        aiAmount = addAISetup();
         initializeGameMode();
 
         if (totalPlayerSize == playerSize && playerSize < 2) {
@@ -454,6 +456,7 @@ public class Controller implements Initializable {
         aiSize++;
 
         // Fetches the right amount of spinners and textfield (retrieving the Hbox from the function)
+        playerAmount = addPlayerSetup();
         aiAmount = addAISetup();
         aiAmount.setAlignment(Pos.TOP_CENTER);
         // Create and initialize gamemode (either normal or abridge)
@@ -907,10 +910,8 @@ public class Controller implements Initializable {
         int randomIndex = rand.nextInt(nameAI.size());
         String tempName = nameAI.get(randomIndex);
 
-        spinAI1 = new Spinner <String>();
         // Making the arrows on the spinner HORIZONTAL (rather than vertical)
         spinAI1.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
-        txtAI1 = new TextField();
         txtAI1.setStyle("-fx-font-size: 14px");
         txtAI1.setText(tempName);
         // Remove the AI's name that been assigned so no duplicate name at one time
@@ -918,50 +919,40 @@ public class Controller implements Initializable {
 
         randomIndex = rand.nextInt(nameAI.size());
         tempName = nameAI.get(randomIndex);
-        spinAI2 = new Spinner <String>();
         // Making the arrows on the spinner HORIZONTAL (rather than vertical)
         spinAI2.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
-        txtAI2 = new TextField();
         txtAI2.setStyle("-fx-font-size: 14px");
         txtAI2.setText(tempName);
         nameAI.remove(randomIndex);
 
         randomIndex = rand.nextInt(nameAI.size());
         tempName = nameAI.get(randomIndex);
-        spinAI3 = new Spinner <String>();
         // Making the arrows on the spinner HORIZONTAL (rather than vertical)
         spinAI3.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
-        txtAI3 = new TextField();
         txtAI3.setStyle("-fx-font-size: 14px");
         txtAI3.setText(tempName);
         nameAI.remove(randomIndex);
 
         randomIndex = rand.nextInt(nameAI.size());
         tempName = nameAI.get(randomIndex);
-        spinAI4 = new Spinner <String>();
         // Making the arrows on the spinner HORIZONTAL (rather than vertical)
         spinAI4.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
-        txtAI4 = new TextField();
         txtAI4.setStyle("-fx-font-size: 14px");
         txtAI4.setText(tempName);
         nameAI.remove(randomIndex);
 
         randomIndex = rand.nextInt(nameAI.size());
         tempName = nameAI.get(randomIndex);
-        spinAI5 = new Spinner <String>();
         // Making the arrows on the spinner HORIZONTAL (rather than vertical)
         spinAI5.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
-        txtAI5 = new TextField();
         txtAI5.setStyle("-fx-font-size: 14px");
         txtAI5.setText(tempName);
         nameAI.remove(randomIndex);
 
         randomIndex = rand.nextInt(nameAI.size());
         tempName = nameAI.get(randomIndex);
-        spinAI6 = new Spinner <String>();
         // Making the arrows on the spinner HORIZONTAL (rather than vertical)
         spinAI6.getStyleClass().add(Spinner.STYLE_CLASS_SPLIT_ARROWS_HORIZONTAL);
-        txtAI6 = new TextField();
         txtAI6.setStyle("-fx-font-size: 14px");
         txtAI6.setText(tempName);
         nameAI.remove(randomIndex);
