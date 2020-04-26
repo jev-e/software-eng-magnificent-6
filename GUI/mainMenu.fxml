@@ -7,7 +7,7 @@
 
 <VBox alignment="TOP_CENTER" prefHeight="420.0" prefWidth="370.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.Controller">
    <children>
-      <Label text="Property Tycoon">
+      <Label fx:id="setupTitle" text="Property Tycoon">
          <font>
             <Font name="System Bold" size="14.0" />
          </font>
@@ -15,7 +15,7 @@
             <Insets bottom="40.0" top="20.0" />
          </VBox.margin>
       </Label>
-      <Button fx:id="startButton" minHeight="30.0" minWidth="50.0" mnemonicParsing="false" onAction="#setupSceneChange" text="Start">
+      <Button minHeight="30.0" minWidth="50.0" mnemonicParsing="false" onAction="#mainToSetupScene" text="Start">
          <font>
             <Font size="14.0" />
          </font>
@@ -23,7 +23,7 @@
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
          </VBox.margin>
       </Button>
-      <Button fx:id="rulesButton" minHeight="30.0" minWidth="50.0" mnemonicParsing="false" onAction="#ruleSceneChange" text="Rules">
+      <Button fx:id="rulesButton" minHeight="30.0" minWidth="50.0" mnemonicParsing="false" onAction="#mainToRuleScene" text="Rules">
          <VBox.margin>
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
          </VBox.margin>
@@ -33,6 +33,5 @@
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
          </VBox.margin>
       </Button>
-      <HBox prefHeight="100.0" prefWidth="200.0" />
    </children>
 </VBox>

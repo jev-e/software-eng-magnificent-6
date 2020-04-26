@@ -481,7 +481,7 @@
                                              </font>
                                           </Label>
                                           <ListView fx:id="player2Props" prefHeight="200.0" prefWidth="200.0" />
-                                          <Button fx:id="player2Conf" mnemonicParsing="false" text="Confirm">
+                                          <Button fx:id="player2Conf" mnemonicParsing="false" onAction="#player2TradeConfirm" text="Confirm">
                                              <font>
                                                 <Font name="System Bold" size="18.0" />
                                              </font>
