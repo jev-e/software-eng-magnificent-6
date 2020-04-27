@@ -1,5 +1,6 @@
 package ClassStructure;
 
+import GUI.Controller;
 import javafx.util.Pair;
 
 import java.time.Duration;
@@ -96,6 +97,7 @@ public class Board {
         turns = 0;
         taxPot = 0;
         repeat =  false;
+        dataStore = new HashMap<>();
         //Set board references for activation methods in tiles and cards
         for (CardEffect c : potLuck) {
             c.setBoard(this);
@@ -377,13 +379,12 @@ public class Board {
         return result;
     }
 
-    public void testLoop() {
+    public void testLoop(Controller controller) {
         int retirePoint = 300;
         start = Instant.now();
         displayAsString();
         Collections.shuffle(turnOrder);
         for( Player p: turnOrder ){
-            System.out.println(p.getName());
             dataStore.put(p.getName(), new ArrayList<>());
         }
         turns = 0;
@@ -405,7 +406,7 @@ public class Board {
                     repeat = false;
                     if (!currentPlayer.isAiAgent()) {//get input from player
                         try {//TODO remove this for GUI loop
-                            System.in.read();
+                            controller.grabRollInput();
                         } catch (Exception e) {
                             System.out.println("Error in press next");
                             e.printStackTrace();

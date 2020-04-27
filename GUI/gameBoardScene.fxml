@@ -579,7 +579,7 @@
          <bottom>
             <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="904.0" style="-fx-background-color: royalblue;" BorderPane.alignment="CENTER">
                <children>
-                  <Button fx:id="buildBtn" mnemonicParsing="false" style="-fx-background-color: slategray;" text="Build">
+                  <Button fx:id="buildBtn" disable="true" mnemonicParsing="false" style="-fx-background-color: slategray;" text="Build">
                      <font>
                         <Font size="36.0" />
                      </font>
@@ -587,7 +587,7 @@
                         <Insets left="30.0" right="10.0" />
                      </HBox.margin>
                   </Button>
-                  <Button fx:id="sellBtn" mnemonicParsing="false" style="-fx-background-color: slategray;" text="Sell">
+                  <Button fx:id="sellBtn" disable="true" mnemonicParsing="false" style="-fx-background-color: slategray;" text="Sell">
                      <font>
                         <Font size="36.0" />
                      </font>
@@ -595,7 +595,7 @@
                         <Insets left="10.0" right="10.0" />
                      </HBox.margin>
                   </Button>
-                  <Button fx:id="mortgageBtn" mnemonicParsing="false" style="-fx-background-color: slategray;" text="Mortgage">
+                  <Button fx:id="mortgageBtn" disable="true" mnemonicParsing="false" style="-fx-background-color: slategray;" text="Mortgage">
                      <font>
                         <Font size="36.0" />
                      </font>
@@ -603,7 +603,7 @@
                         <Insets left="10.0" right="10.0" />
                      </HBox.margin>
                   </Button>
-                  <Button fx:id="unmortgageBtn" mnemonicParsing="false" style="-fx-background-color: slategray;" text="Unmortgage">
+                  <Button fx:id="unmortgageBtn" disable="true" mnemonicParsing="false" style="-fx-background-color: slategray;" text="Unmortgage">
                      <font>
                         <Font size="36.0" />
                      </font>
@@ -611,7 +611,7 @@
                         <Insets left="10.0" right="10.0" />
                      </HBox.margin>
                   </Button>
-                  <Button fx:id="tradeBtn" mnemonicParsing="false" onAction="#goToTrade" style="-fx-background-color: slategray;" text="Trade">
+                  <Button fx:id="tradeBtn" disable="true" mnemonicParsing="false" onAction="#goToTrade" style="-fx-background-color: slategray;" text="Trade">
                      <font>
                         <Font size="36.0" />
                      </font>
@@ -619,7 +619,7 @@
                         <Insets left="10.0" right="10.0" />
                      </HBox.margin>
                   </Button>
-                  <Button fx:id="quitBtn" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" text="Quit">
+                  <Button fx:id="quitBtn" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" style="-fx-background-color: white;" text="Quit">
                      <font>
                         <Font size="36.0" />
                      </font>

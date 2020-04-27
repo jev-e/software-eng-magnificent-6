@@ -39,8 +39,13 @@ public class Controller implements Initializable {
     //Tom's controls for the game board scene
     @FXML private Label diceRoll = new Label();
     @FXML private ChoiceBox playerSelector = new ChoiceBox();
+    @FXML private Button buildBtn = new Button();
+    @FXML private Button sellBtn = new Button();
     @FXML private Button mortgageBtn = new Button();
+    @FXML private Button unmortgageBtn = new Button();
     @FXML private Button tradeBtn = new Button();
+    @FXML private Button quitBtn = new Button();
+    @FXML private Button rollBtn = new Button();
     //Tom's Controls for start of turn
     @FXML private Label curPlayerLbl = new Label();
 
@@ -308,6 +313,8 @@ public class Controller implements Initializable {
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         window.setScene(gameScene);
         window.setFullScreen(true);
+        curPlayerLbl.setText("");
+        gameSystem.testLoop(this);
         window.show();
     }
 
@@ -407,8 +414,6 @@ public class Controller implements Initializable {
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         window.setScene(setupScene);
         window.show();
-
-
     }
 
     /**
@@ -1027,9 +1032,43 @@ public class Controller implements Initializable {
     }
 
     public void rollDice(ActionEvent event) throws IOException{
+        System.out.println("test roll dice here");
+        toggleMenuButtons(true);
         Alert testMsg = new Alert(AlertType.INFORMATION);
-        testMsg.setHeaderText("test test 123");
+        testMsg.setHeaderText("Hello");
         testMsg.initOwner((Stage)((Node)event.getSource()).getScene().getWindow());
         testMsg.show();
+    }
+
+    public void setPlayerTurn(Player curPlayer){
+
+    }
+
+    public void toggleMenuButtons(Boolean check){
+        ArrayList<Button> buttons = new ArrayList<Button>();
+        buttons.add(buildBtn);
+        buttons.add(sellBtn);
+        buttons.add(mortgageBtn);
+        buttons.add(unmortgageBtn);
+        buttons.add(tradeBtn);
+        for(Button b: buttons){
+            b.setDisable(!check);
+            if(check){
+                b.setStyle("-fx-background-color: white");
+            }
+            else{
+                b.setStyle("-fx-background-color: slategray");
+            }
+        }
+    }
+
+    public void grabRollInput(){
+        rollBtn.setOnAction(event -> {
+            try {
+                rollDice(event);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } );
     }
 }

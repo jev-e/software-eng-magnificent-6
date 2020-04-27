@@ -129,7 +129,7 @@ public class DataVisualisation extends Application {
             playerNumber = order.size();
 
             try {
-                b.testLoop();
+                //b.testLoop();
             } catch (Exception e) {
                 e.printStackTrace();
                 System.out.println("An error occurred in game execution");

@@ -55,7 +55,7 @@ public class TestSpace {
         order.add(tom);
 
         try {
-            b.testLoop();
+            //b.testLoop();
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("An error occurred in game execution");
