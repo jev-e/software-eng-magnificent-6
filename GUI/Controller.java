@@ -335,8 +335,7 @@ public class Controller implements Initializable {
 
         pot = new ArrayDeque<>(potLuckPack);//Load shuffled pack into decks
         opp = new ArrayDeque<>(opportunityKnocksPack);
-
-        gameSystem = new Board(order, board, pot, opp);
+        gameSystem = new Board(order, board, pot, opp, ((String) gameMode.getValue()).toLowerCase());
     }
     /**
      *  Recreate the same scene but adding a addition spinner and textfield (add spinner and textfield for the player)
@@ -836,11 +835,11 @@ public class Controller implements Initializable {
     public void initializeGameMode(){
         gameMode = new ComboBox();
         // Setting up the choice box so players can select the game mode either normal or abridged
-        gameMode.getItems().addAll("Normal", "Abridged");
+        gameMode.getItems().addAll("Full", "Abridged");
         gameMode.setPrefWidth(170);
         gameMode.setPrefHeight(30);
-        // Setting the default value for game mode to be normal
-        gameMode.setValue("Normal");
+        // Setting the default value for game mode to be full
+        gameMode.setValue("Full");
     }
 
     /***
