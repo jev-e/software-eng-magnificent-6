@@ -1027,10 +1027,9 @@ public class Controller implements Initializable {
     }
 
     public void rollDice(ActionEvent event) throws IOException{
-        Random rand = new Random();
-        diceRoll.setText("21");
-        System.out.println(order.getFirst().getName());
-        curPlayerLbl.setText(order.getFirst().getName());
-
+        Alert testMsg = new Alert(AlertType.INFORMATION);
+        testMsg.setHeaderText("test test 123");
+        testMsg.initOwner((Stage)((Node)event.getSource()).getScene().getWindow());
+        testMsg.show();
     }
 }
