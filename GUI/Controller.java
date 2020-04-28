@@ -1,8 +1,11 @@
 package GUI;
 
 import ClassStructure.*;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.Initializable;
 import java.net.URL;
+import java.time.Instant;
 import java.util.*;
 
 import javafx.fxml.FXML;
@@ -23,6 +26,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import jdk.nashorn.internal.runtime.ListAdapter;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -30,6 +34,7 @@ import java.io.IOException;
 public class Controller implements Initializable {
 
     @FXML Label setupTitle;
+    boolean pressed;
 
     private static int totalPlayerSize = 0;
     private static int playerSize = 0;
@@ -108,8 +113,7 @@ public class Controller implements Initializable {
     // This is called every time a new scene is built
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
-
+        rollBtn.setOnAction(handler);
         // Label used in setup scene for the title
         setupTitle = new Label();
         setupTitle.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;");
@@ -313,9 +317,9 @@ public class Controller implements Initializable {
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         window.setScene(gameScene);
         window.setFullScreen(true);
-        curPlayerLbl.setText("");
-        gameSystem.testLoop(this);
         window.show();
+        setPlayerTurn(order.getFirst());
+        gameSystem.testLoop(this);
     }
 
     public void createBoard(){
@@ -1016,6 +1020,7 @@ public class Controller implements Initializable {
             txtMsg += String.format("%s%n", (String) item);
         }
         testMsg.setHeaderText("You've selected: " + txtMsg);
+        testMsg.initOwner((Stage)((Node)event.getSource()).getScene().getWindow());
         testMsg.show();
     }
 
@@ -1028,12 +1033,14 @@ public class Controller implements Initializable {
             txtMsg += String.format("%s%n", (String) item);
         }
         testMsg.setHeaderText("You've selected: " + txtMsg);
+        testMsg.initOwner((Stage)((Node)event.getSource()).getScene().getWindow());
         testMsg.show();
+
     }
 
     public void rollDice(ActionEvent event) throws IOException{
+        curPlayerLbl.setText("testtest");
         System.out.println("test roll dice here");
-        toggleMenuButtons(true);
         Alert testMsg = new Alert(AlertType.INFORMATION);
         testMsg.setHeaderText("Hello");
         testMsg.initOwner((Stage)((Node)event.getSource()).getScene().getWindow());
@@ -1041,7 +1048,9 @@ public class Controller implements Initializable {
     }
 
     public void setPlayerTurn(Player curPlayer){
-
+        curPlayerLbl.setText("testtest");
+        System.out.print(curPlayer.getName());
+        toggleMenuButtons(false);
     }
 
     public void toggleMenuButtons(Boolean check){
@@ -1062,13 +1071,16 @@ public class Controller implements Initializable {
         }
     }
 
-    public void grabRollInput(){
-        rollBtn.setOnAction(event -> {
-            try {
-                rollDice(event);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } );
+    public boolean grabRollInput(){
+        return(pressed);
     }
+
+
+    EventHandler handler = new EventHandler() {
+        @Override
+        public void handle(Event event) {
+            System.out.println("pressed == true");
+            pressed = true;
+        }
+    };
 }

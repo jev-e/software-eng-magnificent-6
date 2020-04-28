@@ -6,6 +6,8 @@ import javafx.util.Pair;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
+import java.util.concurrent.CountDownLatch;
+
 /**
  * @author Ayman Bensreti, Calvin Boreham
  *	Game board and logic
@@ -23,9 +25,19 @@ public class Board {
     Timer timer;
     boolean timeUp = false;
     HashMap<String, ArrayList<Pair>> dataStore; //key : playerName value: networths at each turn in game
+
+    public Instant getStart() {
+        return start;
+    }
+
+    public void setStart(Instant start) {
+        this.start = start;
+    }
+
     private Instant start;
     private Instant finished;
     public long timeElapsed;
+    private CountDownLatch latch = new CountDownLatch(1);
 
 
     /**
@@ -379,6 +391,10 @@ public class Board {
         return result;
     }
 
+    public void unblockCall(){
+        latch.countDown();
+    }
+
     public void testLoop(Controller controller) {
         int retirePoint = 300;
         start = Instant.now();
@@ -405,13 +421,12 @@ public class Board {
                     count++;
                     repeat = false;
                     if (!currentPlayer.isAiAgent()) {//get input from player
-                        try {//TODO remove this for GUI loop
-                            controller.grabRollInput();
-                        } catch (Exception e) {
-                            System.out.println("Error in press next");
-                            e.printStackTrace();
+                        boolean pressed = false;
+                        while(!pressed){
+                            pressed = controller.grabRollInput();
                         }
                     }
+                    System.out.print("reached gui do statement");
                     currentPlayer.setLastRoll(roll(currentPlayer, count));//keep track of player roll
                     currentPlayer.passGo();
                     tiles.get(currentPlayer.getCurrentPos()).activeEffect(currentPlayer);
@@ -746,6 +761,4 @@ public class Board {
         Pair pair = new Pair( turns, netWorth);
         dataStore.get(p.getName()).add(pair);
     }
-
-
 }
