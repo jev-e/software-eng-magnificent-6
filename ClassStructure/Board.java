@@ -15,16 +15,16 @@ import java.util.concurrent.CountDownLatch;
 public class Board {
     Deque<CardEffect> potLuck;
     Deque<CardEffect> opportunityKnocks;
-    int turns;
-    LinkedList<Player> turnOrder;
-    HashMap<Integer,BoardTile> tiles;// key: iD value: (Property|Effect)
+    public int turns;
+    public LinkedList<Player> turnOrder;
+    public HashMap<Integer,BoardTile> tiles;// key: iD value: (Property|Effect)
     int taxPot; // subject to change see free parking in spec
-    boolean repeat;
+    public boolean repeat;
     private String version;
     private int timeLimit = 5;
     Timer timer;
-    boolean timeUp = false;
-    HashMap<String, ArrayList<Pair>> dataStore; //key : playerName value: networths at each turn in game
+    public boolean timeUp = false;
+    public HashMap<String, ArrayList<Pair>> dataStore; //key : playerName value: networths at each turn in game
 
     public Instant getStart() {
         return start;
@@ -133,9 +133,7 @@ public class Board {
         }
     }
 
-    public Board() {
 
-    }
 
     /**
      * Asks user to choose between abridged and full version
@@ -544,7 +542,7 @@ public class Board {
      * Processes the ending of the game and declares the winner
      * @throws Exception
      */
-    private void gameOver() throws Exception {
+    public void gameOver() throws Exception {
 
         finished = Instant.now();
         timeElapsed = Duration.between(start, finished).toMillis();

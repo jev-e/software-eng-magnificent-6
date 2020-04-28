@@ -1,35 +1,31 @@
 package GUI;
 
 import ClassStructure.*;
+import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
-import javafx.fxml.Initializable;
-import java.net.URL;
-import java.time.Instant;
-import java.util.*;
-
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.event.ActionEvent;
-import javafx.application.Platform;
-import javafx.scene.Parent;
+import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.scene.Scene;
-import javafx.scene.Node;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-import jdk.nashorn.internal.runtime.ListAdapter;
 
-import javax.swing.*;
 import java.io.IOException;
+import java.net.URL;
+import java.time.Instant;
+import java.util.*;
 
 public class Controller implements Initializable {
 
@@ -318,8 +314,8 @@ public class Controller implements Initializable {
         window.setScene(gameScene);
         window.setFullScreen(true);
         window.show();
-        setPlayerTurn(order.getFirst());
-        gameSystem.testLoop(this);
+        setPlayerTurn(gameSystem.turnOrder.getFirst());
+        gameLoop();
     }
 
     public void createBoard(){
@@ -1073,6 +1069,77 @@ public class Controller implements Initializable {
 
     public boolean grabRollInput(){
         return(pressed);
+    }
+
+    public void gameLoop() {
+        int retirePoint = 300;
+        gameSystem.setStart(Instant.now());
+        //displayAsString();
+        Collections.shuffle(gameSystem.turnOrder);
+        for( Player p: gameSystem.turnOrder ){
+            gameSystem.dataStore.put(p.getName(), new ArrayList<>());
+        }
+        gameSystem.turns = 0;
+        while (gameSystem.turnOrder.size() > 1) {
+            gameSystem.turns++;
+            for (int i = 0; i < gameSystem.turnOrder.size(); i++) {
+                Player currentPlayer = gameSystem.turnOrder.get(i);
+                if (currentPlayer == null) {
+                    continue;//skip players that have been removed from turn order
+                } else if (currentPlayer.isInJail()) {
+                    gameSystem.tiles.get(10).activeEffect(currentPlayer);//Activate the jail tile to serve time
+                    gameSystem.storeData(currentPlayer, currentPlayer.netWorth());
+                    continue;//move to next turn
+                }
+                int count = 0;
+
+                do {
+                    count++;
+                    gameSystem.repeat = false;
+                    if (!currentPlayer.isAiAgent()) {//get input from player
+                        pressed = false;
+                        while(!pressed){
+
+                        }
+                    }
+                    System.out.print("reached gui do statement");
+                    currentPlayer.setLastRoll(gameSystem.roll(currentPlayer, count));//keep track of player roll
+                    currentPlayer.passGo();
+                    gameSystem.tiles.get(currentPlayer.getCurrentPos()).activeEffect(currentPlayer);
+                    //displayAsString();
+
+                    if (gameSystem.turnOrder.contains(currentPlayer) && !currentPlayer.isInJail()) {
+                        if (!currentPlayer.isAiAgent()) {
+                            currentPlayer.leaveGame();
+                            currentPlayer.unMortgage();
+                            gameSystem.trade(currentPlayer);
+
+                        } else {
+                            currentPlayer.initiateTrade();
+                            if (gameSystem.turns > retirePoint && gameSystem.turnOrder.size() > 4) {
+                                retirePoint += 100;
+                                currentPlayer.agentRetire();
+                            }
+                        }
+                        currentPlayer.developProperties();
+                        if (!gameSystem.repeat) {
+                            gameSystem.storeData(currentPlayer, currentPlayer.netWorth());
+                        }
+                    }
+
+                } while (gameSystem.repeat);
+            }
+            if (gameSystem.timeUp) {
+
+                break;
+            }
+        }
+        try {
+            gameSystem.gameOver();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+        }
     }
 
 
