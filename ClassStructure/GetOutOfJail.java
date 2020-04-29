@@ -28,7 +28,6 @@ public class GetOutOfJail extends CardEffect {
         currentPlayer.addAsset(this);//adds this item to players assets
         owner = currentPlayer;//keep reference the owner of the card until it is played
         //When card is drawn from deck owner will be overwritten
-        System.out.println("You get a get out of jail free card");
     }
 
     /**
@@ -37,7 +36,6 @@ public class GetOutOfJail extends CardEffect {
     public void playCard() {
         owner.leaveJail();//set player out of jail and resets jailCount
         owner.removeAsset(this);//removes this card from asset list
-        System.out.println(cardText);//Display for test version
         if (deck.equals("pot")) {
             this.board.potLuck.addLast(this);//returns to pot luck deck
         } else {
@@ -45,6 +43,9 @@ public class GetOutOfJail extends CardEffect {
         }
     }
 
+    /**
+     * Returns the card to the deck it came from as get out of jail cards can be from either decks
+     */
     public void returnCard() {
         if (deck.equals("pot")) {
             this.board.potLuck.addLast(this);//returns to pot luck deck
@@ -53,10 +54,11 @@ public class GetOutOfJail extends CardEffect {
         }
     }
 
-    public String getDeck() {
-        return deck;
-    }
-
+    /**
+     * Setter to assign the deck that a card has been placed into
+     *
+     * @param deck name of deck that this card belongs to pot | opp
+     */
     public void setDeck(String deck) {
         this.deck = deck;
     }

@@ -1106,13 +1106,12 @@ public class Controller implements Initializable {
                     currentPlayer.setLastRoll(gameSystem.roll(currentPlayer, count));//keep track of player roll
                     currentPlayer.passGo();
                     gameSystem.tiles.get(currentPlayer.getCurrentPos()).activeEffect(currentPlayer);
-                    //displayAsString();
 
                     if (gameSystem.turnOrder.contains(currentPlayer) && !currentPlayer.isInJail()) {
                         if (!currentPlayer.isAiAgent()) {
                             currentPlayer.leaveGame();
-                            currentPlayer.unMortgage();
-                            gameSystem.trade(currentPlayer);
+                            //TODO Player property management GUI here
+                            //TODO Ask player if they want to trade/ GUI trade here
 
                         } else {
                             currentPlayer.initiateTrade();

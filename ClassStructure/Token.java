@@ -3,7 +3,7 @@ package ClassStructure;
  * @author Ayman Bensreti
  *	an enum for player tokens
  *	name of token
- *  image path //TODO Paths to be added
+ *  image path
  *	Text symbol for prototype versions
  */
 public enum Token {

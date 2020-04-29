@@ -13,7 +13,7 @@ public class MoveBack3 extends CardEffect {
     }
 
     /**
-     * moves player back 3 spaces
+     * moves player back 3 spaces and activates the tile on landing
      */
     @Override
     void effect(Player currentPlayer) {
@@ -21,7 +21,6 @@ public class MoveBack3 extends CardEffect {
         int position = currentPlayer.getCurrentPos();//get players position
         int newPosition = ((position - 3) + max) % max;//Performs wrap around
         currentPlayer.setCurrentPos(newPosition);//update the players position to the one calculated
-        System.out.println(cardText);//Display for test version
         board.tiles.get(newPosition).activeEffect(currentPlayer);//triggers that tiles effect
     }
 }
