@@ -12,6 +12,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.util.*;
 
 
@@ -211,15 +212,27 @@ public class Main extends Application {
         Label title = new Label("Property Tycoon Setup");
         Label numberOfPlayerLabel = new Label("Number of players");
         Label numberOfAILabel = new Label("Number of AIs ");
+        Label gameModeLabel = new Label("Select the desired game mode");
 
         // Drop down box for user to select how many players and AIs (default value = 1 player, 1 AI)
         ComboBox playerNumber = new ComboBox();
+        playerNumber.setPrefWidth(100);
         playerNumber.getItems().addAll("0", "1", "2", "3", "4", "5", "6");
         playerNumber.setValue("1");
+
         ComboBox AINumber = new ComboBox();
+        AINumber.setPrefWidth(100);
         AINumber.getItems().addAll("0", "1", "2", "3", "4", "5", "6");
         // Setting the default value for the combo box to have 1 player and 1 AI
         AINumber.setValue("1");
+
+        // Drop down box for game mode (full or abridged)
+        ComboBox gameMode = new ComboBox();
+        // Setting up the choice box so players can select the game mode either full or abridged
+        gameMode.getItems().addAll("Full", "Abridged");
+        gameMode.setPrefWidth(100);
+        // Setting the default value for game mode to be full
+        gameMode.setValue("Full");
 
         Button nextButton = new Button("Next");
         Button rule = new Button("Rules");
@@ -233,6 +246,7 @@ public class Main extends Application {
 
         numberOfPlayerLabel.setStyle("-fx-font-size: 15;");
         numberOfAILabel.setStyle("-fx-font-size: 15;");
+        gameModeLabel.setStyle("-fx-font-size: 15;");
 
         nextButton .setPrefSize(110,30);
         nextButton .setStyle("-fx-font-size:14;");
@@ -245,14 +259,16 @@ public class Main extends Application {
 
         // Button Functionality
         nextButton.setOnAction(e -> {
-            // Fetch value from the combo box and converting into a integer
+            // Fetch value from the player and ai combo box and converting into a integer
             int tempPlayerNum = Integer.valueOf(playerNumber.getValue().toString());
             int tempAINum = Integer.valueOf(AINumber.getValue().toString());
-            // Error message
+            // Fetch the game mode value from combo box
+            String mode = gameMode.getValue().toString();
+            // Error message for player constraint
             Alert exceedPlayerMessage = new Alert(Alert.AlertType.WARNING);
-            // Maximum player constraint
+            // Maximum and minimum player constraint implemented
             if(tempPlayerNum + tempAINum <= 6 && tempPlayerNum + tempAINum >= 2){
-                createGameSetupScene(tempPlayerNum, tempAINum);
+                createGameSetupScene(tempPlayerNum, tempAINum, mode);
                 window.setScene(gameSetupScene);
                 window.show();
             }else if(tempPlayerNum + tempAINum < 2){
@@ -279,7 +295,7 @@ public class Main extends Application {
         quit.setOnAction(e -> Platform.exit());
 
         optionPane.getChildren().addAll(nextButton, rule, quit);
-        playerPane.getChildren().addAll(title, numberOfPlayerLabel, playerNumber, numberOfAILabel, AINumber, optionPane);
+        playerPane.getChildren().addAll(title, numberOfPlayerLabel, playerNumber, numberOfAILabel, AINumber, gameModeLabel, gameMode, optionPane);
         playerSetupScene = new Scene(playerPane, 500, 500);
     }
 
@@ -289,8 +305,9 @@ public class Main extends Application {
      * Textfield (placeholder to show AIs name or allow the player to set their own name)
      * @param playerSize Number of player size
      * @param aiSize Number of AIs
+     * @param gameMode A string which represent the game mode that the user selected
      */
-    public void createGameSetupScene(int playerSize, int aiSize){
+    public void createGameSetupScene(int playerSize, int aiSize, String gameMode){
         VBox gameSetupPane = new VBox(10);
         gameSetupPane.setAlignment(Pos.CENTER);
         HBox optionPane = new HBox(10);
@@ -308,6 +325,7 @@ public class Main extends Application {
         Random rand = new Random();
 
         Label title = new Label("Property Tycoon Player Setup");
+        Label mode = new Label("Game mode currently selected: " + gameMode);
 
         Button generateGame = new Button("Generate Game");
         Button backToPlayerSetup = new Button("Back");
@@ -315,8 +333,11 @@ public class Main extends Application {
 
         // CSS
         title.setStyle(
-                // Top, Right, Bottom and Left for padding in Css
+                // Top, Right, Bottom and Left for padding in CSS
                 "-fx-label-padding: 20 0 10 0;" + "-fx-font-size: 14;" + "-fx-font-weight: bold;"
+        );
+        mode.setStyle(
+                "-fx-label-padding: 10 0 5 0;" + "-fx-font-size: 14;" + "-fx-font-weight: bold;"
         );
         generateGame.setPrefSize(130,30);
         generateGame.setStyle("-fx-font-size:14;");
@@ -327,7 +348,7 @@ public class Main extends Application {
         quit.setPrefSize(130,30);
         quit.setStyle("-fx-font-size:14;");
 
-        gameSetupPane.getChildren().add(title);
+        gameSetupPane.getChildren().addAll(title, mode);
         // Create the right amount of spinners and textfield for each player
         for(int i = 0; i < playerSize; i++){
             // HBox container which contains a spinner and textfield per player
@@ -390,11 +411,18 @@ public class Main extends Application {
 
         // Button functionality
         generateGame.setOnAction(e -> {
-//            window.setScene(playerSetupScene);
-//            window.show();
+            // tokenTest = true if constraint is met else false if constraints is not met
+            boolean tokenTest = tokenConstraintCheck();
+            // Change scene if tokenTest = true, else Alert pops up
+            tokenConstraint(tokenTest, gameMode.toLowerCase());
         });
 
         backToPlayerSetup.setOnAction(e -> {
+            // Reset the values when back button is clicked
+            playerNameTextField = new ArrayList<>();
+            aiNameTextField = new ArrayList<>();
+            playerTokenSpin = new ArrayList<>();
+            aiTokenSpin = new ArrayList<>();
             window.setScene(playerSetupScene);
             window.show();
         });
@@ -404,5 +432,113 @@ public class Main extends Application {
         optionPane.getChildren().addAll(generateGame, backToPlayerSetup, quit);
         gameSetupPane.getChildren().add(optionPane);
         gameSetupScene = new Scene(gameSetupPane, 500, 500);
+    }
+
+    /***
+     * Check to see that no duplicate token has been chosen
+     * @return A boolean value (true = no duplicate tokens found, false = duplicate tokens found amongst the players and AI)
+     */
+    public boolean tokenConstraintCheck(){
+        // true = pass constraint check, else failed constraint check
+        boolean tokenCheck;
+        // arrayList which holds all the tokens that the player and AI currently has chosen
+        ArrayList<String> allToken = new ArrayList<>();
+
+        // Fetch a spinner from the player list and assigned to playerToken
+        for(int i = 0; i < playerTokenSpin.size(); i++){
+            // Fetching the tokens that was assigned to each spinner (player)
+            String playerToken = playerTokenSpin.get(i).getValue().toString();
+            allToken.add(playerToken);
+        }
+
+        // Fetch a spinner from the AI list and assigned to aiToken
+        for(int j = 0; j < aiTokenSpin.size(); j++){
+            // Fetching the tokens that was assigned to each spinner (AI)
+            String aiToken = aiTokenSpin.get(j).getValue().toString();
+            allToken.add(aiToken);
+        }
+
+        // Add all the tokens to a into tokenConstraint (tokenConstraint is a datatype of set meaning no duplicates)
+        Set<String> tokenConstraint = new HashSet<String>(allToken);
+
+        // No duplicate token found if the size of both allToken and tokenConstraint is the same
+        if(allToken.size() == tokenConstraint.size()){
+            tokenCheck = true;
+        }else{
+            // Duplicate token found (size of allToken and tokenConstraint is different)
+            tokenCheck = false;
+        }
+        return tokenCheck;
+    }
+
+    /***
+     * Check and see if the token constraint has been met (false = error message, true = switch to board scene)
+     * @param tokenTest A boolean value specifying if the tokens assigned has met the condition to switch scene
+     */
+    public void tokenConstraint(boolean tokenTest, String gameMode){
+        if(tokenTest == false){
+            Alert tokenError = new Alert(Alert.AlertType.ERROR);
+            tokenError.setTitle("Token Assignment Error");
+            tokenError.setHeaderText("Token Constraint");
+            tokenError.setContentText("Please ensure all players and AIs has a unique token");
+            tokenError.showAndWait();
+        }else{
+            assignPlayerToTurnOrder();
+            // Initialize board and the pack of cards
+            createBoard(gameMode);
+            // Change scene
+            //            window.setScene(playerSetupScene);
+//            window.show();
+        }
+    }
+
+    /***
+     * Create a new player with their token and name then assigning it to the turn order if playerSize >= 1
+     * Also creating a new player with their token and name then assigning it to the turn order if aiSize >= 1
+     */
+    public void assignPlayerToTurnOrder(){
+        // Add player to the turn order if playerSize >= 1
+        for(int i = 0; i < playerNameTextField.size(); i++){
+            // Creating a new player and assigning it to turn order
+            Player player = new Player(playerNameTextField.get(i).getText(), Token.valueOf(playerTokenSpin.get(i).getValue().toString()), gameSystem,false);
+            order.add(player);
+        }
+
+        // Add AI to the turn order if aiSize >= 1
+        for(int j = 0; j < aiNameTextField.size(); j++){
+            // Creating a new player and assigning it to turn order
+            Player ai = new Player(aiNameTextField.get(j).getText(), Token.valueOf(aiTokenSpin.get(j).getValue().toString()), gameSystem,true);
+            order.add(ai);
+        }
+    }
+    /***
+     * Initializing the game board and it's deck's of cards
+     * @param gameMode A string which initialize the game to be either full or abridged
+     */
+    public void createBoard(String gameMode){
+        Deque<CardEffect> pot = new ArrayDeque<CardEffect>();
+        Deque<CardEffect> opp;
+
+        try{
+            board = Json.fromJsonToTileSet("BoardTileData.json");
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+        // Add cards to decks
+        try{
+            opportunityKnocksPack = Json.fromJsonToList("OpportunityKnocksCardData.json");
+            potLuckPack = Json.fromJsonToList("PotLuckCardData.json");
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // Shuffles order
+        Collections.shuffle(opportunityKnocksPack);
+        Collections.shuffle(potLuckPack);
+
+        //Load shuffled pack into decks
+        pot = new ArrayDeque<>(potLuckPack);
+        opp = new ArrayDeque<>(opportunityKnocksPack);
+        gameSystem = new Board(order, board, pot, opp, gameMode);
     }
 }
