@@ -3,20 +3,48 @@ package GUI;
 import ClassStructure.*;
 import javafx.application.Application;
 import javafx.application.Platform;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+
 import javafx.geometry.Pos;
+
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.*;
 
-
+/**
+ *
+ * @author Callum Crawford and Danny Che
+ */
 public class Main extends Application {
+
+    // Variables
+    private Label[] tiles;
+
+    // Scenes
+    private Scene gameScene; // Shows gameBP
+
+    // BorderPanes
+    private BorderPane gameBP; // Holds entire game screen
+
+    // GridPanes
+    private GridPane boardGP;   // Main Board, Left side of screen
+    private GridPane playersGP; // Player cards, Right side of Screen
+
+    private GridPane topRowGP;   // Top 9 tiles container (Not the top two corners)
+    private GridPane leftColGP;  // Left 9 tiles container (Not the Corners)
+    private GridPane rightColGP; // Right 9 tiles container (Not the corners)
+    private GridPane botRowGP;   // Bottom 9 tiles container (Not the corners)
 
     Stage window;
     Scene menuScene, ruleScene, playerSetupScene, gameSetupScene, gameBoardScene;
@@ -35,18 +63,122 @@ public class Main extends Application {
     private static List<CardEffect> potLuckPack;
     private Board gameSystem;
 
-    public static void main(String[] args) {
-        launch(args);
-    }
-
     @Override
     public void start(Stage primaryStage) throws Exception{
         window = primaryStage;
         window.setTitle("Property Tycoon");
+
         createMainMenuScene();
         window.setScene(menuScene);
         window.show();
     }
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+
+    /**
+     * Displays Board to primaryStage
+     *
+     */
+    public void displayGame() {
+
+        initGameVariables(); // Initalise Variables and Containers
+
+        int shortSide = 60, longSide = 100;
+        for (int i = 0; i < 40; i++) {
+
+            String labelValue = String.valueOf(i);
+            Label label = new Label("Tile: " + labelValue);
+
+            // Add Tiles to Gridpane
+            switch (i) {
+
+                // Go Tile
+                case 0:
+                    boardGP.add(label, 2, 2);
+                    break;
+
+                // Bottom Row
+                case 1: case 2: case 3: case 4: case 5: case 6: case 7: case 8: case 9:
+                    botRowGP.add(label, (9 - i), 0);
+                    break;
+
+                // Jail Tile
+                case 10:
+                    boardGP.add(label, 0,2);
+                    break;
+
+                // Left Column
+                case 11: case 12: case 13: case 14: case 15: case 16: case 17: case 18: case 19:
+                    leftColGP.add(label, 0, (20 - i));
+                    break;
+
+                // Free Parking Tile
+                case 20:
+                    boardGP.add(label, 0, 0);
+                    break;
+
+                // Top Row
+                case 21: case 22: case 23: case 24: case 25: case 26: case 27: case 28: case 29:
+                    topRowGP.add(label, i, 0);
+                    break;
+
+                // Go To Jail Tile
+                case 30:
+                    boardGP.add(label, 2,0);
+                    break;
+
+                // Right Column
+                case 31: case 32: case 33: case 34: case 35: case 36: case 37: case 38: case 39:
+                    rightColGP.add(label, 0, i);
+                    break;
+
+                default:
+
+                    break;
+            }
+
+            tiles[i] = label;
+        }
+        tiles[0].setText("Go Tile");
+        tiles[10].setText("Jail Tile");
+    }
+
+    /**
+     * Initialises all Panes and Variables for Game Scene
+     *
+     */
+    public void initGameVariables() {
+
+        // Initialise main Game containers
+        gameBP = new BorderPane();
+        boardGP = new GridPane();
+        playersGP = new GridPane();
+
+        // Initialise Scene
+        gameScene = new Scene(gameBP);
+
+        // Add GridPanes to gameBP
+        gameBP.setLeft(boardGP);
+        gameBP.setRight(playersGP);
+
+        // Initialise inner containers
+        topRowGP = new GridPane();
+        leftColGP = new GridPane();
+        rightColGP = new GridPane();
+        botRowGP = new GridPane();
+
+        // Add inner containers to boardGP
+        boardGP.add(topRowGP, 1, 0);
+        boardGP.add(leftColGP, 0, 1);
+        boardGP.add(rightColGP, 2,1);
+        boardGP.add(botRowGP,1,2);
+
+        // Initialise Variables
+        tiles = new Label[40];
+    }
+
 
     /***
      * A main menu scene which contains a label, start button, rule button and a quit button
@@ -103,7 +235,7 @@ public class Main extends Application {
     }
 
     /***
-     * A rule scene which contains a 2 labels, 3 buttons
+     * A rule scene which contains 2 labels, 3 buttons
      * Label (Rule title), next label (text of all of the rules), start button (switch to next scene),
      * Main menu button (go back to the last scene) and quit
      */
@@ -411,10 +543,12 @@ public class Main extends Application {
 
         // Button functionality
         generateGame.setOnAction(e -> {
+            // nameTest = true if textfield is not null else some or all text fields is null or " "
+            boolean nameTest = nameConstraintCheck();
             // tokenTest = true if constraint is met else false if constraints is not met
             boolean tokenTest = tokenConstraintCheck();
             // Change scene if tokenTest = true, else Alert pops up
-            tokenConstraint(tokenTest, gameMode.toLowerCase());
+            constraintCheck(nameTest, tokenTest, gameMode.toLowerCase());
         });
 
         backToPlayerSetup.setOnAction(e -> {
@@ -435,11 +569,39 @@ public class Main extends Application {
     }
 
     /***
+     * Check to see that all textfield is not null or containing just " "
+     * @return A boolean value (true = no null textfield, false = textfield is either null or containing only " ")
+     */
+    public boolean nameConstraintCheck(){
+        // True = all textfield is not null, else some/all textfield is " " or empty
+        boolean nameCheck = true; // Default to true (if game = all AI)
+        int i = 0;
+
+        // Fetch the name value from each textfield
+        while(i < playerNameTextField.size()){
+            String playerName = playerNameTextField.get(i).getText();
+
+            // Check if the textfield is empty, containing only " ", or null
+            if(playerName == null || playerNameTextField.get(i).getText().trim().isEmpty()){
+                // Name constraint failed
+                nameCheck = false;
+                break;
+            }else{
+                // Name constraint passed
+                nameCheck = true;
+            }
+            i++;
+        }
+        return nameCheck;
+    }
+
+
+    /***
      * Check to see that no duplicate token has been chosen
      * @return A boolean value (true = no duplicate tokens found, false = duplicate tokens found amongst the players and AI)
      */
     public boolean tokenConstraintCheck(){
-        // true = pass constraint check, else failed constraint check
+        // True = pass constraint check, else failed constraint check
         boolean tokenCheck;
         // arrayList which holds all the tokens that the player and AI currently has chosen
         ArrayList<String> allToken = new ArrayList<>();
@@ -471,24 +633,35 @@ public class Main extends Application {
         return tokenCheck;
     }
 
+
     /***
-     * Check and see if the token constraint has been met (false = error message, true = switch to board scene)
+     * Check and see if it has passed all of the constraint test (false = error message, true = switch to board scene)
+     * @param nameTest A boolean value specifying if all of the name assigned has met the condition to switch scene
      * @param tokenTest A boolean value specifying if the tokens assigned has met the condition to switch scene
+     * @param gameMode A string which dictates which game mode they will be playing
      */
-    public void tokenConstraint(boolean tokenTest, String gameMode){
-        if(tokenTest == false){
-            Alert tokenError = new Alert(Alert.AlertType.ERROR);
+    public void constraintCheck(boolean nameTest, boolean tokenTest, String gameMode){
+        Alert tokenError = new Alert(Alert.AlertType.ERROR);
+        if(nameTest == false){
+            tokenError.setTitle("Name Assignment Error");
+            tokenError.setHeaderText("Name Constraint");
+            tokenError.setContentText("Please enter in a name for all of the players");
+            tokenError.showAndWait();
+        }else if(tokenTest == false){
             tokenError.setTitle("Token Assignment Error");
             tokenError.setHeaderText("Token Constraint");
             tokenError.setContentText("Please ensure all players and AIs has a unique token");
             tokenError.showAndWait();
         }else{
+            // Assign player to the turn order
             assignPlayerToTurnOrder();
             // Initialize board and the pack of cards
             createBoard(gameMode);
             // Change scene
-            //            window.setScene(playerSetupScene);
-//            window.show();
+            displayGame();
+            diceRoll();
+            window.setScene(gameScene);
+            window.show();
         }
     }
 
@@ -500,17 +673,18 @@ public class Main extends Application {
         // Add player to the turn order if playerSize >= 1
         for(int i = 0; i < playerNameTextField.size(); i++){
             // Creating a new player and assigning it to turn order
-            Player player = new Player(playerNameTextField.get(i).getText(), Token.valueOf(playerTokenSpin.get(i).getValue().toString()), gameSystem,false);
+            Player player = new Player(playerNameTextField.get(i).getText(), Token.valueOf(playerTokenSpin.get(i).getValue().toString().toUpperCase()), gameSystem,false);
             order.add(player);
         }
 
         // Add AI to the turn order if aiSize >= 1
         for(int j = 0; j < aiNameTextField.size(); j++){
             // Creating a new player and assigning it to turn order
-            Player ai = new Player(aiNameTextField.get(j).getText(), Token.valueOf(aiTokenSpin.get(j).getValue().toString()), gameSystem,true);
+            Player ai = new Player(aiNameTextField.get(j).getText(), Token.valueOf(aiTokenSpin.get(j).getValue().toString().toUpperCase()), gameSystem,true);
             order.add(ai);
         }
     }
+
     /***
      * Initializing the game board and it's deck's of cards
      * @param gameMode A string which initialize the game to be either full or abridged
@@ -540,5 +714,20 @@ public class Main extends Application {
         pot = new ArrayDeque<>(potLuckPack);
         opp = new ArrayDeque<>(opportunityKnocksPack);
         gameSystem = new Board(order, board, pot, opp, gameMode);
+    }
+
+    public void diceRoll(){
+        int diceCount = 0;
+        Player player = order.getFirst();
+
+        int diceNum = gameSystem.roll(player, diceCount);
+
+        Alert diceMessage = new Alert(Alert.AlertType.INFORMATION);
+        diceMessage.setTitle("Dice Generated");
+        diceMessage.setHeaderText("Your rolled " + diceNum);
+       // diceMessage.setContentText("Roll again");
+        diceMessage.showAndWait();
+        // Remove the first person after action and add it to the last turn order?
+        order.add(order.removeFirst());
     }
 }
