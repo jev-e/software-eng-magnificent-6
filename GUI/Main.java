@@ -20,6 +20,7 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.*;
 
 /**
@@ -659,8 +660,8 @@ public class Main extends Application {
             createBoard(gameMode);
             // Change scene
             displayGame();
-            diceRoll();
             window.setScene(gameScene);
+            gameLoop();
             window.show();
         }
     }
@@ -716,18 +717,82 @@ public class Main extends Application {
         gameSystem = new Board(order, board, pot, opp, gameMode);
     }
 
-    public void diceRoll(){
-        int diceCount = 0;
-        Player player = order.getFirst();
-
-        int diceNum = gameSystem.roll(player, diceCount);
+    public void diceRoll(Player nextPlayer, int diceCount){
+        int diceNum = gameSystem.roll(nextPlayer, diceCount);
 
         Alert diceMessage = new Alert(Alert.AlertType.INFORMATION);
         diceMessage.setTitle("Dice Generated");
-        diceMessage.setHeaderText("Your rolled " + diceNum);
+        diceMessage.setHeaderText(nextPlayer.getName() + " rolled " + diceNum);
        // diceMessage.setContentText("Roll again");
         diceMessage.showAndWait();
-        // Remove the first person after action and add it to the last turn order?
-        order.add(order.removeFirst());
+    }
+
+    public void gameLoop() {
+        int retirePoint = 300;
+        gameSystem.setStart(Instant.now());
+        //displayAsString();
+        Collections.shuffle(gameSystem.turnOrder);
+        // graph
+        for( Player p: gameSystem.turnOrder ){
+            gameSystem.dataStore.put(p.getName(), new ArrayList<>());
+        }
+        gameSystem.turns = 0;
+
+        while (gameSystem.turnOrder.size() > 1) {
+            gameSystem.turns++;
+            for (int i = 0; i < gameSystem.turnOrder.size(); i++) {
+                Player currentPlayer = gameSystem.turnOrder.get(i);
+                if (currentPlayer == null) {
+                    continue;//skip players that have been removed from turn order
+                } else if (currentPlayer.isInJail()) {
+                    gameSystem.tiles.get(10).activeEffect(currentPlayer);//Activate the jail tile to serve time
+                    gameSystem.storeData(currentPlayer, currentPlayer.netWorth());
+                    continue;//move to next turn
+                }
+                int count = 0;
+                do {
+                    count++;
+                    // Dice rolling the same number
+                    gameSystem.repeat = false;
+                    // Get dice roll input from player (not AI)
+                    if (!currentPlayer.isAiAgent()) {
+                        diceRoll(currentPlayer, count);
+                    }
+                    currentPlayer.setLastRoll(gameSystem.roll(currentPlayer, count));//keep track of player roll
+                    currentPlayer.passGo();
+                    gameSystem.tiles.get(currentPlayer.getCurrentPos()).activeEffect(currentPlayer);
+
+                    if (gameSystem.turnOrder.contains(currentPlayer) && !currentPlayer.isInJail()) {
+                        if (!currentPlayer.isAiAgent()) {
+                            currentPlayer.leaveGame();
+                            //TODO Player property management GUI here
+                            //TODO Ask player if they want to trade/ GUI trade here
+
+                        } else {
+                            currentPlayer.initiateTrade();
+                            if (gameSystem.turns > retirePoint && gameSystem.turnOrder.size() > 4) {
+                                retirePoint += 100;
+                                currentPlayer.agentRetire();
+                            }
+                        }
+                        currentPlayer.developProperties();
+                        if (!gameSystem.repeat) {
+                            gameSystem.storeData(currentPlayer, currentPlayer.netWorth());
+                        }
+                    }
+
+                } while (gameSystem.repeat);
+            }
+            if (gameSystem.timeUp) {
+
+                break;
+            }
+        }
+        try {
+            gameSystem.gameOver();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+        }
     }
 }
