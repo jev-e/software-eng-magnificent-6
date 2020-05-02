@@ -1129,7 +1129,6 @@ public class Controller implements Initializable {
                 } while (gameSystem.repeat);
             }
             if (gameSystem.timeUp) {
-
                 break;
             }
         }

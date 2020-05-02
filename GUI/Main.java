@@ -3,20 +3,15 @@ package GUI;
 import ClassStructure.*;
 import javafx.application.Application;
 import javafx.application.Platform;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-
 import javafx.geometry.Pos;
-
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
-
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -654,10 +649,10 @@ public class Main extends Application {
             tokenError.setContentText("Please ensure all players and AIs has a unique token");
             tokenError.showAndWait();
         }else{
-            // Assign player to the turn order
-            assignPlayerToTurnOrder();
             // Initialize board and the pack of cards
             createBoard(gameMode);
+            // Assign player to the turn order
+            assignPlayerToTurnOrder();
             // Change scene
             displayGame();
             window.setScene(gameScene);
@@ -675,14 +670,14 @@ public class Main extends Application {
         for(int i = 0; i < playerNameTextField.size(); i++){
             // Creating a new player and assigning it to turn order
             Player player = new Player(playerNameTextField.get(i).getText(), Token.valueOf(playerTokenSpin.get(i).getValue().toString().toUpperCase()), gameSystem,false);
-            order.add(player);
+            gameSystem.turnOrder.add(player);
         }
 
         // Add AI to the turn order if aiSize >= 1
         for(int j = 0; j < aiNameTextField.size(); j++){
             // Creating a new player and assigning it to turn order
             Player ai = new Player(aiNameTextField.get(j).getText(), Token.valueOf(aiTokenSpin.get(j).getValue().toString().toUpperCase()), gameSystem,true);
-            order.add(ai);
+            gameSystem.turnOrder.add(ai);
         }
     }
 
@@ -756,7 +751,7 @@ public class Main extends Application {
                     gameSystem.repeat = false;
                     // Get dice roll input from player (not AI)
                     if (!currentPlayer.isAiAgent()) {
-                        diceRoll(currentPlayer, count);
+                        //diceRoll(currentPlayer, count);
                     }
                     currentPlayer.setLastRoll(gameSystem.roll(currentPlayer, count));//keep track of player roll
                     currentPlayer.passGo();

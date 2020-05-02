@@ -1,6 +1,9 @@
 package ClassStructure;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -655,6 +658,8 @@ public class Player {
      * @return object list of (Station|Utility|Property)*
      */
     public LinkedList<Object> ownedAssets() {
+        System.out.println("Test");
+        System.out.println(board.toString());
         LinkedList<Object> owned = new LinkedList<>();
         for (Player p : board.turnOrder) {
             if (p != this) {//ignore this agent
