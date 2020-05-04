@@ -698,7 +698,6 @@ public class Player {
                 owned.add(item);
             }
         }
-
         return owned;
     }
 

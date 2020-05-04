@@ -1,10 +1,12 @@
 package GUI;
 
 import ClassStructure.*;
+import com.sun.corba.se.impl.logging.POASystemException;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -735,6 +737,110 @@ public class Main extends Application {
     }
 
     /***
+     * Create the trading Scene where it shows your assets and the selected player assets that is trade-able
+     * @param currentPlayer Current player
+     * @param tradePlayer The selected player that they wish to trade with
+     */
+    public void tradingScene(Player currentPlayer, String tradePlayer){
+        int i = 0;
+        VBox tradingPane = new VBox(10);
+        tradingPane.setPadding(new Insets(0, 20, 10, 20));
+        tradingPane.setAlignment(Pos.TOP_CENTER);
+        // Hold playerOnePane and PlayerTwoPane (asset information for both players)
+        HBox allPlayerPane = new HBox(15);
+        allPlayerPane.setAlignment(Pos.CENTER);
+        // Holds only the current players assets that is trade-able
+        VBox playerOnePane = new VBox();
+        playerOnePane.setAlignment(Pos.CENTER);
+        // Holds only the selected player assets that is trade-able
+        VBox playerTwoPane = new VBox();
+        playerTwoPane.setAlignment(Pos.CENTER);
+        // Holds three button (select another player, trade and cancel the trade)
+        HBox optionPane = new HBox(5);
+        optionPane.setAlignment(Pos.CENTER);
+
+        Label title = new Label("Property Tycoon Trading");
+        Label playerOneName = new Label(currentPlayer.getName() + " Assets");
+        Label playerTwoName = new Label(tradePlayer + " Assets");
+
+        // TODO remove after finish testing
+        Property temp;
+        Property temp2;
+        temp = new Property(1, "Example Street", Group.GREEN, 10, 10, null, 10, null);
+        temp2 = new Property(2, "Example Street1", Group.GREEN, 10, 10, null, 10, null);
+        currentPlayer.addAsset(temp);
+        currentPlayer.addAsset(temp2);
+
+        ListView playerOneAsset = new ListView();
+        // Add current player assets to it their listView
+        playerOneAsset = addAssetToViewList(currentPlayer, playerOneAsset);
+        // Allow the user to select multiple properties to trade with
+        playerOneAsset.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        ListView playerTwoAsset = new ListView();
+        playerTwoAsset.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        // Find the player object with the given player name
+        while(i < order.size()){
+            if(tradePlayer == order.get(i).getName()){
+                Player playerTwo = order.get(i);
+                // Add selected player assets to their listView
+                playerTwoAsset = addAssetToViewList(playerTwo, playerTwoAsset);
+                break;
+            }
+            i++;
+        }
+
+        Button trade = new Button("Trade");
+        Button help = new Button("Help");
+        Button back = new Button("Select Another Player");
+        Button cancelTrade = new Button("Cancel Trade");
+
+        // Button Functionality
+        trade.setOnAction(e -> {
+            Alert tradeMessage = new Alert(Alert.AlertType.NONE);
+
+        });
+        help.setOnAction(e -> {
+            Alert helpMessage = new Alert(Alert.AlertType.INFORMATION);
+            helpMessage.setTitle("Property Tycoon Trading");
+            // TODO ask tom which key is hold
+            helpMessage.setHeaderText("Property Tycoon Help Message");
+            helpMessage.setContentText("To trade multiple assets, hold 'x' and click on the asset");
+            helpMessage.showAndWait();
+        });
+        back.setOnAction(e -> {
+
+        });
+        cancelTrade.setOnAction(e -> {
+
+        });
+
+        playerOnePane.getChildren().addAll(playerOneName, playerOneAsset);
+        playerTwoPane.getChildren().addAll(playerTwoName, playerTwoAsset);
+        allPlayerPane.getChildren().addAll(playerOnePane, playerTwoPane);
+        optionPane.getChildren().addAll(back, help, trade, cancelTrade);
+        tradingPane.getChildren().addAll(title, allPlayerPane, optionPane);
+
+        tradingScene = new Scene(tradingPane);
+    }
+
+    /***
+     * Add all of the trade-able assets to the given list view with the given player
+     * @param player The current player you wish to find their assets
+     * @param asset A empty list view which will show all of the trade-able assets
+     * @return A filled list view of all of the trade-able assets
+     */
+    public ListView addAssetToViewList(Player player, ListView asset){
+        LinkedList<Object> tradeableAsset = player.tradeableAssets(player);
+        for(int i = 0; i < tradeableAsset.size(); i++){
+            // Fetch a property and casting it to a board tile
+            BoardTile propertyTile = (BoardTile) tradeableAsset.get(i);
+            // Fetch the property name
+            asset.getItems().add(propertyTile.getTitle());
+        }
+        return asset;
+    }
+
+    /***
      * Create a popup scene which allow the current player to select who they want to trade with
      * @param currentPlayer Is a parameter which tell us who is the current player is
      */
@@ -760,8 +866,12 @@ public class Main extends Application {
             // Make sure you cant trade with yourself
             if(currentPlayer.getName() != tempPlayerList.get(i).getName()){
                 listOfPlayer.getItems().add(tempPlayerList.get(i).getName());
+                // Default value set to the first player that is not itself
+                listOfPlayer.setValue(tempPlayerList.get(1).getName());
             }
         }
+
+
 
         title.setStyle(
                 "-fx-label-padding: 20 0 10 0;" + "-fx-font-size: 14;" + "-fx-font-weight: bold;"
@@ -775,7 +885,12 @@ public class Main extends Application {
         leaveTrade.setStyle("-fx-font-size:14;");
 
         nextSetup.setOnAction(e -> {
+            // Fetch the name of the player that they want to trade with
+            String tradingPlayer = listOfPlayer.getValue().toString();
+            tradingScene(currentPlayer, tradingPlayer);
             // Change scene with current player asset and selected player asset to trade with
+            window.setScene(tradingScene);
+            window.show();
         });
         leaveTrade.setOnAction(e -> {
             // Doesnt want to trade, go back to board scene
