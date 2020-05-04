@@ -43,7 +43,7 @@ public class Main extends Application {
     private GridPane botRowGP;   // Bottom 9 tiles container (Not the corners)
 
     Stage window;
-    Scene menuScene, ruleScene, playerSetupScene, gameSetupScene, gameBoardScene;
+    Scene menuScene, ruleScene, playerSetupScene, gameSetupScene, gameBoardScene, tradingSetupScene, tradingScene;
 
     // Holds the players name
     public ArrayList<TextField> playerNameTextField = new ArrayList<>();
@@ -653,11 +653,18 @@ public class Main extends Application {
             createBoard(gameMode);
             // Assign player to the turn order
             assignPlayerToTurnOrder();
-            // Change scene
-            displayGame();
-            window.setScene(gameScene);
-            gameLoop();
+
+            // Testing  dannnny !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            // TODO change after testing
+            tradingSetupScene(order.getFirst());
+            window.setScene(tradingSetupScene);
             window.show();
+
+            // Change scene
+//            displayGame();
+//            window.setScene(gameScene);
+//            gameLoop();
+//            window.show();
         }
     }
 
@@ -712,6 +719,11 @@ public class Main extends Application {
         gameSystem = new Board(order, board, pot, opp, gameMode);
     }
 
+    /***
+     * Dice rolling function, Allow the player to roll the dice and then move appropriately
+     * @param nextPlayer Current player in the turn order to roll dice
+     * @param diceCount Counter to keep track of how many times it has rolled the same number
+     */
     public void diceRoll(Player nextPlayer, int diceCount){
         int diceNum = gameSystem.roll(nextPlayer, diceCount);
 
@@ -722,6 +734,64 @@ public class Main extends Application {
         diceMessage.showAndWait();
     }
 
+    /***
+     * Create a popup scene which allow the current player to select who they want to trade with
+     * @param currentPlayer Is a parameter which tell us who is the current player is
+     */
+    public void tradingSetupScene(Player currentPlayer){
+        // TODO make it a popup scene, (waiting on board scene to be finished)
+        VBox tradingSetupPane = new VBox(10);
+        tradingSetupPane.setAlignment(Pos.CENTER);
+        HBox selectPlayerPane = new HBox(5);
+        selectPlayerPane.setAlignment(Pos.CENTER);
+        HBox optionPane = new HBox(5);
+        optionPane.setAlignment(Pos.CENTER);
+
+        Label title = new Label("Property Tycoon Trading Setup");
+        Label tradeMessage = new Label("Select the players you want to trade with " + currentPlayer.getName());
+
+        Button nextSetup = new Button("Next");
+        Button leaveTrade = new Button("Leave Trade");
+
+        ComboBox listOfPlayer = new ComboBox();
+        // Copying all of the players - current player (choices for current player to trade with)
+        LinkedList<Player> tempPlayerList = (LinkedList<Player>) order.clone();
+        for(int i = 0; i < order.size(); i++){
+            // Make sure you cant trade with yourself
+            if(currentPlayer.getName() != tempPlayerList.get(i).getName()){
+                listOfPlayer.getItems().add(tempPlayerList.get(i).getName());
+            }
+        }
+
+        title.setStyle(
+                "-fx-label-padding: 20 0 10 0;" + "-fx-font-size: 14;" + "-fx-font-weight: bold;"
+        );
+        tradeMessage.setStyle(
+                "-fx-label-padding: 20 0 10 0;" + "-fx-font-size: 14;"
+        );
+        nextSetup.setPrefSize(130,30);
+        nextSetup.setStyle("-fx-font-size:14;");
+        leaveTrade.setPrefSize(130,30);
+        leaveTrade.setStyle("-fx-font-size:14;");
+
+        nextSetup.setOnAction(e -> {
+            // Change scene with current player asset and selected player asset to trade with
+        });
+        leaveTrade.setOnAction(e -> {
+            // Doesnt want to trade, go back to board scene
+            window.setScene(gameScene);
+            window.show();
+        });
+
+        selectPlayerPane.getChildren().addAll(tradeMessage, listOfPlayer);
+        optionPane.getChildren().addAll(nextSetup, leaveTrade);
+        tradingSetupPane.getChildren().addAll(title, selectPlayerPane, optionPane);
+        tradingSetupScene = new Scene(tradingSetupPane,400,400);
+    }
+
+    /***
+     * How the game is run
+     */
     public void gameLoop() {
         int retirePoint = 300;
         gameSystem.setStart(Instant.now());
@@ -762,7 +832,6 @@ public class Main extends Application {
                             currentPlayer.leaveGame();
                             //TODO Player property management GUI here
                             //TODO Ask player if they want to trade/ GUI trade here
-
                         } else {
                             currentPlayer.initiateTrade();
                             if (gameSystem.turns > retirePoint && gameSystem.turnOrder.size() > 4) {
