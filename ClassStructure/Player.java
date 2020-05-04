@@ -679,10 +679,10 @@ public class Player {
         return owned;
     }
 
-    /**
-     * Creates a list of all assets owned by other players that are can be traded
-     *
-     * @return object list of (Station|Utility|Property)*
+    /***
+     * Return a list of trade-able asset for the selected player
+     * @param p Selected player
+     * @return A trade-able assets for the selected player
      */
     public LinkedList<Object> tradeableAssets( Player p ) {
         LinkedList<Object> owned = new LinkedList<>();
