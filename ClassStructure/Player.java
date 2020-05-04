@@ -689,9 +689,7 @@ public class Player {
 
         for (Object item : p.getAssets()) {
             if (item instanceof Property) {
-                if (!(((Property) item).isCompletedSet())) {//do not include complete set items
-                    owned.add(item);
-                }
+                owned.add(item);
             } else if (item instanceof Station) {
                 owned.add(item);
             } else if (item instanceof Utility) {
