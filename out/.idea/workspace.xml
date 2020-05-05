@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="d4718719-5500-4975-beb1-5c65e877021f" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/software-eng-magnificent-6.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/software-eng-magnificent-6.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/software-eng-magnificent-6/.idea/software-eng-magnificent-6.iml" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/software-eng-magnificent-6/.idea/software-eng-magnificent-6.iml" afterDir="false" />
+    </list>
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CodeInsightWorkspaceSettings">
+    <option name="optimizeImportsOnTheFly" value="true" />
+  </component>
+  <component name="CoverageViewManager">
+    <option name="myElementSize" value="241" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+        <option value="JavaFXApplication" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="master" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="1Zog43iGYZ5iuXMAq79DQ56Cjiy" />
+  <component name="PropertiesComponent">
+    <property name="Downloaded.Files.Path.Enabled" value="false" />
+    <property name="Git.Branch.Popup.ShowAllRemotes" value="true" />
+    <property name="Repository.Attach.Annotations" value="false" />
+    <property name="Repository.Attach.JavaDocs" value="false" />
+    <property name="Repository.Attach.Sources" value="false" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="aspect.path.notification.shown" value="true" />
+    <property name="last_opened_file_path" value="C:/Program Files/Java/javafx-sdk-11.0.2/lib/javafx.media.jar!/" />
+    <property name="project.structure.last.edited" value="Modules" />
+    <property name="project.structure.proportion" value="0.15384616" />
+    <property name="project.structure.side.proportion" value="0.2" />
+    <property name="settings.editor.selected.configurable" value="org.intellij.lang.jflex.options.JFlexConfigurable" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Calvin\Documents\GitHub\software-eng-magnificent-6" />
+    </key>
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager" selected="JUnit.GameTest">
+    <configuration name="DataVisualisation" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="ClassStructure.DataVisualisation" />
+      <module name="software-eng-magnificent-6" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="ClassStructure.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="GUI.Main" />
+      <module name="software-eng-magnificent-6" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="GUI.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TestSpace" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="ClassStructure.TestSpace" />
+      <module name="software-eng-magnificent-6" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="GameTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="software-eng-magnificent-6" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="ClassStructure.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="ClassStructure" />
+      <option name="MAIN_CLASS_NAME" value="ClassStructure.GameTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="GameTest.bankruptTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="software-eng-magnificent-6" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="ClassStructure.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="ClassStructure" />
+      <option name="MAIN_CLASS_NAME" value="ClassStructure.GameTest" />
+      <option name="METHOD_NAME" value="bankruptTest" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ReadInDataTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="software-eng-magnificent-6" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="ClassStructure.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="ClassStructure" />
+      <option name="MAIN_CLASS_NAME" value="ClassStructure.ReadInDataTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="JUnit.GameTest" />
+        <item itemvalue="JUnit.GameTest.bankruptTest" />
+        <item itemvalue="Application.DataVisualisation" />
+        <item itemvalue="Application.Main" />
+        <item itemvalue="JUnit.ReadInDataTest" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="d4718719-5500-4975-beb1-5c65e877021f" name="Default Changelist" comment="" />
+      <created>1585510666066</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1585510666066</updated>
+      <workItem from="1585510668687" duration="1748000" />
+      <workItem from="1585512489097" duration="18396000" />
+      <workItem from="1585599204082" duration="3778000" />
+      <workItem from="1585655659491" duration="602000" />
+      <workItem from="1585656290149" duration="8113000" />
+      <workItem from="1585773247408" duration="702000" />
+      <workItem from="1585823525467" duration="1418000" />
+      <workItem from="1585825715330" duration="1985000" />
+      <workItem from="1585831343563" duration="426000" />
+      <workItem from="1585851201585" duration="912000" />
+      <workItem from="1585913642640" duration="41332000" />
+      <workItem from="1586084006290" duration="9028000" />
+      <workItem from="1586174546378" duration="16093000" />
+      <workItem from="1586327674994" duration="631000" />
+      <workItem from="1586428683832" duration="2047000" />
+      <workItem from="1586452817715" duration="1590000" />
+      <workItem from="1586504182244" duration="2356000" />
+      <workItem from="1586951722887" duration="772000" />
+      <workItem from="1587030569393" duration="4722000" />
+      <workItem from="1587497531045" duration="27573000" />
+      <workItem from="1587587191289" duration="123000" />
+      <workItem from="1587632331756" duration="6640000" />
+      <workItem from="1587911532413" duration="796000" />
+      <workItem from="1587916550904" duration="5860000" />
+      <workItem from="1588080777025" duration="3007000" />
+      <workItem from="1588084744526" duration="3602000" />
+      <workItem from="1588244582849" duration="5074000" />
+      <workItem from="1588341892161" duration="13722000" />
+      <workItem from="1588697251374" duration="936000" />
+    </task>
+    <task id="LOCAL-00001" summary="test">
+      <created>1585851452384</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1585851452384</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="trading" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+              <option name="COLUMN_ORDER" />
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="RECENT_FILTERS">
+      <map>
+        <entry key="Branch">
+          <value>
+            <list>
+              <RecentGroup>
+                <option name="FILTER_VALUES">
+                  <option value="trading" />
+                </option>
+              </RecentGroup>
+            </list>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="test" />
+    <option name="LAST_COMMIT_MESSAGE" value="test" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/ClassStructure/GameTest.java</url>
+          <line>9</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/software_eng_magnificent_6$GameTest.ic" NAME="GameTest Coverage Results" MODIFIED="1588696151556" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
+      <FILTER>ClassStructure.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/software_eng_magnificent_6$TestSpace.ic" NAME="TestSpace Coverage Results" MODIFIED="1586040959036" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+  </component>
+</project>
