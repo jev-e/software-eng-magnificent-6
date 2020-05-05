@@ -257,6 +257,39 @@ class GameTest {
     public void bankruptTest() throws IOException {
         jsonDataBoard();//Reads in full game data for test
         for (Player p : board.turnOrder) {
+            if (!p.getName().equals("Ayman")) {//Sets all players money apart from Ayman's to £10
+                p.setMoney(10);
+            }
+        }
+        Player currentPlayer = board.turnOrder.get(1);//gets Danny from turn order
+        currentPlayer.setCurrentPos(4);//Moves Danny to income tax
+        board.tiles.get(currentPlayer.getCurrentPos()).activeEffect(currentPlayer);//activate tile
+        //Danny cannot pay £200 fine
+        assertFalse(board.turnOrder.contains(currentPlayer));//Check danny has been removed
+        currentPlayer = board.turnOrder.get(0);//gets Ayman from turn order
+        currentPlayer.setCurrentPos(4);//Moves Ayman to income tax
+        board.tiles.get(currentPlayer.getCurrentPos()).activeEffect(currentPlayer);//activate tile
+        //Ayman can pay £200 fine
+        assertTrue(board.turnOrder.contains(currentPlayer));//Check Ayman has not been removed
+
+        currentPlayer = board.turnOrder.get(1);//get Jacob
+        ((Property) board.tiles.get(1)).setOwner(currentPlayer);//give jacob crapper street
+        currentPlayer.addAsset(board.tiles.get(1)); //add to asset list
+        //jacob net worth  £10 + crapper street = £10 + £60 = £70
+        assertEquals(currentPlayer, ((Property) board.tiles.get(1)).getOwner());//ownership check
+        currentPlayer.setCurrentPos(4);//Moves Ayman to income tax
+        board.tiles.get(currentPlayer.getCurrentPos()).activeEffect(currentPlayer);//activate tile
+        //Jacob cannot pay £200 fine, crapper street returned to bank
+        assertNull(((Property) board.tiles.get(1)).getOwner());//ownership check
+    }
+
+    /**
+     * Player bankrupt function and returning assets
+     */
+    @Test
+    public void bankruptTestFormer() throws IOException {
+        jsonDataBoard();//Reads in full game data for test
+        for (Player p : board.turnOrder) {
             if (p.getName().equals("Ayman")) {//Sets all players money apart from Ayman's to £10
                 p.setMoney(10);
             }
@@ -388,6 +421,7 @@ class GameTest {
         Player currentPlayer = board.turnOrder.getFirst();
         currentPlayer.setAiAgent(true);//Set player to be AI
         currentPlayer.getPersonality().setPatient(true);//AI will serve time if get out of jail card not available
+        currentPlayer.getPersonality().setCautious(true);//AI will likely pay bail based on cautious judgement
         currentPlayer.jailPlayer();
         assertTrue(currentPlayer.isInJail());//Player should not be in jail as they are patient
         CardEffect jailCard = board.drawPotLuck();
@@ -399,8 +433,16 @@ class GameTest {
         currentPlayer.jailPlayer();//player will use card
         assertFalse(currentPlayer.isInJail());//check player has left jail
         currentPlayer.getPersonality().setPatient(false);//player should pay bail as they have enough money
-        currentPlayer.jailPlayer();
-        assertFalse(currentPlayer.isInJail());
+        int count = 0;
+        int correct = 0;
+        currentPlayer.setMoney(10000);//make sure player has ample funds for repeated trials
+        while (count < 40) {//check the interaction multiple times due to probabilistic element
+            if (!currentPlayer.isInJail()) {
+                correct++;
+            }
+            count++;
+        }
+        assertTrue(correct > 38);//insure that expected outcome occurs the majority of the time
     }
 
     /**

@@ -1,7 +1,6 @@
 package ClassStructure;
 
 import java.util.LinkedList;
-import java.util.Scanner;
 
 /**
  * Station tile events
