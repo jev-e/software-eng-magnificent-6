@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="d4718719-5500-4975-beb1-5c65e877021f" name="Default Changelist" comment="" />
+    <list default="true" id="d4718719-5500-4975-beb1-5c65e877021f" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/ClassStructure/Board.java" beforeDir="false" afterPath="$PROJECT_DIR$/ClassStructure/Board.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ClassStructure/GameTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/ClassStructure/GameTest.java" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -12,7 +15,10 @@
     <option name="optimizeImportsOnTheFly" value="true" />
   </component>
   <component name="CoverageViewManager">
-    <option name="myElementSize" value="241" />
+    <option name="myElementSize" value="325" />
+  </component>
+  <component name="FavoritesManager">
+    <favorites_list name="software-eng-magnificent-6" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -40,7 +46,7 @@
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="last_opened_file_path" value="C:/Program Files/Java/javafx-sdk-11.0.2/lib/javafx.media.jar!/" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="project.structure.last.edited" value="Modules" />
     <property name="project.structure.proportion" value="0.15384616" />
     <property name="project.structure.side.proportion" value="0.2" />
@@ -64,32 +70,6 @@
     </option>
   </component>
   <component name="RunManager" selected="JUnit.GameTest">
-    <configuration name="DataVisualisation" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="ClassStructure.DataVisualisation" />
-      <module name="software-eng-magnificent-6" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="ClassStructure.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="GUI.Main" />
-      <module name="software-eng-magnificent-6" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="GUI.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="TestSpace" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="ClassStructure.TestSpace" />
       <module name="software-eng-magnificent-6" />
@@ -112,7 +92,7 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="GameTest.bankruptTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="GameTest.testGoToJailCard" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="software-eng-magnificent-6" />
       <extension name="coverage">
         <pattern>
@@ -122,13 +102,13 @@
       </extension>
       <option name="PACKAGE_NAME" value="ClassStructure" />
       <option name="MAIN_CLASS_NAME" value="ClassStructure.GameTest" />
-      <option name="METHOD_NAME" value="bankruptTest" />
+      <option name="METHOD_NAME" value="testGoToJailCard" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="ReadInDataTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="GameTest.testOpportunityKnocks" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="software-eng-magnificent-6" />
       <extension name="coverage">
         <pattern>
@@ -137,19 +117,60 @@
         </pattern>
       </extension>
       <option name="PACKAGE_NAME" value="ClassStructure" />
-      <option name="MAIN_CLASS_NAME" value="ClassStructure.ReadInDataTest" />
-      <option name="TEST_OBJECT" value="class" />
+      <option name="MAIN_CLASS_NAME" value="ClassStructure.GameTest" />
+      <option name="METHOD_NAME" value="testOpportunityKnocks" />
+      <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="GameTest.testPayBankTax" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="software-eng-magnificent-6" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="ClassStructure.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="ClassStructure" />
+      <option name="MAIN_CLASS_NAME" value="ClassStructure.GameTest" />
+      <option name="METHOD_NAME" value="testPayBankTax" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="GameTest.testPayBankTaxOrDrawCreation" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="software-eng-magnificent-6" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="ClassStructure.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="ClassStructure" />
+      <option name="MAIN_CLASS_NAME" value="ClassStructure.GameTest" />
+      <option name="METHOD_NAME" value="testPayBankTaxOrDrawCreation" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="Application.TestSpace" />
+      <item itemvalue="JUnit.GameTest.testGoToJailCard" />
+      <item itemvalue="JUnit.GameTest.testOpportunityKnocks" />
+      <item itemvalue="JUnit.GameTest.testPayBankTax" />
+      <item itemvalue="JUnit.GameTest.testPayBankTaxOrDrawCreation" />
+      <item itemvalue="JUnit.GameTest" />
+    </list>
     <recent_temporary>
       <list>
         <item itemvalue="JUnit.GameTest" />
-        <item itemvalue="JUnit.GameTest.bankruptTest" />
-        <item itemvalue="Application.DataVisualisation" />
-        <item itemvalue="Application.Main" />
-        <item itemvalue="JUnit.ReadInDataTest" />
+        <item itemvalue="JUnit.GameTest.testPayBankTaxOrDrawCreation" />
+        <item itemvalue="JUnit.GameTest.testPayBankTax" />
+        <item itemvalue="JUnit.GameTest.testOpportunityKnocks" />
+        <item itemvalue="JUnit.GameTest.testGoToJailCard" />
       </list>
     </recent_temporary>
   </component>
@@ -192,6 +213,8 @@
       <workItem from="1588244582849" duration="5074000" />
       <workItem from="1588341892161" duration="13722000" />
       <workItem from="1588697251374" duration="2493000" />
+      <workItem from="1588772194126" duration="19529000" />
+      <workItem from="1588803248703" duration="107000" />
     </task>
     <task id="LOCAL-00001" summary="test">
       <created>1585851452384</created>
@@ -254,16 +277,61 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/ClassStructure/GameTest.java</url>
-          <line>9</line>
+          <line>8</line>
           <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-method">
+          <url>file://$PROJECT_DIR$/ClassStructure/GameTest.java</url>
+          <line>903</line>
+          <properties class="ClassStructure.GameTest" method="testGoToJailCard">
+            <option name="EMULATED" value="true" />
+          </properties>
+          <option name="timeStamp" value="4" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/software_eng_magnificent_6$GameTest.ic" NAME="GameTest Coverage Results" MODIFIED="1588709299387" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
+    <SUITE FILE_PATH="coverage/software_eng_magnificent_6$GameTest.ic" NAME="GameTest Coverage Results" MODIFIED="1588797156430" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
+      <FILTER>ClassStructure.*</FILTER>
+      <EXCLUDED_FILTER>ClassStructure.DataVisualisation</EXCLUDED_FILTER>
+      <EXCLUDED_FILTER>ClassStructure.PropertyTest</EXCLUDED_FILTER>
+      <EXCLUDED_FILTER>ClassStructure.ReadInDataTest</EXCLUDED_FILTER>
+      <EXCLUDED_FILTER>ClassStructure.GameTest</EXCLUDED_FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/software_eng_magnificent_6$GameTest_testOpportunityKnocks.ic" NAME="GameTest.testOpportunityKnocks Coverage Results" MODIFIED="1588802396605" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
+      <FILTER>ClassStructure.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/software_eng_magnificent_6$GameTest_testGoToJail.ic" NAME="GameTest.testGoToJail Coverage Results" MODIFIED="1588800548936" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
       <FILTER>ClassStructure.*</FILTER>
     </SUITE>
     <SUITE FILE_PATH="coverage/software_eng_magnificent_6$TestSpace.ic" NAME="TestSpace Coverage Results" MODIFIED="1586040959036" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+    <SUITE FILE_PATH="coverage/software_eng_magnificent_6$GameTest_testPayBankTaxOrDrawCreation.ic" NAME="GameTest.testPayBankTaxOrDrawCreation Coverage Results" MODIFIED="1588802901496" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
+      <FILTER>ClassStructure.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/software_eng_magnificent_6$GameTest_cardDrawTest.ic" NAME="GameTest.cardDrawTest Coverage Results" MODIFIED="1588798480631" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
+      <FILTER>ClassStructure.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/software_eng_magnificent_6$GameTest_testPayBankTax.ic" NAME="GameTest.testPayBankTax Coverage Results" MODIFIED="1588802684335" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
+      <FILTER>ClassStructure.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/software_eng_magnificent_6$GameTest_testBankPaysPlayer.ic" NAME="GameTest.testBankPaysPlayer Coverage Results" MODIFIED="1588797661928" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
+      <FILTER>ClassStructure.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/software_eng_magnificent_6$GameTest_movePlayer.ic" NAME="GameTest.movePlayer Coverage Results" MODIFIED="1588801486657" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
+      <FILTER>ClassStructure.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/software_eng_magnificent_6$GameTest_testGoToJailCard.ic" NAME="GameTest.testGoToJailCard Coverage Results" MODIFIED="1588800939420" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
+      <FILTER>ClassStructure.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/software_eng_magnificent_6$GameTest_housingRepairsTest.ic" NAME="GameTest.housingRepairsTest Coverage Results" MODIFIED="1588801256911" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
+      <FILTER>ClassStructure.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/software_eng_magnificent_6$GameTest_testBoardTile.ic" NAME="GameTest.testBoardTile Coverage Results" MODIFIED="1588798207263" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
+      <FILTER>ClassStructure.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/software_eng_magnificent_6$GameTest_actionLogTest.ic" NAME="GameTest.actionLogTest Coverage Results" MODIFIED="1588798996556" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
+      <FILTER>ClassStructure.*</FILTER>
+    </SUITE>
   </component>
 </project>

@@ -809,18 +809,7 @@ class GameTest {
         currentPlayer.deductAmount(3100);
     }
 
-    /**
-     * Tests that when an abridged game version is selected that a timer is created, runs and triggers the correct
-     * event
-     */
-    @Test
-    public void abridgedTest() throws InterruptedException {
-        board = new Board(order, tileSet, pot, opp, "abridged", 1);
-        board.startGameTimer();
-        assertNotEquals(board.timer, null);
-        TimeUnit.SECONDS.sleep(90);
-        assertTrue(board.timeUp);
-    }
+
 
     /**
      * Test that action log correctly stores players actions
@@ -864,42 +853,6 @@ class GameTest {
         go.activeEffect(currentPlayer);
         expectedString = "Go\n";
         assertEquals(expectedString, currentPlayer.getActionLog());
-    }
-
-    /**
-     * Tests that the game throws an illegal game ending exception when appropriate and measures
-     * duration of game correctly
-     * @throws Exception
-     */
-    @Test
-    public void testGameOver() throws Exception {
-        board = new Board(order, tileSet, pot, opp, "abridged", 1);
-        board.startGameTimer();
-        //test
-        assertNotEquals(board.getStart(), null);
-        Exception ex = assertThrows(
-                Exception.class,
-                () -> board.gameOver()
-        );
-        assertEquals("illegal end game state" , ex.getMessage());
-
-        assertNotEquals(board.getFinished(), null);
-        assertEquals(Duration.between(board.getStart(), board.getFinished()).toMillis(), board.getTimeElapsed());
-
-    }
-
-    /**
-     * Tests the correct storing of data
-     */
-    @Test
-    public void testStoreData() {
-        for( Player p: board.turnOrder ){
-            board.dataStore.put(p.getName(), new ArrayList<>());
-        }
-        Pair test = new Pair(5,100);
-        board.turns = 5;
-        board.storeData( board.turnOrder.getFirst(), 100);
-        board.dataStore.get(board.turnOrder.getFirst().getName()).contains(test);
     }
 
     /**
@@ -1007,5 +960,55 @@ class GameTest {
     public void testPayBankTaxOrDrawCreation() {
         PayTaxOrDrawOpportunity ptdo = new PayTaxOrDrawOpportunity("Test", 100);
         assertEquals(ptdo.getAmount(), 100);
+    }
+
+    /**
+     * Tests that when an abridged game version is selected that a timer is created, runs and triggers the correct
+     * event
+     */
+    @Test
+    public void abridgedTest() throws InterruptedException {
+        board = new Board(order, tileSet, pot, opp, "abridged", 1);
+        board.startGameTimer();
+        assertNotEquals(board.timer, null);
+        TimeUnit.SECONDS.sleep(90);
+        assertTrue(board.timeUp);
+    }
+
+
+    /**
+     * Tests that the game throws an illegal game ending exception when appropriate and measures
+     * duration of game correctly
+     * @throws Exception
+     */
+    @Test
+    public void testGameOver() throws Exception {
+        board = new Board(order, tileSet, pot, opp, "abridged", 1);
+        board.startGameTimer();
+        //test
+        assertNotEquals(board.getStart(), null);
+        Exception ex = assertThrows(
+                Exception.class,
+                () -> board.gameOver()
+        );
+        assertEquals("illegal end game state" , ex.getMessage());
+
+        assertNotEquals(board.getFinished(), null);
+        assertEquals(Duration.between(board.getStart(), board.getFinished()).toMillis(), board.getTimeElapsed());
+
+    }
+
+    /**
+     * Tests the correct storing of data
+     */
+    @Test
+    public void testStoreData() {
+        for( Player p: board.turnOrder ){
+            board.dataStore.put(p.getName(), new ArrayList<>());
+        }
+        Pair test = new Pair(5,100);
+        board.turns = 5;
+        board.storeData( board.turnOrder.getFirst(), 100);
+        board.dataStore.get(board.turnOrder.getFirst().getName()).contains(test);
     }
 }
