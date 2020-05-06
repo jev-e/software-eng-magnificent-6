@@ -111,7 +111,7 @@ public class DataVisualisation extends Application {
             pot = new ArrayDeque<>(potLuckPack);//Load shuffled pack into decks
             opp = new ArrayDeque<>(opportunityKnocksPack);
 
-            b = new Board(order, board, pot, opp);
+            b = new Board(order, board, pot, opp, "full");
             //player creation
             Player ayman = new Player("Ayman", Token.HATSTAND, b, true);
             Player danny = new Player("Danny", Token.CAT, b, true);

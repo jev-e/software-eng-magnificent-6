@@ -1,10 +1,13 @@
 package ClassStructure;
 
 
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class GameTest {
@@ -86,6 +89,49 @@ class GameTest {
         }
 
 
+    }
+
+    /**
+     * Tests the correct creation of the board, in particular testing member variables are
+     * instantiated correctly
+     */
+    @Test
+    public void boardCreationTest() {
+        assertEquals(board.turnOrder, order);
+        assertEquals(board.tiles, tileSet);
+        assertEquals(board.potLuck, pot);
+        assertEquals(board.opportunityKnocks, opp);
+        assertEquals(board.getVersion(), "full");
+    }
+
+    /**
+     * Tests an exception is thrown when an illegal version is given to the board constructor
+     */
+    @Test
+    public void boardIllegalVersionTest() {
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> new Board(order, tileSet, pot, opp, "jhvjv", 1)
+        );
+
+        IllegalArgumentException ex1 = assertThrows(
+                IllegalArgumentException.class,
+                () -> new Board(order, tileSet, pot, opp, "full", 1)
+        );
+
+        IllegalArgumentException ex2 = assertThrows(
+                IllegalArgumentException.class,
+                () -> new Board(order, tileSet, pot, opp, "abridged")
+        );
+    }
+
+    @Test
+    public void rollDiceTest() {
+        //check return is within given range
+        for( int ii = 0; ii < 100; ii++){
+            int roll = board.roll(board.turnOrder.getFirst(), 0 );
+            assertTrue(roll >= 2 && roll <= 12);
+        }
     }
 
     /**
@@ -283,7 +329,6 @@ class GameTest {
         assertNull(((Property) board.tiles.get(1)).getOwner());//ownership check
     }
 
-
     /**
      * Test for asset list management insuring that owner is maintained
      * sell asset check
@@ -361,8 +406,7 @@ class GameTest {
         Player a = board.turnOrder.get(0);// get Ayman
         Player d = board.turnOrder.get(1);// get Danny
 
-        a.setLastRoll1(5);//treat player as if they just rolled 10
-        a.setLastRoll2(5);
+        a.setLastRoll(10);//treat player as if they just rolled 10
         d.addAsset(board.tiles.get(12));//give utility to Danny
         ((Utility) board.tiles.get(12)).setOwner(d);
         a.setCurrentPos(12);
@@ -370,8 +414,7 @@ class GameTest {
         assertEquals(1460, a.getMoney());
         assertEquals(1540, d.getMoney());
 
-        a.setLastRoll1(3);//treat player as if they just rolled 6
-        a.setLastRoll2(3);
+        a.setLastRoll(6);//treat player as if they just rolled 10
         d.addAsset(board.tiles.get(28));//give utility to Danny
         ((Utility) board.tiles.get(28)).setOwner(d);
         a.setCurrentPos(28);
@@ -748,13 +791,15 @@ class GameTest {
     }
 
     /**
-     * Test that action log correctly stores players actions
-     * Maintain that the log is cleared when accessed
-     *
-     * @throws IOException
+     * Tests that when an abridged game version is selected that a timer is created, runs and triggers the correct
+     * event
      */
     @Test
-    public void actionLogTest() throws IOException {
-        jsonDataBoard();
+    public void abridgedTest() throws InterruptedException {
+        board = new Board(order, tileSet, pot, opp, "abridged", 1);
+        board.startGameTimer();
+        assertNotEquals(board.timer, null);
+        TimeUnit.MINUTES.sleep(2);
+        assertTrue(board.timeUp);
     }
 }
