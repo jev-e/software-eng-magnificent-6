@@ -12,7 +12,7 @@ public class Go extends TileEffect {
         this.title = "Go";
         this.canPurchase = false;
         this.iD = 0;//Is always the first tile
-         this.text = "Go";
+        this.text = "Go";
     }
 
     /**
