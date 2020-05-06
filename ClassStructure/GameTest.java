@@ -1,10 +1,12 @@
 package ClassStructure;
 
 
+import javafx.util.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -790,6 +792,7 @@ class GameTest {
         currentPlayer.deductAmount(3100);
     }
 
+
     /**
      * Tests that when an abridged game version is selected that a timer is created, runs and triggers the correct
      * event
@@ -799,7 +802,44 @@ class GameTest {
         board = new Board(order, tileSet, pot, opp, "abridged", 1);
         board.startGameTimer();
         assertNotEquals(board.timer, null);
-        TimeUnit.MINUTES.sleep(2);
+        TimeUnit.SECONDS.sleep(90);
         assertTrue(board.timeUp);
+    }
+
+
+    /**
+     * Tests that the game throws an illegal game ending exception when appropriate and measures
+     * duration of game correctly
+     * @throws Exception
+     */
+    @Test
+    public void testGameOver() throws Exception {
+        board = new Board(order, tileSet, pot, opp, "abridged", 1);
+        board.startGameTimer();
+        //test
+        assertNotEquals(board.getStart(), null);
+        Exception ex = assertThrows(
+                Exception.class,
+                () -> board.gameOver()
+        );
+        assertEquals("illegal end game state" , ex.getMessage());
+
+        assertNotEquals(board.getFinished(), null);
+        assertEquals(Duration.between(board.getStart(), board.getFinished()).toMillis(), board.getTimeElapsed());
+
+    }
+
+    /**
+     * Tests the correct storing of data
+     */
+    @Test
+    public void testStoreData() {
+        for( Player p: board.turnOrder ){
+            board.dataStore.put(p.getName(), new ArrayList<>());
+        }
+        Pair test = new Pair(5,100);
+        board.turns = 5;
+        board.storeData( board.turnOrder.getFirst(), 100);
+        board.dataStore.get(board.turnOrder.getFirst().getName()).contains(test);
     }
 }

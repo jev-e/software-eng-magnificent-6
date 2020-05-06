@@ -24,7 +24,6 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
-import java.time.Instant;
 import java.util.*;
 
 public class Controller implements Initializable {
@@ -1073,7 +1072,6 @@ public class Controller implements Initializable {
 
     public void gameLoop() {
         int retirePoint = 300;
-        gameSystem.setStart(Instant.now());
         //displayAsString();
         Collections.shuffle(gameSystem.turnOrder);
         for( Player p: gameSystem.turnOrder ){

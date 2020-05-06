@@ -24,14 +24,6 @@ public class Board {
     public boolean timeUp = false;
     public HashMap<String, ArrayList<Pair>> dataStore; //key : playerName value: networths at each turn in game
 
-    public Instant getStart() {
-        return start;
-    }
-
-    public void setStart(Instant start) {
-        this.start = start;
-    }
-
     private Instant start;
     private Instant finished;
     public long timeElapsed;
@@ -115,17 +107,21 @@ public class Board {
     }
 
     /**
-     * Starts the game timer for an abridged game
+     * Starts the game timer, must be called before starting main game loop
      */
     public void startGameTimer(){
-        timer = new Timer();
-        TimerTask endGame = new TimerTask() {
-            @Override
-            public void run() {
-                timeUp = true; System.out.println("timeUp" + timeUp);
-            }
-        };
-        timer.schedule(endGame, (timeLimit * 60) * 1000);
+        if( version == "abridged"){
+            timer = new Timer();
+            TimerTask endGame = new TimerTask() {
+                @Override
+                public void run() {
+                    timeUp = true; System.out.println("timeUp" + timeUp);
+                }
+            };
+            timer.schedule(endGame, (timeLimit * 60) * 1000);
+        }
+        start = Instant.now();
+
     }
 
 
@@ -248,6 +244,11 @@ public class Board {
         return canLeave;
     }
 
+    /**
+     * Stores networth of player in data store along with current turn
+     * @param p
+     * @param netWorth
+     */
     public void storeData( Player p, int netWorth ){
         Pair pair = new Pair( turns, netWorth);
         dataStore.get(p.getName()).add(pair);
@@ -260,4 +261,20 @@ public class Board {
     public String getVersion() {
         return version;
     }
+
+    /**
+     * Getter for finish time
+     */
+    public Instant getFinished() {
+        return finished;
+    }
+
+    public Long getTimeElapsed() {
+        return timeElapsed;
+    }
+
+    public Instant getStart() {
+        return start;
+    }
+
 }
