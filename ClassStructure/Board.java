@@ -157,19 +157,18 @@ public class Board {
     }
 
     /**
-     * rolls two die and returns the number of places to move
-     *
-     * @return int combination of die results
+     * rolls two die and moves player to new position
+     * die 1 and 2 result stored in player
      */
     public void roll(Player currentPlayer, int count) {
-        int result = 0;
+        int result;
         Random rand = new Random();
         int die1 = rand.nextInt(6) + 1;
         int die2 = rand.nextInt(6) + 1;
         currentPlayer.setLastRoll1(die1);//maintain last roll ints
         currentPlayer.setLastRoll2(die2);
         if (currentPlayer.isAiAgent()) {//if AI record roll in action log
-            currentPlayer.addAction("Rolled |" + die1 + "| |" + die2 + "|");
+            currentPlayer.addAction("Rolled |" + die1 + "||" + die2 + "|");
         }
         if (die1 == die2) {
             repeat = true;//tracks double rolled for player to go again

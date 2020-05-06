@@ -129,7 +129,9 @@ class GameTest {
     public void rollDiceTest() {
         //check return is within given range
         for( int ii = 0; ii < 100; ii++){
-            int roll = board.roll(board.turnOrder.getFirst(), 0 );
+            Player p = board.turnOrder.getFirst();
+            board.roll(p, 0);
+            int roll = p.getLastRoll1() + p.getLastRoll2();
             assertTrue(roll >= 2 && roll <= 12);
         }
     }
@@ -406,7 +408,8 @@ class GameTest {
         Player a = board.turnOrder.get(0);// get Ayman
         Player d = board.turnOrder.get(1);// get Danny
 
-        a.setLastRoll(10);//treat player as if they just rolled 10
+        a.setLastRoll1(5);//treat player as if they just rolled 10
+        a.setLastRoll2(5);
         d.addAsset(board.tiles.get(12));//give utility to Danny
         ((Utility) board.tiles.get(12)).setOwner(d);
         a.setCurrentPos(12);
@@ -414,7 +417,8 @@ class GameTest {
         assertEquals(1460, a.getMoney());
         assertEquals(1540, d.getMoney());
 
-        a.setLastRoll(6);//treat player as if they just rolled 10
+        a.setLastRoll1(3);//treat player as if they just rolled 10
+        a.setLastRoll2(3);
         d.addAsset(board.tiles.get(28));//give utility to Danny
         ((Utility) board.tiles.get(28)).setOwner(d);
         a.setCurrentPos(28);
@@ -801,5 +805,45 @@ class GameTest {
         assertNotEquals(board.timer, null);
         TimeUnit.MINUTES.sleep(2);
         assertTrue(board.timeUp);
+    }
+
+    /**
+     * Test that action log correctly stores players actions
+     * Maintain that the log is cleared when accessed
+     *
+     * @throws IOException json file read error
+     */
+    @Test
+    public void actionLogTest() throws IOException {
+        jsonDataBoard();
+        String expectedString;
+        Player currentPlayer = board.turnOrder.getFirst();
+        currentPlayer.setAiAgent(true);//set player to be AI
+        currentPlayer.getPersonality().setWildCard(false);
+        currentPlayer.getPersonality().setTrainAffinity(true);//will buy stations
+        currentPlayer.getPersonality().setTwoSetAffinity(true);//will buy Brown and Deep Blue tiles
+        board.roll(currentPlayer, 0);
+        System.out.println(currentPlayer.getActionLog());//visual test
+        assertEquals(currentPlayer.getActionLog(), "");//check that action log is cleared
+        Station hove = (Station) board.tiles.get(15);
+        hove.activeEffect(currentPlayer);//player should buy station
+        expectedString = "Landed on Hove Station\n" +
+                "Purchased Hove Station for £200\n";
+        assertEquals(expectedString, currentPlayer.getActionLog());
+        BoardTile potLuck = board.tiles.get(2);
+        potLuck.activeEffect(currentPlayer);//draw potluck card first card bank pays player
+        expectedString = "Draw Pot Luck card\n" +
+                "You inherit £100\n";
+        assertEquals(expectedString, currentPlayer.getActionLog());
+        currentPlayer.setMoney(100);//set player money low in oder to bankrupt
+        BoardTile tax = board.tiles.get(4);//super tax
+        tax.activeEffect(currentPlayer);//charge player 200 station will be sold
+        //AI has 100 but is charged 200, 100 will be raised
+        tax.activeEffect(currentPlayer);//charge another 200 AI can't pay
+        expectedString = "You pay £200 Income tax\n" +
+                "Sell assets to raise £100\n" +
+                "You pay £200 Income tax\n" +
+                "Bankrupt\n";
+        assertEquals(expectedString, currentPlayer.getActionLog());
     }
 }
