@@ -24,14 +24,6 @@ public class Board {
     public boolean timeUp = false;
     public HashMap<String, ArrayList<Pair>> dataStore; //key : playerName value: networths at each turn in game
 
-    public Instant getStart() {
-        return start;
-    }
-
-    public void setStart(Instant start) {
-        this.start = start;
-    }
-
     private Instant start;
     private Instant finished;
     public long timeElapsed;
@@ -256,10 +248,22 @@ public class Board {
         dataStore.get(p.getName()).add(pair);
     }
 
+
     /**
-     * Getter for version
-     * @return version
+     * Getter for finish time
      */
+    public Instant getFinished() {
+        return finished;
+    }
+
+    public Long getTimeElapsed() {
+        return timeElapsed;
+    }
+
+    public Instant getStart() {
+        return start;
+    }
+
     public String getVersion() {
         return version;
     }

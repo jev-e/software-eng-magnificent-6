@@ -125,6 +125,9 @@ class GameTest {
         );
     }
 
+    /**
+     * Tests dice roll is within feasible range
+     */
     @Test
     public void rollDiceTest() {
         //check return is within given range
@@ -803,7 +806,7 @@ class GameTest {
         board = new Board(order, tileSet, pot, opp, "abridged", 1);
         board.startGameTimer();
         assertNotEquals(board.timer, null);
-        TimeUnit.MINUTES.sleep(2);
+        TimeUnit.SECONDS.sleep(90);
         assertTrue(board.timeUp);
     }
 
