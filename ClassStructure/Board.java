@@ -115,22 +115,21 @@ public class Board {
     }
 
     /**
-     * Starts the game timer for an abridged game
+     * Starts the game timer, must be called before starting main game loop
      */
     public void startGameTimer(){
-        timer = new Timer();
-        TimerTask endGame = new TimerTask() {
-            @Override
-            public void run() {
-                timeUp = true; System.out.println("timeUp" + timeUp);
-            }
-        };
-        timer.schedule(endGame, (timeLimit * 60) * 1000);
+        if( version == "abridged"){
+            timer = new Timer();
+            TimerTask endGame = new TimerTask() {
+                @Override
+                public void run() {
+                    timeUp = true; System.out.println("timeUp" + timeUp);
+                }
+            };
+            timer.schedule(endGame, (timeLimit * 60) * 1000);
+        }
+        start = Instant.now();
     }
-
-
-
-
 
     /**
      * draw pot luck card from the top of the deque
