@@ -1,7 +1,6 @@
 package ClassStructure;
 
 import java.util.LinkedList;
-import java.util.Scanner;
 
 /**
  * @author Ayman Bensreti, Calvin Boreham
@@ -66,6 +65,7 @@ public class Property extends BoardTile{
      */
     @Override
     public void activeEffect(Player currentPlayer) {
+        currentPlayer.addAction("Landed on " + title);
         if (owner != null && owner != currentPlayer && !mortgaged && !owner.isInJail()) {
             //there is an owner that is allowed to collect rent,so collect rent
             collectRent(currentPlayer);
@@ -201,7 +201,7 @@ public class Property extends BoardTile{
                 //transfer ownership
                 owner = currentPlayer;
                 currentPlayer.addAsset(this);
-                //System.out.println("You have purchased " + title + " for £" + cost);
+                currentPlayer.addAction("Purchased " + title + " for £" + cost);
             }
         } else {
             //trigger auction
@@ -234,6 +234,7 @@ public class Property extends BoardTile{
      */
     private void collectRent( Player currentPlayer) {
         //deduct rent from current player
+        currentPlayer.addAction("Pay £" + rent + " rent to " + owner.getName());
         int amountPayed = currentPlayer.deductAmount( rent ); //deduct amount from player
         //give owner rent
         owner.payPlayerAmount( amountPayed ); //gives owner amount renter was able to pay (e.g. if bankrupt)

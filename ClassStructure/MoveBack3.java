@@ -21,6 +21,7 @@ public class MoveBack3 extends CardEffect {
         int position = currentPlayer.getCurrentPos();//get players position
         int newPosition = ((position - 3) + max) % max;//Performs wrap around
         currentPlayer.setCurrentPos(newPosition);//update the players position to the one calculated
+        currentPlayer.addAction(cardText);//add text to log
         board.tiles.get(newPosition).activeEffect(currentPlayer);//triggers that tiles effect
     }
 }

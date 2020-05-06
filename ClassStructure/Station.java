@@ -41,6 +41,7 @@ public class Station extends TileEffect {
      */
     @Override
     public void activeEffect(Player currentPlayer) {
+        currentPlayer.addAction("Landed on " + title);
         int stationCount = 0;
         int amount = 0;
         if (owner != null && owner != currentPlayer && !owner.isInJail()) {
@@ -64,12 +65,16 @@ public class Station extends TileEffect {
                     amount = 200;
                     break;
             }
+            text = "Player owns " + stationCount + " station(s). You pay £" + amount;
+            currentPlayer.addAction(text);//add text to log
             int payment = currentPlayer.deductAmount(amount);//take from current player
             owner.payPlayerAmount(payment);// gives the amount the player was able to pay
-            text = "Player owns " + stationCount + " station(s). You pay £" + amount;
+
         } else {
             if (owner == null) {
                 purchase(currentPlayer);
+            } else if (owner.isInJail()) {
+                currentPlayer.addAction("Owner is in jail");//add text to log
             }
         }
     }
@@ -100,7 +105,7 @@ public class Station extends TileEffect {
                 //transfer ownership
                 owner = currentPlayer;
                 currentPlayer.addAsset(this);
-                //System.out.println("You have purchased " + title + " for £" + cost);
+                currentPlayer.addAction("Purchased " + title + " for £" + cost);
             }
         } else {
             //trigger auction

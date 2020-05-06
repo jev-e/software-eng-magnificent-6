@@ -1103,7 +1103,7 @@ public class Controller implements Initializable {
                         }
                     }
                     System.out.print("reached gui do statement");
-                    currentPlayer.setLastRoll(gameSystem.roll(currentPlayer, count));//keep track of player roll
+                    gameSystem.roll(currentPlayer, count);
                     currentPlayer.passGo();
                     gameSystem.tiles.get(currentPlayer.getCurrentPos()).activeEffect(currentPlayer);
 

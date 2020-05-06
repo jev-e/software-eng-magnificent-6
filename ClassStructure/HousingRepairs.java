@@ -47,8 +47,8 @@ public class HousingRepairs extends CardEffect {
                 houseCount += ((Property) item).getHousesNo();
             }
         }
-        amount = (hotelCount*hotelFine) + (houseCount*houseFine);//calculate the total fine
-        //note potentially add to card text here the amount that the player is charged
+        amount = (hotelCount * hotelFine) + (houseCount * houseFine);//calculate the total fine
+        currentPlayer.addAction(cardText + ", you pay £" + amount);
         currentPlayer.deductAmount(amount);//deduct amount from players balance
     }
     public int getHouseFine() {

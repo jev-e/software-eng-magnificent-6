@@ -18,9 +18,11 @@ public class Player {
     private boolean inJail; //indicator to differ between players who are jailed or just visiting
     private int jailTime; //counter to indicate how many turns a player has spent in jail
     private Board board; //board the player is playing on
-    private int lastRoll;//For use in utility functions
+    private int lastRoll1;//Last die 1 result for use in Utilities and GUI
+    private int lastRoll2;//Last die 2 result
     private boolean aiAgent;//flag for control method (userInput|Agent response)
     private Trait personality;
+    private String actionLog;//Event text to be displayed to the player or at the end of AI turn
 
     /**
      * Sets players name and token and initialises the players starting assets
@@ -44,6 +46,7 @@ public class Player {
         if (aiAgent) {
             personality = new Trait();//generate personality
         }
+        actionLog = "";//Action log is initially empty
     }
 
     /**
@@ -240,6 +243,7 @@ public class Player {
     public void passGo() {
         if(currentPos < previousPos) {
             payPlayerAmount(200);//collect £200
+            addAction("Passed Go, collect £200");//add text to log
         }
         if(!canBuy) {//Checks if the player can buy and set it to true if false
             canBuy = true;
@@ -272,16 +276,19 @@ public class Player {
             //TODO GUI Jail decision
         } else {
             if (getOutOfJail != null) {
+                addAction("Use Get Out of Jail card");
                 getOutOfJail.playCard();//AI uses card
             } else if (!personality.isPatient()) {//AI is not patient
                 if (personality.isCautious()) {
                     if (cautiousWillBuy(50)) {//checks if AI will pay bail
                         deductAmount(50);
+                        addAction("pay bail");
                         leaveJail();
                     }
                 } else {
                     if (ThreadLocalRandom.current().nextDouble(0, 1) > 0.5) {//coin flip
                         deductAmount(50);
+                        addAction("pay bail");
                         leaveJail();//pay bail based on coin flip
                     }
                 }
@@ -322,12 +329,41 @@ public class Player {
         return inJail;
     }
 
-    public int getLastRoll() {
-        return lastRoll;
+    public int getLastRoll1() {
+        return lastRoll1;
     }
 
-    public void setLastRoll(int lastRoll) {
-        this.lastRoll = lastRoll;
+    public void setLastRoll1(int lastRoll1) {
+        this.lastRoll1 = lastRoll1;
+    }
+
+    public int getLastRoll2() {
+        return lastRoll2;
+    }
+
+    public void setLastRoll2(int lastRoll2) {
+        this.lastRoll2 = lastRoll2;
+    }
+
+    /**
+     * Adds text of an event onto action log, each event is separated by a new line
+     *
+     * @param action event text to be added
+     */
+    public void addAction(String action) {
+        actionLog += action + "\n";//add action
+    }
+
+    /**
+     * Gets the action log of undisplayed actions the player has taken.
+     * Action log is cleared each time this method is called
+     *
+     * @return string of undisplayed actions the player has taken
+     */
+    public String getActionLog() {
+        String actions = actionLog;//pass action log into actions
+        actionLog = "";//clear action log as it has been displayed
+        return actions;
     }
 
     /**
@@ -458,7 +494,7 @@ public class Player {
      */
     private void bankrupt() {
         //remove player from turnorder
-        //TODO add GUI notice to player they are bankrupt
+        addAction("Bankrupt");
         board.turnOrder.remove(this);
         board.repeat = false;
         //transfer all assets to bank ownership
@@ -731,14 +767,15 @@ public class Player {
             //AI agents only offer trades to other AIs
             if (tradeTarget != null && tradeTarget.isAiAgent()) {
                 if (tradeTarget.decide(take, give)) {
-                    Object get = take.getFirst();
-                    Object lose = give.getFirst();
+                    BoardTile get = (BoardTile) take.getFirst();
+                    BoardTile lose = (BoardTile) give.getFirst();
                     tradeTarget.removeAsset(get);//remove asset from target player
                     addAsset(get);//get the desired item
                     removeAsset(lose);//remove item from lost
                     tradeTarget.addAsset(lose);//give item in return
                     completeSetProperties();
                     tradeTarget.completeSetProperties();
+                    addAction("Trade " + get.getTitle() + " for " + lose.getTitle());
                 }
             }
         }
@@ -936,6 +973,7 @@ public class Player {
      * Property developing procedure for AI
      */
     public void agentDevelopProperties() {
+        addAction("Develop Properties");
         LinkedList<Property> properties = new LinkedList<>();
         for (Object item : assets) {
             if (item instanceof Property) {
@@ -1090,6 +1128,7 @@ public class Player {
      * @param amount amount to be raised
      */
     public void agentSellAssets(int amount) {
+        addAction("Sell assets to raise £" + amount);
         int amountRaised = 0;//amount from selling assets
         int count = 0;
         while (amountRaised < amount) {

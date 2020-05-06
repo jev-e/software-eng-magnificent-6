@@ -283,38 +283,6 @@ class GameTest {
         assertNull(((Property) board.tiles.get(1)).getOwner());//ownership check
     }
 
-    /**
-     * Player bankrupt function and returning assets
-     */
-    @Test
-    public void bankruptTestFormer() throws IOException {
-        jsonDataBoard();//Reads in full game data for test
-        for (Player p : board.turnOrder) {
-            if (p.getName().equals("Ayman")) {//Sets all players money apart from Ayman's to £10
-                p.setMoney(10);
-            }
-        }
-        Player currentPlayer = board.turnOrder.get(1);//gets Danny from turn order
-        currentPlayer.setCurrentPos(4);//Moves Danny to income tax
-        board.tiles.get(currentPlayer.getCurrentPos()).activeEffect(currentPlayer);//activate tile
-        //Danny cannot pay £200 fine
-        assertFalse(board.turnOrder.contains(currentPlayer));//Check danny has been removed
-        currentPlayer = board.turnOrder.get(0);//gets Ayman from turn order
-        currentPlayer.setCurrentPos(4);//Moves Ayman to income tax
-        board.tiles.get(currentPlayer.getCurrentPos()).activeEffect(currentPlayer);//activate tile
-        //Ayman can pay £200 fine
-        assertTrue(board.turnOrder.contains(currentPlayer));//Check Ayman has not been removed
-
-        currentPlayer = board.turnOrder.get(1);//get Jacob
-        ((Property) board.tiles.get(1)).setOwner(currentPlayer);//give jacob crapper street
-        currentPlayer.addAsset(board.tiles.get(1)); //add to asset list
-        //jacob net worth  £10 + crapper street = £10 + £60 = £70
-        assertEquals(currentPlayer, ((Property) board.tiles.get(1)).getOwner());//ownership check
-        currentPlayer.setCurrentPos(4);//Moves Ayman to income tax
-        board.tiles.get(currentPlayer.getCurrentPos()).activeEffect(currentPlayer);//activate tile
-        //Jacob cannot pay £200 fine, crapper street returned to bank
-        assertNull(((Property) board.tiles.get(1)).getOwner());//ownership check
-    }
 
     /**
      * Test for asset list management insuring that owner is maintained
@@ -393,7 +361,8 @@ class GameTest {
         Player a = board.turnOrder.get(0);// get Ayman
         Player d = board.turnOrder.get(1);// get Danny
 
-        a.setLastRoll(10);//treat player as if they just rolled 10
+        a.setLastRoll1(5);//treat player as if they just rolled 10
+        a.setLastRoll2(5);
         d.addAsset(board.tiles.get(12));//give utility to Danny
         ((Utility) board.tiles.get(12)).setOwner(d);
         a.setCurrentPos(12);
@@ -401,7 +370,8 @@ class GameTest {
         assertEquals(1460, a.getMoney());
         assertEquals(1540, d.getMoney());
 
-        a.setLastRoll(6);//treat player as if they just rolled 10
+        a.setLastRoll1(3);//treat player as if they just rolled 6
+        a.setLastRoll2(3);
         d.addAsset(board.tiles.get(28));//give utility to Danny
         ((Utility) board.tiles.get(28)).setOwner(d);
         a.setCurrentPos(28);
@@ -775,5 +745,16 @@ class GameTest {
         currentPlayer.agentDevelopProperties();
         System.out.println(currentPlayer.netWorth());
         currentPlayer.deductAmount(3100);
+    }
+
+    /**
+     * Test that action log correctly stores players actions
+     * Maintain that the log is cleared when accessed
+     *
+     * @throws IOException
+     */
+    @Test
+    public void actionLogTest() throws IOException {
+        jsonDataBoard();
     }
 }

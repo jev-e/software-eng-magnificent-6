@@ -30,6 +30,7 @@ public class PlayerPaysTax extends CardEffect {
      */
     @Override
     void effect(Player currentPlayer) {
+        currentPlayer.addAction(cardText);//add text to log
         int payment = currentPlayer.deductAmount(amount);
         this.board.taxPot += payment;//add amount to tax pot
     }

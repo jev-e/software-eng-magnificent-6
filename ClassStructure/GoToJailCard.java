@@ -28,6 +28,7 @@ public class GoToJailCard extends CardEffect{
     void effect(Player currentPlayer) {
         currentPlayer.jailPlayer();
         int jailPosition = currentPlayer.getCurrentPos();
+        currentPlayer.addAction(cardText);//add text to log
         board.tiles.get(jailPosition).activeEffect(currentPlayer);//activate jail as the player has just been moved there
     }
 }

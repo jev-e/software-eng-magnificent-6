@@ -37,6 +37,7 @@ public class PayBankTax extends TileEffect{
      */
     @Override
     public void activeEffect(Player currentPlayer) {
+        currentPlayer.addAction(text);//add text to log
         currentPlayer.deductAmount(amount);
     }
 

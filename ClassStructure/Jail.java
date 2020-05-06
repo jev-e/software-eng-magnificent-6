@@ -37,14 +37,14 @@ public class Jail extends TileEffect{
         if (currentPlayer.isInJail()) {
             if (currentPlayer.getJailTime() == 2) {
                 currentPlayer.leaveJail();//Frees the player after staying two turns in jail and resets jail time
-                //TODO GUI message to inform player they have left jail
+                currentPlayer.addAction("You have left jail");
             } else {
                 currentPlayer.serveJailTime();//Increases the jail time count
-                //TODO GUI message to inform player they are missing their turn for being in jail
+                currentPlayer.addAction("You are in jail");
                 //move on with players turn they are still in jail
             }
         }
-        //TODO GUI display text here. Jail tile text is "Just Visiting"
+        currentPlayer.addAction(text);//add text to log
         //Otherwise player is just visiting
     }
 }

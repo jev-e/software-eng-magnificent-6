@@ -26,8 +26,10 @@ public class Utility extends TileEffect {
 
     @Override
     public void activeEffect(Player currentPlayer) {
+        currentPlayer.addAction("Landed on " + title);
         if(owner != null && owner != currentPlayer && !owner.isInJail()) {
             String multiplier;
+            int roll = currentPlayer.getLastRoll1() + currentPlayer.getLastRoll2();//combined roll amount
             int utilityCount = 0;
             int amount;//amount to be paid
             LinkedList<Object> assets = owner.getAssets();
@@ -37,17 +39,17 @@ public class Utility extends TileEffect {
                 }
             }
             if (utilityCount == 1) {
-                amount = 4 * (currentPlayer.getLastRoll());
+                amount = 4 * (roll);//multiplier*roll
                 multiplier = "4";
             } else {
-                amount = 10 * (currentPlayer.getLastRoll());
+                amount = 10 * (roll);//multiplier*roll
                 multiplier = "10";
             }
             int payment = currentPlayer.deductAmount(amount);
             owner.payPlayerAmount(payment);//give owner the amount
-            this.text = "You pay £" + amount + " resulting from roll |" + currentPlayer.getLastRoll() + "|" + "times multiplier "
+            this.text = "You pay £" + amount + " resulting from roll |" + currentPlayer.getLastRoll1() + "|" + currentPlayer.getLastRoll2() + "|times multiplier "
                     + multiplier;
-            //System.out.println(text);//temp for text version
+            currentPlayer.addAction(text);//add tile text to action log
         }else{
             if(owner == null) {
                 purchase(currentPlayer);
@@ -89,7 +91,7 @@ public class Utility extends TileEffect {
                 //transfer ownership
                 owner = currentPlayer;
                 currentPlayer.addAsset(this);
-                //System.out.println("You have purchased " + title + " for £" + cost);
+                currentPlayer.addAction("Purchased " + title + " for £" + cost);
             }
         } else {
             //trigger auction

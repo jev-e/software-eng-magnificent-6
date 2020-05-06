@@ -27,6 +27,7 @@ public class GetOutOfJail extends CardEffect {
     void effect(Player currentPlayer) {
         currentPlayer.addAsset(this);//adds this item to players assets
         owner = currentPlayer;//keep reference the owner of the card until it is played
+        currentPlayer.addAction(cardText);//add text to log
         //When card is drawn from deck owner will be overwritten
     }
 

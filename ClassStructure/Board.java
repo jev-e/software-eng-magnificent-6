@@ -183,24 +183,30 @@ public class Board {
      */
     public  CardEffect drawOpportunityKnocks() {
         CardEffect card = opportunityKnocks.removeFirst();
-        if(!(card instanceof GetOutOfJail)) {//if card is not get out of jail free place it at the bottom of the deque
+        if (!(card instanceof GetOutOfJail)) {//if card is not get out of jail free place it at the bottom of the deque
             opportunityKnocks.addLast(card);
         }
         return card;
     }
+
     /**
      * rolls two die and returns the number of places to move
+     *
      * @return int combination of die results
      */
-    public int roll(Player currentPlayer, int count) {
+    public void roll(Player currentPlayer, int count) {
         int result = 0;
         Random rand = new Random();
-        int die1 = rand.nextInt(6)+1;
-        int die2 = rand.nextInt(6)+1;
+        int die1 = rand.nextInt(6) + 1;
+        int die2 = rand.nextInt(6) + 1;
+        currentPlayer.setLastRoll1(die1);//maintain last roll ints
+        currentPlayer.setLastRoll2(die2);
+        if (currentPlayer.isAiAgent()) {//if AI record roll in action log
+            currentPlayer.addAction("Rolled |" + die1 + "| |" + die2 + "|");
+        }
         if (die1 == die2) {
             repeat = true;//tracks double rolled for player to go again
             if (count >= 3) {
-                result = die1 + die2;
                 repeat = false;
                 currentPlayer.jailPlayer();//sets players status to jailed
             }
@@ -210,7 +216,6 @@ public class Board {
             int position = (currentPlayer.getCurrentPos() + result) % tiles.size();
             currentPlayer.setCurrentPos(position);
         }
-        return result;
     }
 
     public void unblockCall(){
