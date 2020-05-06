@@ -30,7 +30,6 @@ public class PlayerPaysBank extends CardEffect{
     @Override
     void effect(Player currentPlayer) {
         currentPlayer.deductAmount(amount);
-        System.out.println(cardText);//for testing
     }
 
     public int getAmount() {

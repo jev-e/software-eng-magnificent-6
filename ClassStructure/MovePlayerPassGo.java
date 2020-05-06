@@ -34,7 +34,6 @@ public class MovePlayerPassGo extends CardEffect{
         currentPlayer.setCurrentPos(destination);
         //if current position is less than previous then the 0 position has been passed
         currentPlayer.passGo();
-        System.out.println(cardText);//Display for test version
         board.tiles.get(destination).activeEffect(currentPlayer);
     }
 

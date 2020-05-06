@@ -25,13 +25,13 @@ public class MovePlayerNoPassGo extends CardEffect{
     }
 
     /**
-     * Moves player to tile location
+     * Moves player to tile location without go check
+     *
      * @param currentPlayer player who drew the card and target to be moved
      */
     @Override
     void effect(Player currentPlayer) {
         currentPlayer.setCurrentPos(destination);
-        System.out.println(cardText);//Display for test version
         board.tiles.get(destination).activeEffect(currentPlayer);//triggers tiles effect
     }
 

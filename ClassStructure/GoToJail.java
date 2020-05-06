@@ -30,7 +30,6 @@ public class GoToJail extends TileEffect {
      */
     @Override
     public void activeEffect(Player currentPlayer) {
-        System.out.println(text);//Display for test version
         currentPlayer.jailPlayer();
         int jailPosition = currentPlayer.getCurrentPos();
         board.tiles.get(jailPosition).activeEffect(currentPlayer);//activate jail as the player has just been moved there

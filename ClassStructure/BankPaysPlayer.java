@@ -32,7 +32,6 @@ public class BankPaysPlayer extends CardEffect {
     @Override
     void effect(Player currentPlayer) {
         currentPlayer.payPlayerAmount(amount);
-        System.out.println(cardText);//Display for test version
     }
 
     public int getAmount() {

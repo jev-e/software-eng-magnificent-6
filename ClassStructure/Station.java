@@ -68,114 +68,13 @@ public class Station extends TileEffect {
             int payment = currentPlayer.deductAmount(amount);//take from current player
             owner.payPlayerAmount(payment);// gives the amount the player was able to pay
             text = "Player owns " + stationCount + " station(s). You pay £" + amount;
-            System.out.println(text);//Display for test version
         } else {
             if (owner == null) {
                 purchase(currentPlayer);
             }
         }
     }
-    /**
-     * Runs an auction for the players to purchase the property. Each player makes an (optional) bid and the highest
-     * bidding player purchases the property
-     */
-    private void auction(Player currentPlayer) {
-        System.out.println(title);
-        System.out.println("==========================================================================================");
-        System.out.println("==================================AUCTION BEGINS==========================================");
-        System.out.println("==========================================================================================");
-        Player highestBidder = null;
-        int highestBid = 0;
 
-        //for each player that isn't the current player
-        for (Player bidder : super.board.turnOrder) {
-            if (bidder != currentPlayer && bidder.CanBuy()) {
-                int bid = 0;
-                boolean wishToBid = false;
-                boolean valid = false;
-
-                //ask if want to purchase
-                String question = bidder.getName() + ", do you want to make a bid (yes/no)?";
-                if (bidder.isAiAgent()) {
-                    bid = bidder.auctionDecide(this, highestBid);
-                    if (bid > highestBid) {//if agent does not wish to bid, bid = 0
-                        highestBid = bid;
-                        highestBidder = bidder;
-                    }
-                    System.out.println(bidder.getName() + " bids:£" + bid);
-                } else {
-                    wishToBid = yesNoInput(question);
-                }
-                if (wishToBid) {
-
-                    Scanner userInputScanner = new Scanner(System.in);
-
-                    while (!valid) {
-
-                        System.out.println("Please make a bid:");
-                        bid = userInputScanner.nextInt();
-                        if (bid > bidder.getMoney()) {
-                            System.out.println("Sorry, you have don't have that much money. Please bid again or enter 0 to cancel bid");
-                        } else {
-                            valid = true;
-                        }
-
-                    }
-
-                    if (bid > highestBid) {
-                        highestBidder = bidder;
-                        highestBid = bid;
-                    }
-                }
-            }
-        }
-
-        //auction complete, if we have any valid bids need to make the purchase
-        if (highestBidder != null) {
-            System.out.println(highestBidder.getName() + " has won the auction for " + title + " with a bid of £" + highestBid);
-            highestBidder.deductAmount(highestBid);
-            owner = highestBidder;
-            highestBidder.addAsset(this);
-
-        } else {
-            System.out.println("No bids were made");
-        }
-
-        System.out.println("==========================================================================================");
-        System.out.println("====================================AUCTION ENDS==========================================");
-        System.out.println("==========================================================================================");
-    }
-
-    /**
-     * Takes a yes no question and returns a boolean if answer is yes or no, loops until correct input is recieved
-     *
-     * @param message must have an answer of yes or no
-     */
-    private boolean yesNoInput(String message) {
-        System.out.println(message);
-        Scanner userInputScanner = new Scanner(System.in); //scanner for user input
-        boolean valid = false; //flag for valid input
-        boolean userDecision = false;
-
-        //ask if want to purchase
-        while (!valid) {
-            String decision = userInputScanner.nextLine();
-            //normalise input
-            decision.toLowerCase();
-
-            if (decision.equals("no")) {
-                userDecision = false;
-                valid = true;
-            } else if (decision.equals("yes")) {
-                userDecision = true;
-                valid = true;
-            } else {
-                System.out.println("Sorry, please try again (you need to type yes OR no)");
-            }
-        }
-
-        return userDecision;
-    }
 
     /**
      * Asks current player is they wish to purchase property, if so the ownership is transferred and purchase amount
@@ -187,29 +86,26 @@ public class Station extends TileEffect {
 
         boolean wishToPurchase = false; //flag for purchase choice
 
-        String message = currentPlayer.getName() + ", do you want to make a purchase (yes/no)?";
-
         if (!currentPlayer.isAiAgent()) {
-            wishToPurchase = yesNoInput(message);
+            wishToPurchase = false;//TODO Change this to get player choice from GUI
         } else {
             wishToPurchase = currentPlayer.decide(this);
         }
         if (wishToPurchase) {
             if (cost > currentPlayer.getMoney()) {
                 //no purchase can be made, trigger auction
-                System.out.println("Sorry, you can't afford this");
-                auction(currentPlayer);
+                //TODO GUI auction activated here
             } else {
                 //deduct purchase cost from player
                 currentPlayer.deductAmount(cost);
                 //transfer ownership
                 owner = currentPlayer;
                 currentPlayer.addAsset(this);
-                System.out.println("You have purchased " + title + " for £" + cost);
+                //System.out.println("You have purchased " + title + " for £" + cost);
             }
         } else {
             //trigger auction
-            auction(currentPlayer);
+            //TODO GUI auction activated here
         }
 
     }

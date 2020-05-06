@@ -1,5 +1,7 @@
 package ClassStructure;
 
+import javafx.scene.canvas.Canvas;
+
 import java.util.LinkedList;
 import java.util.Scanner;
 
@@ -20,6 +22,10 @@ public class Property extends BoardTile{
     private boolean completedSet;//If a single player owns all properties in group this is true and false otherwise
     private boolean rentDoubled; //Flag representing whether the rent on this property has been doubled
     private boolean developed; //flag for if property improved
+
+    // GUI Assets
+
+    private Canvas colour; // Displays colour of property group
 
     /**
      * Default constructor for Jackson
@@ -58,6 +64,10 @@ public class Property extends BoardTile{
         this.rentDoubled = false;
         this.housesNo = 0;
         this.hotelNo = 0;
+
+        this.tileName.setText(title);
+        this.tilePrice.setText(String.valueOf(cost));
+        System.out.println("Property + " + title + " constructed.");
     }
 
     /**
@@ -107,25 +117,23 @@ public class Property extends BoardTile{
 
     /**
      * Function to sell houses and hotels on a property.
-     * //TODO change to sell houses or hotels evenly across properties in the set
-     *
      * @return Either the cost of the building or 0 if their is no buildings to sell.
      */
     public int sellHouseOrHotel(){
-        if( hotelNo == 1 ){
+        if (hotelNo == 1) {
             hotelNo = 0;
             housesNo = 4;
             rent -= hotelRent;
-            return( group.getBuildingCost() );
-        } else if( housesNo > 0 ){
-            rent -= buildingRents[housesNo -1];
+            return (group.getBuildingCost());
+        } else if (canSellHouse()) {
+            rent -= buildingRents[housesNo - 1];
             housesNo -= 1;
-            if( housesNo == 0 ){
+            if (housesNo == 0) {
                 developed = false;
             }
-            return( group.getBuildingCost() );
-        } else{
-            return( 0 );
+            return (group.getBuildingCost());
+        } else {
+            return (0);
         }
     }
 
@@ -153,9 +161,9 @@ public class Property extends BoardTile{
             owner.deductAmount(cost/2); //pay un mortgaging fee
             mortgaged = false; //update flag
         } else if( mortgaged && (owner.getMoney() < (cost/2))) {
-            System.out.println("Sorry, you cannot afford to do this");
+            //System.out.println("Sorry, you cannot afford to do this");
         } else{
-            System.out.println("Property not currently mortgaged");
+            //System.out.println("Property not currently mortgaged");
         }
     }
 
@@ -177,103 +185,6 @@ public class Property extends BoardTile{
         }
     }
 
-    /**
-     * Runs an auction for the players to purchase the property. Each player makes an (optional) bid and the highest
-     * bidding player purchases the property
-     */
-    private void auction(Player currentPlayer) {
-        System.out.println(title);
-        System.out.println("==========================================================================================");
-        System.out.println("==================================AUCTION BEGINS==========================================");
-        System.out.println("==========================================================================================");
-        Player highestBidder = null;
-        int highestBid = 0;
-        //for each player that isn't the current player
-        for (Player bidder : board.turnOrder) {
-            if (bidder != currentPlayer && bidder.CanBuy() && !bidder.isInJail()) {
-                int bid = 0;
-                boolean wishToBid = false;
-                boolean valid = false;
-
-                //ask if want to purchase
-                String question = bidder.getName() + ", do you want to make a bid (yes/no)?";
-                if (bidder.isAiAgent()) {
-                    wishToBid = false;//TODO temp for testing to be removed
-                    System.out.println("no");
-                } else {
-                    wishToBid = yesNoInput(question);
-                }
-                if (wishToBid) {
-
-                    Scanner userInputScanner = new Scanner(System.in);
-
-                    while (!valid) {
-
-                        System.out.println("Please make a bid:");
-                        bid = userInputScanner.nextInt();
-                        if (bid > bidder.getMoney()) {
-                            System.out.println("Sorry, you have don't have that much money. Please bid again or enter 0 to cancel bid");
-                        } else {
-                            valid = true;
-                        }
-
-                    }
-
-                    if( bid > highestBid ){
-                        highestBidder = bidder;
-                        highestBid = bid;
-                    }
-                }
-            }
-        }
-
-        //auction complete, if we have any valid bids need to make the purchase
-        if( highestBidder != null ){
-            System.out.println( highestBidder.getName() + " has won the auction for " + title + " with a bid of £" + highestBid );
-            highestBidder.deductAmount( highestBid );
-            owner = highestBidder;
-            highestBidder.addAsset(this);
-            highestBidder.completeSetProperties(); //purchase made, update complete set flags
-
-        } else {
-            System.out.println( "No bids were made");
-        }
-
-        System.out.println("==========================================================================================");
-        System.out.println("====================================AUCTION ENDS==========================================");
-        System.out.println("==========================================================================================");
-    }
-
-    /**
-     * Takes a yes no question and returns a boolean if answer is yes or no, loops until correct input is recieved
-     *
-     * @param message must have an answer of yes or no
-     */
-    private boolean yesNoInput( String message ) {
-        System.out.println( message );
-        Scanner userInputScanner = new Scanner( System.in ); //scanner for user input
-        boolean valid = false; //flag for valid input
-        boolean userDecision = false;
-
-        //ask if want to purchase
-        while(!valid){
-            String decision = userInputScanner.nextLine();
-            //normalise input
-            decision.toLowerCase(); //normalise
-
-            if( decision.equals( "no" )){
-                userDecision = false;
-                valid = true;
-            }else if( decision.equals( "yes" )){
-                userDecision = true;
-                valid = true;
-            }else {
-                System.out.println("Sorry, please try again (you need to type yes OR no)");
-            }
-        }
-
-        return userDecision;
-    }
 
     /**
      * Asks current player is they wish to purchase property, if so the ownership is transferred and purchase amount
@@ -285,31 +196,26 @@ public class Property extends BoardTile{
 
         boolean wishToPurchase = false; //flag for purchase choice
 
-        String message = currentPlayer.getName() + ", do you want to make a purchase (yes/no)?";
-
         if (!currentPlayer.isAiAgent()) {
-            wishToPurchase = yesNoInput(message);
+            wishToPurchase = false;//TODO Change this to get player choice from GUI
         } else {
             wishToPurchase = currentPlayer.decide(this);
         }
         if (wishToPurchase) {
             if (cost > currentPlayer.getMoney()) {
                 //no purchase can be made, trigger auction
-                System.out.println("Sorry, you can't afford this");
-                auction(currentPlayer);
-                System.out.println("Auction ended, can't afford");
+                //TODO GUI auction activated here
             } else {
                 //deduct purchase cost from player
                 currentPlayer.deductAmount(cost);
                 //transfer ownership
+                owner = currentPlayer;
                 currentPlayer.addAsset(this);
-                currentPlayer.completeSetProperties(); //purchase has been made, update complete set flags
-                System.out.println("You have purchased " + title + " for £" + cost);
+                //System.out.println("You have purchased " + title + " for £" + cost);
             }
-
         } else {
             //trigger auction
-            auction( currentPlayer );
+            //TODO GUI auction activated here
         }
 
     }
@@ -322,15 +228,12 @@ public class Property extends BoardTile{
         if( housesNo == 0 && hotelNo == 0 && completedSet ){
             rent *= 2;
             rentDoubled = true;
-            System.out.println("Rent has been doubled");
         } else if( rentDoubled && !completedSet ){
             rent /= 2;
             rentDoubled = false;
-            System.out.println("Rent has been reset");
         } else if ( rentDoubled && housesNo == 1 ){
             rent /= 2;
             rentDoubled = false;
-            System.out.println("Rent has been reset");
         }
     }
 
@@ -340,7 +243,6 @@ public class Property extends BoardTile{
      * @param currentPlayer the player currently on property tile
      */
     private void collectRent( Player currentPlayer) {
-        System.out.println( currentPlayer.getName() + " pays rent to " + owner.getName());
         //deduct rent from current player
         int amountPayed = currentPlayer.deductAmount( rent ); //deduct amount from player
         //give owner rent
@@ -362,7 +264,6 @@ public class Property extends BoardTile{
             }
             owner.deductAmount(group.getBuildingCost());
             rent += buildingRents[housesNo - 1];
-            System.out.println("House purchased for " + title + ", the new rent is: £" + rent);
             return true;
         } else {
             return false;
@@ -382,13 +283,18 @@ public class Property extends BoardTile{
             housesNo = 0;
             owner.deductAmount(group.getBuildingCost());
             rent += hotelRent;
-            System.out.println("Hotel purchased for " + title + ", the new rent is: £" + rent);
+            //System.out.println("Hotel purchased for " + title + ", the new rent is: £" + rent);
             return true;
         } else {
             return false;
         }
     }
 
+    /**
+     * Can a user currently build a house on this tile based on building rules
+     *
+     * @return can buy house true|false yes|no
+     */
     public boolean canBuyHouse() {
         int desiredCount = housesNo + 1;//user wants to add one more house
         if (desiredCount > 4) {
@@ -421,10 +327,52 @@ public class Property extends BoardTile{
         return true;//no violations found can build
     }
 
+    /**
+     * Check that selling a house on this tile will not violate building rules
+     *
+     * @return can sell house true|false yes|no
+     */
+    public boolean canSellHouse() {
+        if (housesNo == 0) {
+            return false;//no houses to sell
+        } else {
+            int desiredCount = housesNo - 1;//user wants to remove one house
+            LinkedList<Property> setMembers = new LinkedList<>();
+            LinkedList<Integer> houseCounts = new LinkedList<>();
+            for (Object item : owner.getAssets()) {
+                if (item instanceof Property && ((Property) item).getGroup() == group) {//if item is member of this set
+                    setMembers.add((Property) item);//add item to set
+                }
+            }
+            for (Property property : setMembers) {//fetch the house counts
+                if (property.equals(this)) {
+                    houseCounts.add(desiredCount);//this tile desired count is being tested
+                } else if (property.getHotelNo() == 1) {
+                    houseCounts.add(4);//hotel is treated like 4 houses
+                } else {
+                    houseCounts.add(property.getHousesNo());//get how houses on tile
+                }
+            }
+            for (int countA : houseCounts) {
+                for (int countB : houseCounts) {
+                    if (Math.abs(countA - countB) > 1) {//if the difference between building is greater than 1
+                        return false;//building violation
+                    }
+                }
+            }
+        }
+        return true;//no violations can build
+    }
+
+    /**
+     * Check if a hotel can be built on this tile based on other set members building counts
+     *
+     * @return can buy hotel true|false yes|no
+     */
     public boolean canBuyHotel() {
         int desiredCount = 4;//user wants to exchange 4 houses for a hotel
         if (housesNo != 4 || hotelNo == 1) {
-            return false;//Not enough houses ore hotel already built
+            return false;//Not enough houses or hotel already built
         } else {
             LinkedList<Property> setMembers = new LinkedList<>();
             LinkedList<Integer> houseCounts = new LinkedList<>();
@@ -536,4 +484,8 @@ public class Property extends BoardTile{
     public void setDeveloped(boolean developed) {
         this.developed = developed;
     }
+
+    // GUI Functions
+
+    public void setColour(Canvas colour) { this.colour = colour; }
 }

@@ -4,7 +4,7 @@ package ClassStructure;
  * Opportunity Knocks tile event
  */
 public class OpportunityKnocks extends TileEffect{
-
+    String currentCardText = "";//empty string by default holds the text of the last card that was drawn
     /**
      * Default constructor for Jackson
      */
@@ -30,7 +30,18 @@ public class OpportunityKnocks extends TileEffect{
      */
     @Override
     public void activeEffect(Player currentPlayer) {
-        System.out.println(text);//Display for test version
-        this.board.drawOpportunityKnocks().effect(currentPlayer);
+
+        CardEffect currentCard = this.board.drawOpportunityKnocks();
+        currentCardText = currentCard.getCardText();//fetch card text
+        currentCard.effect(currentPlayer);
+    }
+
+    /**
+     * Gets the current card text from the tile to be displayed to the GUI
+     *
+     * @return text of card that was drawn
+     */
+    public String getCurrentCardText() {
+        return currentCardText;
     }
 }

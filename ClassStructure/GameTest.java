@@ -3,35 +3,40 @@ package ClassStructure;
 
 import org.junit.jupiter.api.*;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class GameTest {
 
     private static Board board;
-    private static HashMap<Integer, BoardTile> tileSet = new HashMap<Integer, BoardTile>();
-    private static LinkedList<Player> order = new LinkedList<Player>();
-    private static Deque<CardEffect> pot = new ArrayDeque<CardEffect>();
-    private static Deque<CardEffect> opp = new ArrayDeque<CardEffect>();
+    private static HashMap<Integer, BoardTile> tileSet = new HashMap<>();
+    private static LinkedList<Player> order = new LinkedList<>();
+    private static Deque<CardEffect> pot = new ArrayDeque<>();
+    private static Deque<CardEffect> opp = new ArrayDeque<>();
 
-
+    /**
+     * Game board data read in from data files
+     *
+     * @throws IOException file read in issue
+     */
     public void jsonDataBoard() throws IOException {
         tileSet = Json.fromJsonToTileSet("BoardTileData.json");
         List<CardEffect> potPack = Json.fromJsonToList("PotLuckCardData.json");
         List<CardEffect> oppPack = Json.fromJsonToList("OpportunityKnocksCardData.json");
         //Collections.shuffle(potPack);//shuffle decks
         //Collections.shuffle(oppPack);
-        pot = new ArrayDeque<CardEffect>(potPack);
-        opp = new ArrayDeque<CardEffect>(oppPack);
+        pot = new ArrayDeque<>(potPack);
+        opp = new ArrayDeque<>(oppPack);
         board = new Board(order, tileSet, pot, opp, "full");
         for (Player p : order) {
             p.setBoard(board);//assign the board to the players
         }
     }
 
+    /**
+     * Setup for non full game data tests
+     */
     @BeforeEach
     public void setup() {
 
@@ -43,7 +48,7 @@ class GameTest {
         Player callum = new Player("Callum", Token.SPOON, null, false);
         Player tom = new Player("Tom", Token.GOBLET, null, false);
         //load players into turn order
-        order = new LinkedList<Player>();
+        order = new LinkedList<>();
         order.add(ayman);
         order.add(danny);
         order.add(jacob);
@@ -53,22 +58,22 @@ class GameTest {
 
         //add default set of cards to decks
         Random rand = new Random();
-        opp = new ArrayDeque<CardEffect>();
-        pot = new ArrayDeque<CardEffect>();
+        opp = new ArrayDeque<>();
+        pot = new ArrayDeque<>();
         //construction of a test board
         BoardTile temp;
 
         for (int i = 0; i < 8; i++) {
-            if(i == 5) {
+            if (i == 5) {
                 temp = new Property(i, "Example Street", Group.GREEN, 10, 10, null, 10, null);
-            }else if(i == 7) {
+            } else if (i == 7) {
                 temp = new Property(i, "Test crescent", Group.DEEP_BLUE, 10, 10, null, 10, calvin);
-            }else if(i == 0) {
+            } else if (i == 0) {
                 temp = new Go();
-            }else{
-                if(rand.nextInt(2) == 0) {
+            } else {
+                if (rand.nextInt(2) == 0) {
                     temp = new PotLuck(i);
-                }else{
+                } else {
                     temp = new OpportunityKnocks(i);
                 }
             }
@@ -129,7 +134,7 @@ class GameTest {
      */
     @Test
     public void playerPays() {
-        opp = new ArrayDeque<CardEffect>();
+        opp = new ArrayDeque<>();
         CardEffect card = new PlayerPaysBank("Hahahahah",100);
         CardEffect card2 = new PlayerPaysBank("Hahahahah",1600);
         opp.add(card);
@@ -198,14 +203,14 @@ class GameTest {
      */
     @Test
     public void taxPaying() {
-        tileSet = new HashMap<Integer, BoardTile>();
-        pot.add(new PlayerPaysTax("Bob variable tax",10));
-        pot.add(new PlayerPaysTax("Bob variable tax",10));
-        pot.add(new PlayerPaysTax("Bob variable tax",10));
+        tileSet = new HashMap<>();
+        pot.add(new PlayerPaysTax("Bob variable tax", 10));
+        pot.add(new PlayerPaysTax("Bob variable tax", 10));
+        pot.add(new PlayerPaysTax("Bob variable tax", 10));
         //construct tax test board
-        tileSet.put(0,new Go());
-        for( int i = 1; i < 7;i++) {
-            tileSet.put(i,new PotLuck(i));//Add pot luck draw tiles
+        tileSet.put(0, new Go());
+        for (int i = 1; i < 7; i++) {
+            tileSet.put(i, new PotLuck(i));//Add pot luck draw tiles
         }
         tileSet.put(7, new FreeParking(7));
         board = new Board(order, tileSet, pot, opp, "full");//Build board for this test
@@ -252,7 +257,7 @@ class GameTest {
     public void bankruptTest() throws IOException {
         jsonDataBoard();//Reads in full game data for test
         for (Player p : board.turnOrder) {
-            if (p.getName() != "Ayman") {//Sets all players money apart from Ayman's to £10
+            if (p.getName().equals("Ayman")) {//Sets all players money apart from Ayman's to £10
                 p.setMoney(10);
             }
         }
@@ -278,6 +283,12 @@ class GameTest {
         assertNull(((Property) board.tiles.get(1)).getOwner());//ownership check
     }
 
+    /**
+     * Test for asset list management insuring that owner is maintained
+     * sell asset check
+     *
+     * @throws IOException file read error
+     */
     @Test
     public void assetManagementTest() throws IOException {
         jsonDataBoard();
@@ -299,7 +310,7 @@ class GameTest {
     /**
      * Station rent amount checks
      *
-     * @throws IOException
+     * @throws IOException file read error
      */
     @Test
     public void stationRentTest() throws IOException {
@@ -341,7 +352,7 @@ class GameTest {
     /**
      * Test of utility payment based on number owned
      *
-     * @throws IOException
+     * @throws IOException file read error
      */
     @Test
     public void testUtility() throws IOException {
@@ -369,32 +380,26 @@ class GameTest {
     /**
      * Jail serving time and using get out of jail card
      *
-     * @throws IOException
+     * @throws IOException file read error
      */
     @Test
     public void jailTest() throws IOException {
         jsonDataBoard();//read data in
-        String userIn = "3";
         Player currentPlayer = board.turnOrder.getFirst();
-        GetOutOfJail jailCard = ((GetOutOfJail) board.opportunityKnocks.getLast());
-        jailCard.effect(currentPlayer);
-        ByteArrayInputStream in = new ByteArrayInputStream(userIn.getBytes());
-        System.setIn(in);//set user in 3 use card
+        currentPlayer.setAiAgent(true);//Set player to be AI
+        currentPlayer.getPersonality().setPatient(true);//AI will serve time if get out of jail card not available
         currentPlayer.jailPlayer();
-        assertFalse(currentPlayer.isInJail());
-        in = new ByteArrayInputStream("1".getBytes());
-        System.setIn(in);//set user input 1 serve time
-        currentPlayer.setCurrentPos(0);//move player to go
+        assertTrue(currentPlayer.isInJail());//Player should not be in jail as they are patient
+        CardEffect jailCard = board.drawPotLuck();
+        while (!(jailCard instanceof GetOutOfJail)) {//retrieve GetOutOfJail card from deck
+            jailCard = board.drawPotLuck();
+        }
+        jailCard.effect(currentPlayer);//Player will get this card from the effect
+        assertTrue(currentPlayer.getAssets().contains(jailCard));
+        currentPlayer.jailPlayer();//player will use card
+        assertFalse(currentPlayer.isInJail());//check player has left jail
+        currentPlayer.getPersonality().setPatient(false);//player should pay bail as they have enough money
         currentPlayer.jailPlayer();
-        //check player has been moved to jail
-        assertEquals(10, currentPlayer.getCurrentPos());
-        assertTrue(currentPlayer.isInJail());//check player is serving time
-        board.tiles.get(10).activeEffect(currentPlayer);//serve time
-        assertTrue(currentPlayer.isInJail());
-        board.tiles.get(10).activeEffect(currentPlayer);//serve time
-        assertTrue(currentPlayer.isInJail());
-        board.tiles.get(10).activeEffect(currentPlayer);//serve time
-        // check player has been released
         assertFalse(currentPlayer.isInJail());
     }
 
@@ -415,23 +420,29 @@ class GameTest {
         ((Property) board.tiles.get(1)).setOwner(currentPlayer);
         currentPlayer.addAsset(board.tiles.get(3));
         ((Property) board.tiles.get(3)).setOwner(currentPlayer);
-        ((Property) board.tiles.get(1)).purchaseHouse();
+        ((Property) board.tiles.get(1)).purchaseHouse();//1 House
         ((Property) board.tiles.get(3)).purchaseHouse();
         (house).effect(currentPlayer);
         assertEquals(1320, currentPlayer.getMoney());
-        ((Property) board.tiles.get(1)).purchaseHouse();
-        ((Property) board.tiles.get(1)).purchaseHouse();
-        ((Property) board.tiles.get(1)).purchaseHouse();
+        ((Property) board.tiles.get(1)).purchaseHouse();//2 houses
+        ((Property) board.tiles.get(3)).purchaseHouse();
+        ((Property) board.tiles.get(1)).purchaseHouse();//3 houses
+        ((Property) board.tiles.get(3)).purchaseHouse();
+        ((Property) board.tiles.get(1)).purchaseHouse();//3 houses
+        ((Property) board.tiles.get(3)).purchaseHouse();
         ((Property) board.tiles.get(1)).purchaseHotel();
-        assertEquals(1120, currentPlayer.getMoney());
+        assertEquals(970, currentPlayer.getMoney());
         (house).effect(currentPlayer);
-        assertEquals(965, currentPlayer.getMoney());
+        assertEquals(695, currentPlayer.getMoney());// after 4 houses and 1 hotel housing charge
+        ((Property) board.tiles.get(3)).purchaseHotel();
+        (house).effect(currentPlayer);
+        assertEquals(415, currentPlayer.getMoney());//after 2 hotels housing charge
     }
 
     /**
      * Set updating
      *
-     * @throws IOException
+     * @throws IOException file read error
      */
     @Test
     public void setUpdateTest() throws IOException {
@@ -455,7 +466,7 @@ class GameTest {
     /**
      * Test that player receives no rent when property is mortgaged and pays half the cost to un-mortgage it
      *
-     * @throws IOException
+     * @throws IOException file read error
      */
     @Test
     public void mortgagingTest() throws IOException {
@@ -486,8 +497,8 @@ class GameTest {
     public void tradeTest() throws IOException {
         jsonDataBoard();//read data
         Player firstPlayer = board.turnOrder.get(0);
-        Player secondPlayer = board.turnOrder.get(1);
-        firstPlayer.setAiAgent(true);
+        Player secondPlayer = board.turnOrder.get(1);//get players
+        firstPlayer.setAiAgent(true);//set player to be AI
         secondPlayer.setAiAgent(true);
         firstPlayer.getPersonality().setTrainAffinity(true);//likes trains
         firstPlayer.getPersonality().setTwoSetAffinity(false);//doesn't prefer brown and deep blue tiles
@@ -501,38 +512,31 @@ class GameTest {
         Station falmer = (Station) board.tiles.get(25);
         firstPlayer.addAsset(crapper);
         secondPlayer.addAsset(falmer);
-        firstPlayer.initiateTrade();
-        assertTrue(falmer.getOwner() == firstPlayer);
-        assertTrue(crapper.getOwner() == secondPlayer);
+        firstPlayer.initiateTrade();//this trade will be successful
+        assertSame(falmer.getOwner(), firstPlayer);
+        assertSame(crapper.getOwner(), secondPlayer);
         Property angel = (Property) board.tiles.get(6);
         Property potts = (Property) board.tiles.get(9);
         Property gangsters = (Property) board.tiles.get(3);
         firstPlayer.addAsset(angel);
         secondPlayer.addAsset(potts);
         firstPlayer.addAsset(gangsters);
-        firstPlayer.initiateTrade();
+        firstPlayer.completeSetProperties();
+        assertEquals(gangsters.getOwner(), firstPlayer);
+        assertFalse(gangsters.isCompletedSet());//gangsters and crapper owned by different players
+        secondPlayer.initiateTrade();//second player offers potts for gangsters
+        assertEquals(gangsters.getOwner(), secondPlayer);
+        assertEquals(potts.getOwner(), firstPlayer);
+        assertTrue(gangsters.isCompletedSet());//gangsters and crapper owned by same player after trade
     }
 
-    /**
-     * Test of auction asset handling and logic
-     * @throws IOException
-     */
-    @Test
-    public void auctionTest() throws IOException {
-        jsonDataBoard();//read data
-    }
 
     /**
-     * Test assets are sold correctly when a player can't pay
-     * Additional check that asset selling does not occur when the player does not have net worth to pay
+     * Insure that simple building buying of buildings functions
+     * Handle building violations and do not buy houses when not valid
      *
-     * @throws IOException
+     * @throws IOException file read error
      */
-    @Test
-    public void sellAssetsTest() throws IOException {
-        jsonDataBoard();//read data
-    }
-
     @Test
     public void buildingBuyingTest() throws IOException {
         jsonDataBoard();//read data
@@ -543,6 +547,7 @@ class GameTest {
         ((Property) board.tiles.get(3)).setOwner(firstPlayer);
         firstPlayer.addAsset(board.tiles.get(3));
         firstPlayer.completeSetProperties();
+        assertEquals(firstPlayer.getMoney(), 1500);
         ((Property) board.tiles.get(1)).purchaseHouse();//buy house on crapper street
         ((Property) board.tiles.get(3)).purchaseHouse();//buy house on gangsters paradise
         ((Property) board.tiles.get(1)).purchaseHouse();
@@ -551,14 +556,18 @@ class GameTest {
         ((Property) board.tiles.get(3)).purchaseHouse();
         ((Property) board.tiles.get(1)).purchaseHouse();
         ((Property) board.tiles.get(3)).purchaseHouse();
+        assertFalse(((Property) board.tiles.get(3)).purchaseHouse());//check that the build was not successful
         ((Property) board.tiles.get(1)).purchaseHotel();//buy hotel on crapper street
         ((Property) board.tiles.get(3)).purchaseHotel();//buy hotel gangsters paradise
+        assertFalse(((Property) board.tiles.get(3)).purchaseHotel());//check that the build was not successful
         assertEquals(0, ((Property) board.tiles.get(1)).getHousesNo());
         assertEquals(1, ((Property) board.tiles.get(1)).getHotelNo());
+        assertEquals(firstPlayer.getMoney(), 1000);//money after paying 5 building charges on each property
     }
 
     /**
-     * @throws IOException
+     * Insures selling obeys building regulations
+     * @throws IOException file read error
      */
     @Test
     public void agentBuildingSellingTest() throws IOException {
@@ -569,20 +578,41 @@ class GameTest {
         currentPlayer.addAsset(tileSet.get(6));//weeping
         currentPlayer.addAsset(tileSet.get(8));//potts
         currentPlayer.addAsset(tileSet.get(9));//Nardole
+        assertEquals(currentPlayer.getMoney(), 1500);
         currentPlayer.completeSetProperties();
         currentPlayer.agentDevelopProperties();
-        ((Property) tileSet.get(9)).sellHouseOrHotel();
-        assertTrue(((Property) tileSet.get(9)).isDeveloped());
-        ((Property) tileSet.get(9)).sellHouseOrHotel();
-        ((Property) tileSet.get(9)).sellHouseOrHotel();
-        ((Property) tileSet.get(9)).sellHouseOrHotel();
-        ((Property) tileSet.get(9)).sellHouseOrHotel();
+        assertEquals(currentPlayer.getMoney(), 750);//money after fully developing
+        ((Property) tileSet.get(9)).sellHouseOrHotel();//hotel sells house count = 4
+        ((Property) tileSet.get(9)).sellHouseOrHotel();//house sells house count = 3
+        ((Property) tileSet.get(9)).sellHouseOrHotel();//Sale will fail as it would violate regulations
+        ((Property) tileSet.get(9)).sellHouseOrHotel();//house count = 3
+        assertTrue(((Property) tileSet.get(9)).isDeveloped());//will still be developed as last two sells will fail
+        ((Property) tileSet.get(6)).sellHouseOrHotel();//hotel sell house count = 4
+        ((Property) tileSet.get(8)).sellHouseOrHotel();//houses = 4
+        ((Property) tileSet.get(9)).sellHouseOrHotel();//houses = 4
+        //sell building on each tile
+        ((Property) tileSet.get(6)).sellHouseOrHotel();//houses = 3
+        ((Property) tileSet.get(8)).sellHouseOrHotel();//houses = 3
+        ((Property) tileSet.get(9)).sellHouseOrHotel();//houses = 2
+        //sell building on each tile
+        ((Property) tileSet.get(6)).sellHouseOrHotel();//houses = 2
+        ((Property) tileSet.get(8)).sellHouseOrHotel();//houses = 2
+        ((Property) tileSet.get(9)).sellHouseOrHotel();//houses = 1
+        //sell building on each tile
+        ((Property) tileSet.get(6)).sellHouseOrHotel();//houses = 1
+        ((Property) tileSet.get(8)).sellHouseOrHotel();//houses = 1
+        ((Property) tileSet.get(9)).sellHouseOrHotel();//houses = 0
+        //sell remaining 2 buildings
+        ((Property) tileSet.get(6)).sellHouseOrHotel();//houses = 0
+        ((Property) tileSet.get(8)).sellHouseOrHotel();//houses = 0
+        assertFalse(((Property) tileSet.get(6)).isDeveloped());//Check developed is maintained
+        assertFalse(((Property) tileSet.get(8)).isDeveloped());
         assertFalse(((Property) tileSet.get(9)).isDeveloped());
-        System.out.println(currentPlayer.netWorth());
     }
 
     /**
-     * @throws IOException
+     * Simple check of agent ability to purchase
+     * @throws IOException file read error
      */
     @Test
     public void agentPurchaseTest() throws IOException {
@@ -595,7 +625,7 @@ class GameTest {
         player.getPersonality().setTwoSetAffinity(true);//give player two set affinity will buy Brown tiles if possible
         Property crapper = (Property) board.tiles.get(1);//brown tile
         crapper.activeEffect(player);//AI will buy tile
-        assertTrue(crapper.getOwner() == player);
+        assertSame(crapper.getOwner(), player);
         assertTrue(player.getAssets().contains(crapper));
         for (Object item : player.getAssets()) {
             if (item instanceof Property) {
@@ -612,10 +642,9 @@ class GameTest {
 
     /**
      * Test of cautious buying strategy
-     * will fail at times due to random element.
-     * solution run scenario multiple times and assert expected outcome > 90% of the time
-     *
-     * @throws IOException
+     * Runs 100 times and asserts the expected outcome occurs 80% or more of the time
+     * may fail in very rare cases due to extreme chance
+     * @throws IOException file read error
      */
     @Test
     public void cautiousPurchaseTest() throws IOException {
@@ -630,25 +659,29 @@ class GameTest {
         player.getPersonality().setTwoSetAffinity(false);
         Property crapper = (Property) board.tiles.get(1);//brown tile
         crapper.activeEffect(player);//AI will buy tile
-        assertTrue(crapper.getOwner() == player);
+        assertSame(crapper.getOwner(), player);
         assertTrue(player.getAssets().contains(crapper));
-        player.setMoney(70);
         Property gangsters = (Property) board.tiles.get(3);
-        gangsters.activeEffect(player);
-        assertFalse(gangsters.getOwner() == player);
-        assertFalse(player.getAssets().contains(gangsters));
-
-        for (Player p : board.turnOrder) {//check that no player received item after auction
-            if (p != player) {
-                assertTrue(p.getAssets().size() == 0);
+        int count = 0;
+        int success = 0;
+        while (count < 100) {
+            player.removeAsset(gangsters);
+            player.setMoney(70);
+            gangsters.activeEffect(player);
+            if (!(player.getAssets().contains(gangsters))) {
+                success++;
             }
+            count++;
         }
+        double result = success / 100.0;
+        System.out.println("Success rate:" + result + "%");
+        assertTrue(result >= 0.8);
     }
 
     /**
      * basic asset selling
      *
-     * @throws IOException
+     * @throws IOException file read error
      */
     @Test
     public void agentAssetSelling() throws IOException {
@@ -680,7 +713,7 @@ class GameTest {
     /**
      * Testing the case where agent has multiple developed properties
      *
-     * @throws IOException
+     * @throws IOException file read error
      */
     @Test
     public void assetSellingManyDeveloped() throws IOException {
