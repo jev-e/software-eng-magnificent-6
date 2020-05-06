@@ -1,10 +1,13 @@
 package ClassStructure;
 
 
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class GameTest {
@@ -86,6 +89,49 @@ class GameTest {
         }
 
 
+    }
+
+    /**
+     * Tests the correct creation of the board, in particular testing member variables are
+     * instantiated correctly
+     */
+    @Test
+    public void boardCreationTest() {
+        assertEquals(board.turnOrder, order);
+        assertEquals(board.tiles, tileSet);
+        assertEquals(board.potLuck, pot);
+        assertEquals(board.opportunityKnocks, opp);
+        assertEquals(board.getVersion(), "full");
+    }
+
+    /**
+     * Tests an exception is thrown when an illegal version is given to the board constructor
+     */
+    @Test
+    public void boardIllegalVersionTest() {
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> new Board(order, tileSet, pot, opp, "jhvjv", 1)
+        );
+
+        IllegalArgumentException ex1 = assertThrows(
+                IllegalArgumentException.class,
+                () -> new Board(order, tileSet, pot, opp, "full", 1)
+        );
+
+        IllegalArgumentException ex2 = assertThrows(
+                IllegalArgumentException.class,
+                () -> new Board(order, tileSet, pot, opp, "abridged")
+        );
+    }
+
+    @Test
+    public void rollDiceTest() {
+        //check return is within given range
+        for( int ii = 0; ii < 100; ii++){
+            int roll = board.roll(board.turnOrder.getFirst(), 0 );
+            assertTrue(roll >= 2 && roll <= 12);
+        }
     }
 
     /**
@@ -258,39 +304,6 @@ class GameTest {
         jsonDataBoard();//Reads in full game data for test
         for (Player p : board.turnOrder) {
             if (!p.getName().equals("Ayman")) {//Sets all players money apart from Ayman's to £10
-                p.setMoney(10);
-            }
-        }
-        Player currentPlayer = board.turnOrder.get(1);//gets Danny from turn order
-        currentPlayer.setCurrentPos(4);//Moves Danny to income tax
-        board.tiles.get(currentPlayer.getCurrentPos()).activeEffect(currentPlayer);//activate tile
-        //Danny cannot pay £200 fine
-        assertFalse(board.turnOrder.contains(currentPlayer));//Check danny has been removed
-        currentPlayer = board.turnOrder.get(0);//gets Ayman from turn order
-        currentPlayer.setCurrentPos(4);//Moves Ayman to income tax
-        board.tiles.get(currentPlayer.getCurrentPos()).activeEffect(currentPlayer);//activate tile
-        //Ayman can pay £200 fine
-        assertTrue(board.turnOrder.contains(currentPlayer));//Check Ayman has not been removed
-
-        currentPlayer = board.turnOrder.get(1);//get Jacob
-        ((Property) board.tiles.get(1)).setOwner(currentPlayer);//give jacob crapper street
-        currentPlayer.addAsset(board.tiles.get(1)); //add to asset list
-        //jacob net worth  £10 + crapper street = £10 + £60 = £70
-        assertEquals(currentPlayer, ((Property) board.tiles.get(1)).getOwner());//ownership check
-        currentPlayer.setCurrentPos(4);//Moves Ayman to income tax
-        board.tiles.get(currentPlayer.getCurrentPos()).activeEffect(currentPlayer);//activate tile
-        //Jacob cannot pay £200 fine, crapper street returned to bank
-        assertNull(((Property) board.tiles.get(1)).getOwner());//ownership check
-    }
-
-    /**
-     * Player bankrupt function and returning assets
-     */
-    @Test
-    public void bankruptTestFormer() throws IOException {
-        jsonDataBoard();//Reads in full game data for test
-        for (Player p : board.turnOrder) {
-            if (p.getName().equals("Ayman")) {//Sets all players money apart from Ayman's to £10
                 p.setMoney(10);
             }
         }
@@ -775,5 +788,18 @@ class GameTest {
         currentPlayer.agentDevelopProperties();
         System.out.println(currentPlayer.netWorth());
         currentPlayer.deductAmount(3100);
+    }
+
+    /**
+     * Tests that when an abridged game version is selected that a timer is created, runs and triggers the correct
+     * event
+     */
+    @Test
+    public void abridgedTest() throws InterruptedException {
+        board = new Board(order, tileSet, pot, opp, "abridged", 1);
+        board.startGameTimer();
+        assertNotEquals(board.timer, null);
+        TimeUnit.MINUTES.sleep(2);
+        assertTrue(board.timeUp);
     }
 }

@@ -1,12 +1,10 @@
 package ClassStructure;
 
-import GUI.Controller;
 import javafx.util.Pair;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
-import java.util.concurrent.CountDownLatch;
 
 /**
  * @author Ayman Bensreti, Calvin Boreham
@@ -37,53 +35,8 @@ public class Board {
     private Instant start;
     private Instant finished;
     public long timeElapsed;
-    private CountDownLatch latch = new CountDownLatch(1);
 
 
-    /**
-     * Board constructor that fetches version choice from user input
-     * @param turnOrder linked list of players in their turn order
-     * @param tiles board representation as a hash map
-     * @param potLuck deque of pot luck cards
-     * @param opportunityKnocks deque of opportunity knocks cards
-     */
-    public Board(LinkedList<Player> turnOrder, HashMap<Integer,BoardTile> tiles, Deque<CardEffect> potLuck, Deque<CardEffect> opportunityKnocks) {
-        this.potLuck = potLuck;
-        this.opportunityKnocks = opportunityKnocks;
-        this.turnOrder = turnOrder;
-        this.tiles = tiles;
-        turns = 0;
-        taxPot = 0;
-        repeat =  false;
-
-        dataStore = new HashMap<>();
-
-
-
-        //fetch version choice from user
-        this.version = chooseVersion();
-        //Set board references for activation methods in tiles and cards
-        for (CardEffect c : potLuck) {
-            c.setBoard(this);
-        }
-        for (CardEffect c : opportunityKnocks) {
-            c.setBoard(this);
-        }
-        for (BoardTile b : tiles.values()) {
-            b.setBoard(this);
-        }
-
-        if( version.equals( "abridged")){
-            timer = new Timer();
-            TimerTask endGame = new TimerTask() {
-                @Override
-                public void run() {
-                    timeUp = true;
-                }
-            };
-            timer.schedule(endGame, (timeLimit * 60) * 1000);
-        }
-    }
 
     /**
      * Board constructor with specified version
@@ -95,7 +48,7 @@ public class Board {
      */
     public Board(LinkedList<Player> turnOrder, HashMap<Integer,BoardTile> tiles, Deque<CardEffect> potLuck, Deque<CardEffect> opportunityKnocks, String version) {
 
-        if( version.equals("full") || version.equals("abridged") ){
+        if( version.equals("full") ){
             this.version = version;
         } else {
             System.out.println("Error in version");
@@ -121,50 +74,63 @@ public class Board {
             b.setBoard(this);
         }
 
-        if( version.equals("abridged")){
-            timer = new Timer();
-            TimerTask endGame = new TimerTask() {
-                @Override
-                public void run() {
-                    timeUp = true;
-                }
-            };
-            timer.schedule(endGame, (timeLimit * 60) * 1000);
-        }
     }
-
-
 
     /**
-     * Asks user to choose between abridged and full version
-     * for text version and debugging only
-     *
-     * @return decision one of "full" or "abridged"
+     * Board constructor with specified version
+     * @param turnOrder linked list of players in their turn order
+     * @param tiles board representation as a hash map
+     * @param potLuck deque of pot luck cards
+     * @param opportunityKnocks deque of opportunity knocks cards
+     * @param version one of "full" or "abridged"
      */
-    private String chooseVersion() {
-        Scanner userInputScanner = new Scanner( System.in ); //scanner for user input
-        boolean valid = false;
-        String  decision = null;
-        int timeLimit = 0;
+    public Board(LinkedList<Player> turnOrder, HashMap<Integer,BoardTile> tiles, Deque<CardEffect> potLuck, Deque<CardEffect> opportunityKnocks, String version, int timeLimit) {
 
-        while(!valid){
-            System.out.println("Abridged or full version?");
-            decision = userInputScanner.nextLine();
-            decision = decision.toLowerCase();
-            if( decision.equals("abridged") ){
-                System.out.println("Please give a time limit in whole minutes:");
-                timeLimit = userInputScanner.nextInt();
-                this.timeLimit = timeLimit;
-                valid = true;
-            } else if (decision.equals("full")){
-                valid = true;
-            } else {
-                System.out.println("Please pick one of full or abridged");
-            }
+        if( version.equals("abridged") ){
+            this.version = version;
+        } else {
+            System.out.println("Error in version");
+            throw new IllegalArgumentException();
         }
 
-        return decision;
+        this.timeLimit = timeLimit;
+        this.potLuck = potLuck;
+        this.opportunityKnocks = opportunityKnocks;
+        this.turnOrder = turnOrder;
+        this.tiles = tiles;
+        turns = 0;
+        taxPot = 0;
+        repeat =  false;
+        dataStore = new HashMap<>();
+        //Set board references for activation methods in tiles and cards
+        for (CardEffect c : potLuck) {
+            c.setBoard(this);
+        }
+        for (CardEffect c : opportunityKnocks) {
+            c.setBoard(this);
+        }
+        for (BoardTile b : tiles.values()) {
+            b.setBoard(this);
+        }
     }
+
+    /**
+     * Starts the game timer for an abridged game
+     */
+    public void startGameTimer(){
+        timer = new Timer();
+        TimerTask endGame = new TimerTask() {
+            @Override
+            public void run() {
+                timeUp = true; System.out.println("timeUp" + timeUp);
+            }
+        };
+        timer.schedule(endGame, (timeLimit * 60) * 1000);
+    }
+
+
+
+
 
     /**
      * draw pot luck card from the top of the deque
@@ -177,6 +143,7 @@ public class Board {
         }
         return card;
     }
+
     /**
      * draw opportunity knocks card from the top of the deque
      * @return Effect
@@ -212,11 +179,6 @@ public class Board {
         }
         return result;
     }
-
-    public void unblockCall(){
-        latch.countDown();
-    }
-
 
     /**
      * Processes the ending of the game and declares the winner
@@ -286,9 +248,16 @@ public class Board {
         return canLeave;
     }
 
-
     public void storeData( Player p, int netWorth ){
         Pair pair = new Pair( turns, netWorth);
         dataStore.get(p.getName()).add(pair);
+    }
+
+    /**
+     * Getter for version
+     * @return version
+     */
+    public String getVersion() {
+        return version;
     }
 }

@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="d4718719-5500-4975-beb1-5c65e877021f" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/software-eng-magnificent-6.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/software-eng-magnificent-6.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/software-eng-magnificent-6/.idea/software-eng-magnificent-6.iml" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/software-eng-magnificent-6/.idea/software-eng-magnificent-6.iml" afterDir="false" />
-    </list>
+    <list default="true" id="d4718719-5500-4975-beb1-5c65e877021f" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -194,7 +191,7 @@
       <workItem from="1588084744526" duration="3602000" />
       <workItem from="1588244582849" duration="5074000" />
       <workItem from="1588341892161" duration="13722000" />
-      <workItem from="1588697251374" duration="936000" />
+      <workItem from="1588697251374" duration="2493000" />
     </task>
     <task id="LOCAL-00001" summary="test">
       <created>1585851452384</created>
@@ -264,7 +261,7 @@
     </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/software_eng_magnificent_6$GameTest.ic" NAME="GameTest Coverage Results" MODIFIED="1588696151556" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
+    <SUITE FILE_PATH="coverage/software_eng_magnificent_6$GameTest.ic" NAME="GameTest Coverage Results" MODIFIED="1588709299387" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
       <FILTER>ClassStructure.*</FILTER>
     </SUITE>
     <SUITE FILE_PATH="coverage/software_eng_magnificent_6$TestSpace.ic" NAME="TestSpace Coverage Results" MODIFIED="1586040959036" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
