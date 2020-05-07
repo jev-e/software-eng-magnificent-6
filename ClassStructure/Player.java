@@ -685,6 +685,26 @@ public class Player {
         }
     }
 
+    /***
+     * Return a list of trade-able asset for the selected player
+     * @param p Selected player
+     * @return A trade-able assets for the selected player
+     */
+    public LinkedList<Object> tradeableAssets( Player p ) {
+        LinkedList<Object> owned = new LinkedList<>();
+
+        for (Object item : p.getAssets()) {
+            if (item instanceof Property) {
+                owned.add(item);
+            } else if (item instanceof Station) {
+                owned.add(item);
+            } else if (item instanceof Utility) {
+                owned.add(item);
+            }
+        }
+        return owned;
+    }
+
     /**
      * Creates a list of all assets owned by other players that are can be traded
      *

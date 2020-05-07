@@ -19,6 +19,7 @@ import javafx.stage.Stage;
 
 import javax.swing.*;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.*;
 
 /**
@@ -54,7 +55,7 @@ public class Main extends Application {
     private VBox playersVB; // Player cards, Right side of Screen
 
     Stage window;
-    Scene menuScene, ruleScene, playerSetupScene, gameSetupScene, gameBoardScene;
+    Scene menuScene, ruleScene, playerSetupScene, gameSetupScene, gameBoardScene, tradingSetupScene, tradingScene;
 
     // Holds the players name
     public ArrayList<TextField> playerNameTextField = new ArrayList<>();
@@ -632,10 +633,12 @@ public class Main extends Application {
 
         // Button functionality
         generateGame.setOnAction(e -> {
+            // nameTest = true if textfield is not null else some or all text fields is null or " "
+            boolean nameTest = nameConstraintCheck();
             // tokenTest = true if constraint is met else false if constraints is not met
             boolean tokenTest = tokenConstraintCheck();
             // Change scene if tokenTest = true, else Alert pops up
-            tokenConstraint(tokenTest, gameMode.toLowerCase());
+            constraintCheck(nameTest, tokenTest, gameMode.toLowerCase());
         });
 
         backToPlayerSetup.setOnAction(e -> {
@@ -653,6 +656,32 @@ public class Main extends Application {
         optionPane.getChildren().addAll(generateGame, backToPlayerSetup, quit);
         gameSetupPane.getChildren().add(optionPane);
         gameSetupScene = new Scene(gameSetupPane, 500, 500);
+    }
+    /***
+     * Check to see that all textfield is not null or containing just " "
+     * @return A boolean value (true = no null textfield, false = textfield is either null or containing only " ")
+     */
+    public boolean nameConstraintCheck(){
+        // True = all textfield is not null, else some/all textfield is " " or empty
+        boolean nameCheck = true; // Default to true (if game = all AI)
+        int i = 0;
+
+        // Fetch the name value from each textfield
+        while(i < playerNameTextField.size()){
+            String playerName = playerNameTextField.get(i).getText();
+
+            // Check if the textfield is empty, containing only " ", or null
+            if(playerName == null || playerNameTextField.get(i).getText().trim().isEmpty()){
+                // Name constraint failed
+                nameCheck = false;
+                break;
+            }else{
+                // Name constraint passed
+                nameCheck = true;
+            }
+            i++;
+        }
+        return nameCheck;
     }
 
     /***
@@ -693,22 +722,40 @@ public class Main extends Application {
     }
 
     /***
-     * Check and see if the token constraint has been met (false = error message, true = switch to board scene)
+     * Check and see if it has passed all of the constraint test (false = error message, true = switch to board scene)
+     * @param nameTest A boolean value specifying if all of the name assigned has met the condition to switch scene
      * @param tokenTest A boolean value specifying if the tokens assigned has met the condition to switch scene
+     * @param gameMode A string which dictates which game mode they will be playing
      */
-    public void tokenConstraint(boolean tokenTest, String gameMode){
-        if(tokenTest == false){
-            Alert tokenError = new Alert(Alert.AlertType.ERROR);
+    public void constraintCheck(boolean nameTest, boolean tokenTest, String gameMode){
+        Alert tokenError = new Alert(Alert.AlertType.ERROR);
+        if(nameTest == false){
+            tokenError.setTitle("Name Assignment Error");
+            tokenError.setHeaderText("Name Constraint");
+            tokenError.setContentText("Please enter in a name for all of the players");
+            tokenError.showAndWait();
+        }else if(tokenTest == false){
             tokenError.setTitle("Token Assignment Error");
             tokenError.setHeaderText("Token Constraint");
             tokenError.setContentText("Please ensure all players and AIs has a unique token");
             tokenError.showAndWait();
         }else{
-            assignPlayerToTurnOrder();
             // Initialize board and the pack of cards
             createBoard(gameMode);
+            // Assign player to the turn order
+            assignPlayerToTurnOrder();
+
+            // Testing  dannnny !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            // TODO change after testing
+            tradingSetupScene(order.getFirst());
+            window.setScene(tradingSetupScene);
+            window.show();
+
             // Change scene
-            displayGameScene();
+//            displayGame();
+//            window.setScene(gameScene);
+//            gameLoop();
+//            window.show();
         }
     }
 
@@ -731,6 +778,188 @@ public class Main extends Application {
             order.add(ai);
         }
     }
+
+    /***
+     * Dice rolling function, Allow the player to roll the dice and then move appropriately
+     * @param nextPlayer Current player in the turn order to roll dice
+     * @param diceCount Counter to keep track of how many times it has rolled the same number
+     */
+    public void diceRoll(Player nextPlayer, int diceCount){
+        int diceNum = gameSystem.roll(nextPlayer, diceCount);
+
+        Alert diceMessage = new Alert(Alert.AlertType.INFORMATION);
+        diceMessage.setTitle("Dice Generated");
+        diceMessage.setHeaderText(nextPlayer.getName() + " rolled " + diceNum);
+        // diceMessage.setContentText("Roll again");
+        diceMessage.showAndWait();
+    }
+
+    /***
+     * Create the trading Scene where it shows your assets and the selected player assets that is trade-able
+     * @param currentPlayer Current player
+     * @param tradePlayer The selected player that they wish to trade with
+     */
+    public void tradingScene(Player currentPlayer, String tradePlayer){
+        int i = 0;
+        VBox tradingPane = new VBox(10);
+        tradingPane.setPadding(new Insets(0, 20, 10, 20));
+        tradingPane.setAlignment(Pos.TOP_CENTER);
+        // Hold playerOnePane and PlayerTwoPane (asset information for both players)
+        HBox allPlayerPane = new HBox(15);
+        allPlayerPane.setAlignment(Pos.CENTER);
+        // Holds only the current players assets that is trade-able
+        VBox playerOnePane = new VBox();
+        playerOnePane.setAlignment(Pos.CENTER);
+        // Holds only the selected player assets that is trade-able
+        VBox playerTwoPane = new VBox();
+        playerTwoPane.setAlignment(Pos.CENTER);
+        // Holds three button (select another player, trade and cancel the trade)
+        HBox optionPane = new HBox(5);
+        optionPane.setAlignment(Pos.CENTER);
+
+        Label title = new Label("Property Tycoon Trading");
+        Label playerOneName = new Label(currentPlayer.getName() + " Assets");
+        Label playerTwoName = new Label(tradePlayer + " Assets");
+
+        // TODO remove after finish testing
+        Property temp;
+        Property temp2;
+        temp = new Property(1, "Example Street", Group.GREEN, 10, 10, null, 10, null);
+        temp2 = new Property(2, "Example Street1", Group.GREEN, 10, 10, null, 10, null);
+        currentPlayer.addAsset(temp);
+        currentPlayer.addAsset(temp2);
+
+        ListView playerOneAsset = new ListView();
+        // Add current player assets to it their listView
+        playerOneAsset = addAssetToViewList(currentPlayer, playerOneAsset);
+        // Allow the user to select multiple properties to trade with
+        playerOneAsset.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        ListView playerTwoAsset = new ListView();
+        playerTwoAsset.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        // Find the player object with the given player name
+        while(i < order.size()){
+            if(tradePlayer == order.get(i).getName()){
+                Player playerTwo = order.get(i);
+                // Add selected player assets to their listView
+                playerTwoAsset = addAssetToViewList(playerTwo, playerTwoAsset);
+                break;
+            }
+            i++;
+        }
+
+        Button trade = new Button("Trade");
+        Button help = new Button("Help");
+        Button back = new Button("Select Another Player");
+        Button cancelTrade = new Button("Cancel Trade");
+
+        // Button Functionality
+        trade.setOnAction(e -> {
+            Alert tradeMessage = new Alert(Alert.AlertType.NONE);
+
+        });
+        help.setOnAction(e -> {
+            Alert helpMessage = new Alert(Alert.AlertType.INFORMATION);
+            helpMessage.setTitle("Property Tycoon Trading");
+            // TODO ask tom which key is hold
+            helpMessage.setHeaderText("Property Tycoon Help Message");
+            helpMessage.setContentText("To trade multiple assets, hold 'x' and click on the asset");
+            helpMessage.showAndWait();
+        });
+        back.setOnAction(e -> {
+
+        });
+        cancelTrade.setOnAction(e -> {
+
+        });
+
+        playerOnePane.getChildren().addAll(playerOneName, playerOneAsset);
+        playerTwoPane.getChildren().addAll(playerTwoName, playerTwoAsset);
+        allPlayerPane.getChildren().addAll(playerOnePane, playerTwoPane);
+        optionPane.getChildren().addAll(back, help, trade, cancelTrade);
+        tradingPane.getChildren().addAll(title, allPlayerPane, optionPane);
+
+        tradingScene = new Scene(tradingPane);
+    }
+
+    /***
+     * Add all of the trade-able assets to the given list view with the given player
+     * @param player The current player you wish to find their assets
+     * @param asset A empty list view which will show all of the trade-able assets
+     * @return A filled list view of all of the trade-able assets
+     */
+    public ListView addAssetToViewList(Player player, ListView asset){
+        LinkedList<Object> tradeableAsset = player.tradeableAssets(player);
+        for(int i = 0; i < tradeableAsset.size(); i++){
+            // Fetch a property and casting it to a board tile
+            BoardTile propertyTile = (BoardTile) tradeableAsset.get(i);
+            // Fetch the property name
+            asset.getItems().add(propertyTile.getTitle());
+        }
+        return asset;
+    }
+
+    /***
+     * Create a popup scene which allow the current player to select who they want to trade with
+     * @param currentPlayer Is a parameter which tell us who is the current player is
+     */
+    public void tradingSetupScene(Player currentPlayer){
+        // TODO make it a popup scene, (waiting on board scene to be finished)
+        VBox tradingSetupPane = new VBox(10);
+        tradingSetupPane.setAlignment(Pos.CENTER);
+        HBox selectPlayerPane = new HBox(5);
+        selectPlayerPane.setAlignment(Pos.CENTER);
+        HBox optionPane = new HBox(5);
+        optionPane.setAlignment(Pos.CENTER);
+
+        Label title = new Label("Property Tycoon Trading Setup");
+        Label tradeMessage = new Label("Select the players you want to trade with " + currentPlayer.getName());
+
+        Button nextSetup = new Button("Next");
+        Button leaveTrade = new Button("Leave Trade");
+
+        ComboBox listOfPlayer = new ComboBox();
+        // Copying all of the players - current player (choices for current player to trade with)
+        LinkedList<Player> tempPlayerList = (LinkedList<Player>) order.clone();
+        for(int i = 0; i < order.size(); i++){
+            // Make sure you cant trade with yourself
+            if(currentPlayer.getName() != tempPlayerList.get(i).getName()){
+                listOfPlayer.getItems().add(tempPlayerList.get(i).getName());
+                // Default value set to the first player that is not itself
+                listOfPlayer.setValue(tempPlayerList.get(1).getName());
+            }
+        }
+
+        title.setStyle(
+                "-fx-label-padding: 20 0 10 0;" + "-fx-font-size: 14;" + "-fx-font-weight: bold;"
+        );
+        tradeMessage.setStyle(
+                "-fx-label-padding: 20 0 10 0;" + "-fx-font-size: 14;"
+        );
+        nextSetup.setPrefSize(130,30);
+        nextSetup.setStyle("-fx-font-size:14;");
+        leaveTrade.setPrefSize(130,30);
+        leaveTrade.setStyle("-fx-font-size:14;");
+
+        nextSetup.setOnAction(e -> {
+            // Fetch the name of the player that they want to trade with
+            String tradingPlayer = listOfPlayer.getValue().toString();
+            tradingScene(currentPlayer, tradingPlayer);
+            // Change scene with current player asset and selected player asset to trade with
+            window.setScene(tradingScene);
+            window.show();
+        });
+        leaveTrade.setOnAction(e -> {
+            // Doesnt want to trade, go back to board scene
+            window.setScene(gameScene);
+            window.show();
+        });
+
+        selectPlayerPane.getChildren().addAll(tradeMessage, listOfPlayer);
+        optionPane.getChildren().addAll(nextSetup, leaveTrade);
+        tradingSetupPane.getChildren().addAll(title, selectPlayerPane, optionPane);
+        tradingSetupScene = new Scene(tradingSetupPane,400,400);
+    }
+
     /***
      * Initializing the game board and it's deck's of cards
      * @param gameMode A string which initialize the game to be either full or abridged
@@ -760,5 +989,76 @@ public class Main extends Application {
         pot = new ArrayDeque<>(potLuckPack);
         opp = new ArrayDeque<>(opportunityKnocksPack);
         gameSystem = new Board(order, board, pot, opp, gameMode);
+    }
+
+    /***
+     * How the game is run
+     */
+    public void gameLoop() {
+        int retirePoint = 300;
+        gameSystem.setStart(Instant.now());
+        //displayAsString();
+        Collections.shuffle(gameSystem.turnOrder);
+        // graph
+        for( Player p: gameSystem.turnOrder ){
+            gameSystem.dataStore.put(p.getName(), new ArrayList<>());
+        }
+        gameSystem.turns = 0;
+
+        while (gameSystem.turnOrder.size() > 1) {
+            gameSystem.turns++;
+            for (int i = 0; i < gameSystem.turnOrder.size(); i++) {
+                Player currentPlayer = gameSystem.turnOrder.get(i);
+                if (currentPlayer == null) {
+                    continue;//skip players that have been removed from turn order
+                } else if (currentPlayer.isInJail()) {
+                    gameSystem.tiles.get(10).activeEffect(currentPlayer);//Activate the jail tile to serve time
+                    gameSystem.storeData(currentPlayer, currentPlayer.netWorth());
+                    continue;//move to next turn
+                }
+                int count = 0;
+                do {
+                    count++;
+                    // Dice rolling the same number
+                    gameSystem.repeat = false;
+                    // Get dice roll input from player (not AI)
+                    if (!currentPlayer.isAiAgent()) {
+                        //diceRoll(currentPlayer, count);
+                    }
+                    currentPlayer.setLastRoll(gameSystem.roll(currentPlayer, count));//keep track of player roll
+                    currentPlayer.passGo();
+                    gameSystem.tiles.get(currentPlayer.getCurrentPos()).activeEffect(currentPlayer);
+
+                    if (gameSystem.turnOrder.contains(currentPlayer) && !currentPlayer.isInJail()) {
+                        if (!currentPlayer.isAiAgent()) {
+                            currentPlayer.leaveGame();
+                            //TODO Player property management GUI here
+                            //TODO Ask player if they want to trade/ GUI trade here
+                        } else {
+                            currentPlayer.initiateTrade();
+                            if (gameSystem.turns > retirePoint && gameSystem.turnOrder.size() > 4) {
+                                retirePoint += 100;
+                                currentPlayer.agentRetire();
+                            }
+                        }
+                        currentPlayer.developProperties();
+                        if (!gameSystem.repeat) {
+                            gameSystem.storeData(currentPlayer, currentPlayer.netWorth());
+                        }
+                    }
+
+                } while (gameSystem.repeat);
+            }
+            if (gameSystem.timeUp) {
+
+                break;
+            }
+        }
+        try {
+            gameSystem.gameOver();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+        }
     }
 }
