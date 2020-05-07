@@ -1,5 +1,7 @@
 package ClassStructure;
 
+import javafx.scene.canvas.Canvas;
+
 import java.util.LinkedList;
 
 /**
@@ -19,6 +21,10 @@ public class Property extends BoardTile{
     private boolean completedSet;//If a single player owns all properties in group this is true and false otherwise
     private boolean rentDoubled; //Flag representing whether the rent on this property has been doubled
     private boolean developed; //flag for if property improved
+
+    // GUI Assets
+
+    private Canvas colour; // Displays colour of property group
 
     /**
      * Default constructor for Jackson
@@ -57,6 +63,10 @@ public class Property extends BoardTile{
         this.rentDoubled = false;
         this.housesNo = 0;
         this.hotelNo = 0;
+
+        this.tileName.setText(title);
+        this.tilePrice.setText(String.valueOf(cost));
+        System.out.println("Property + " + title + " constructed.");
     }
 
     /**
@@ -475,4 +485,8 @@ public class Property extends BoardTile{
     public void setDeveloped(boolean developed) {
         this.developed = developed;
     }
+
+    // GUI Functions
+
+    public void setColour(Canvas colour) { this.colour = colour; }
 }
