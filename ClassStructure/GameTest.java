@@ -13,7 +13,8 @@ import java.util.concurrent.TimeUnit;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Test class for Property Tyccooon
+ * Test class for Property Tycoon
+ * @author Ayman Bensreti, Calvin Boreham
  */
 class GameTest {
 
