@@ -243,6 +243,12 @@ public class Board {
         return canLeave;
     }
 
+    /**
+     * Stores data for a player in the board data store
+     * data stored is pair (turns, networth)
+     * @param p player
+     * @param netWorth current networth of player
+     */
     public void storeData( Player p, int netWorth ){
         Pair pair = new Pair( turns, netWorth);
         dataStore.get(p.getName()).add(pair);
