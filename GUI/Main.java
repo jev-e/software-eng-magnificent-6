@@ -15,6 +15,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import javax.swing.*;
@@ -102,7 +103,7 @@ public class Main extends Application {
         window.show();
     }
 
-/    public void addKeyGameButtons() {
+    public void addKeyGameButtons() {
         // Initialise Buttons
         Button rollBtn = new Button("Roll Dice");
         Button propManageBtn = new Button("Manage Properties");
@@ -112,7 +113,6 @@ public class Main extends Application {
         // Set Button Actions
         rollBtn.setOnAction((ActionEvent event) -> {
             // Roll Dice
-            System.out.println("Roll Button Clicked");
         });
 
         propManageBtn.setOnAction((ActionEvent event) -> {
@@ -746,17 +746,11 @@ public class Main extends Application {
             // Assign player to the turn order
             assignPlayerToTurnOrder();
 
-            // Testing  dannnny !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            // TODO change after testing
-            tradingSetupScene(order.getFirst());
-            window.setScene(tradingSetupScene);
-            window.show();
-
             // Change scene
-//            displayGame();
-//            window.setScene(gameScene);
-//            gameLoop();
-//            window.show();
+            displayGameScene();
+            window.setScene(gameScene);
+            gameLoop();
+            window.show();
         }
     }
 
@@ -780,18 +774,41 @@ public class Main extends Application {
         }
     }
 
+    public void diceRollMessage(Player currentPlayer, int diceCount){
+        Alert diceMessage = new Alert(Alert.AlertType.NONE);
+        ButtonType roll = new ButtonType("Roll Dice");
+
+        diceMessage.setTitle("Property Tycoon Roll Dice");
+        diceMessage.setContentText("Click Roll Dice down below to roll your dices");
+        diceMessage.getButtonTypes().add(roll);
+
+        Optional<ButtonType> option = diceMessage.showAndWait();
+        // After clicking the "Roll Dice" button from the popup
+        if(option.get() == roll){
+            diceRoll(currentPlayer, diceCount);
+        }
+        // TODO double check showAndWait is not needed
+        //diceMessage.show();
+        //diceMessage.showAndWait();
+    }
+
     /***
      * Dice rolling function, Allow the player to roll the dice and then move appropriately
-     * @param nextPlayer Current player in the turn order to roll dice
+     * @param currentPlayer Current player in the turn order to roll dice
      * @param diceCount Counter to keep track of how many times it has rolled the same number
      */
-    public void diceRoll(Player nextPlayer, int diceCount){
-        int diceNum = gameSystem.roll(nextPlayer, diceCount);
+    public void diceRoll(Player currentPlayer, int diceCount){
+        // Roll dice using the back-end function
+        gameSystem.roll(currentPlayer, diceCount);
+        // Fetch the number for die one
+        int dice1 = currentPlayer.getLastRoll1();
+        // Fetch the number for die two
+        int dice2 = currentPlayer.getLastRoll2();
 
         Alert diceMessage = new Alert(Alert.AlertType.INFORMATION);
-        diceMessage.setTitle("Dice Generated");
-        diceMessage.setHeaderText(nextPlayer.getName() + " rolled " + diceNum);
-        // diceMessage.setContentText("Roll again");
+        diceMessage.setTitle("Property Tycoon Dice Generated");
+        diceMessage.setHeaderText(currentPlayer.getName() + " rolled " + (dice1 + dice2));
+        diceMessage.setContentText("Die one rolled " + dice1 + "\nDie two rolled " + dice2);
         diceMessage.showAndWait();
     }
 
@@ -801,6 +818,7 @@ public class Main extends Application {
      * @param tradePlayer The selected player that they wish to trade with
      */
     public void tradingScene(Player currentPlayer, String tradePlayer){
+        Stage tradePopUpStage = new Stage();
         int i = 0;
         VBox tradingPane = new VBox(10);
         tradingPane.setPadding(new Insets(0, 20, 10, 20));
@@ -825,8 +843,10 @@ public class Main extends Application {
         // TODO remove after finish testing
         Property temp;
         Property temp2;
+        Property temp3;
         temp = new Property(1, "Example Street", Group.GREEN, 10, 10, null, 10, null);
         temp2 = new Property(2, "Example Street1", Group.GREEN, 10, 10, null, 10, null);
+        temp3 = new Property(3, "test", Group.YELLOW, 10, 10, null, 10, null);
         currentPlayer.addAsset(temp);
         currentPlayer.addAsset(temp2);
 
@@ -841,6 +861,7 @@ public class Main extends Application {
         while(i < order.size()){
             if(tradePlayer == order.get(i).getName()){
                 Player playerTwo = order.get(i);
+                playerTwo.addAsset(temp3);
                 // Add selected player assets to their listView
                 playerTwoAsset = addAssetToViewList(playerTwo, playerTwoAsset);
                 break;
@@ -854,23 +875,57 @@ public class Main extends Application {
         Button cancelTrade = new Button("Cancel Trade");
 
         // Button Functionality
-        trade.setOnAction(e -> {
-            Alert tradeMessage = new Alert(Alert.AlertType.NONE);
-
+        back.setOnAction(e -> {
+            tradingSetupScene(currentPlayer);
+            // Close the popup (showing your assets and the other persons asset)
+            tradePopUpStage.close();
         });
         help.setOnAction(e -> {
             Alert helpMessage = new Alert(Alert.AlertType.INFORMATION);
             helpMessage.setTitle("Property Tycoon Trading");
-            // TODO ask tom which key is hold
             helpMessage.setHeaderText("Property Tycoon Help Message");
-            helpMessage.setContentText("To trade multiple assets, hold 'x' and click on the asset");
+            helpMessage.setContentText("To trade multiple assets, hold 'Ctrl' and click on the assets you wish to trade");
             helpMessage.showAndWait();
         });
-        back.setOnAction(e -> {
+        ListView finalPlayerOneAsset = playerOneAsset;
+        ListView finalPlayerTwoAsset = playerTwoAsset;
+        trade.setOnAction(e -> {
+            Alert tradeMessage = new Alert(Alert.AlertType.NONE);
+            tradeMessage.setTitle("Property Tycoon Trading Offer" );
+            ButtonType acceptTrade = new ButtonType("Accept Trade");
+            ButtonType declineTrade = new ButtonType("Decline Trade");
+            tradeMessage.getButtonTypes().addAll(acceptTrade, declineTrade);
+            String msgOffering = "";
+            String msgFor = "";
 
+            // Fetch the information that has been selected for the current player and display it into alert header
+            ObservableList listOfPlayerOneAsset = finalPlayerOneAsset.getSelectionModel().getSelectedItems();
+            for(Object item: listOfPlayerOneAsset){
+                msgOffering += String.format("%s%n", (String) item);
+            }
+            tradeMessage.setHeaderText(currentPlayer.getName() + " Offering\n" + msgOffering);
+            // Fetch the information of all the assets that they wish for from the other player and display it into context
+            ObservableList listOfPlayerTwoAsset = finalPlayerTwoAsset.getSelectionModel().getSelectedItems();
+            for(Object item: listOfPlayerTwoAsset){
+                msgFor += String.format("%s%n", (String) item);
+            }
+            tradeMessage.setContentText("For your\n"  + msgFor);
+
+            // TODO implement ai trade
+            Optional<ButtonType> option = tradeMessage.showAndWait();
+            // After clicking the "Roll Dice" button from the popup
+            if(option.get() == acceptTrade){
+                System.out.println("bye");
+            }else if(option.get() == declineTrade){
+                System.out.println("hi");
+            }
         });
         cancelTrade.setOnAction(e -> {
-
+            // Doesnt want to trade, go back to board scene
+            window.setScene(gameScene);
+            window.show();
+            // Close the trading popup scene
+            tradePopUpStage.close();
         });
 
         playerOnePane.getChildren().addAll(playerOneName, playerOneAsset);
@@ -878,8 +933,11 @@ public class Main extends Application {
         allPlayerPane.getChildren().addAll(playerOnePane, playerTwoPane);
         optionPane.getChildren().addAll(back, help, trade, cancelTrade);
         tradingPane.getChildren().addAll(title, allPlayerPane, optionPane);
-
         tradingScene = new Scene(tradingPane);
+        // Creating the popup effect
+        tradePopUpStage.setScene(tradingScene);
+        tradePopUpStage.initModality(Modality.APPLICATION_MODAL);
+        tradePopUpStage.show();
     }
 
     /***
@@ -904,7 +962,8 @@ public class Main extends Application {
      * @param currentPlayer Is a parameter which tell us who is the current player is
      */
     public void tradingSetupScene(Player currentPlayer){
-        // TODO make it a popup scene, (waiting on board scene to be finished)
+        Stage tradeSetupPopUpStage = new Stage();
+
         VBox tradingSetupPane = new VBox(10);
         tradingSetupPane.setAlignment(Pos.CENTER);
         HBox selectPlayerPane = new HBox(5);
@@ -926,7 +985,7 @@ public class Main extends Application {
             if(currentPlayer.getName() != tempPlayerList.get(i).getName()){
                 listOfPlayer.getItems().add(tempPlayerList.get(i).getName());
                 // Default value set to the first player that is not itself
-                listOfPlayer.setValue(tempPlayerList.get(1).getName());
+                listOfPlayer.setValue(tempPlayerList.get(0).getName());
             }
         }
 
@@ -944,21 +1003,27 @@ public class Main extends Application {
         nextSetup.setOnAction(e -> {
             // Fetch the name of the player that they want to trade with
             String tradingPlayer = listOfPlayer.getValue().toString();
-            tradingScene(currentPlayer, tradingPlayer);
             // Change scene with current player asset and selected player asset to trade with
-            window.setScene(tradingScene);
-            window.show();
+            tradingScene(currentPlayer, tradingPlayer);
+            // Close the popup (to select which person you want to trade with)
+            tradeSetupPopUpStage.close();
         });
         leaveTrade.setOnAction(e -> {
             // Doesnt want to trade, go back to board scene
             window.setScene(gameScene);
             window.show();
+            // Close the trading popup scene
+            tradeSetupPopUpStage.close();
         });
 
         selectPlayerPane.getChildren().addAll(tradeMessage, listOfPlayer);
         optionPane.getChildren().addAll(nextSetup, leaveTrade);
         tradingSetupPane.getChildren().addAll(title, selectPlayerPane, optionPane);
         tradingSetupScene = new Scene(tradingSetupPane,400,400);
+        // Creating the popup effect
+        tradeSetupPopUpStage.setScene(tradingSetupScene);
+        tradeSetupPopUpStage.initModality(Modality.APPLICATION_MODAL);
+        tradeSetupPopUpStage.show();
     }
 
     /***
@@ -1024,15 +1089,18 @@ public class Main extends Application {
                     gameSystem.repeat = false;
                     // Get dice roll input from player (not AI)
                     if (!currentPlayer.isAiAgent()) {
-                        //diceRoll(currentPlayer, count);
+                        // Player click roll dice from alert
+                        diceRollMessage(currentPlayer, count);
                     }
-                    currentPlayer.setLastRoll(gameSystem.roll(currentPlayer, count));//keep track of player roll
+                    //currentPlayer.setLastRoll(gameSystem.roll(currentPlayer, count));//keep track of player roll
                     currentPlayer.passGo();
                     gameSystem.tiles.get(currentPlayer.getCurrentPos()).activeEffect(currentPlayer);
 
                     if (gameSystem.turnOrder.contains(currentPlayer) && !currentPlayer.isInJail()) {
                         if (!currentPlayer.isAiAgent()) {
                             currentPlayer.leaveGame();
+                            // Changes to the trading setup scene (popup)
+                            tradingSetupScene(currentPlayer);
                             //TODO Player property management GUI here
                             //TODO Ask player if they want to trade/ GUI trade here
                         } else {
@@ -1047,8 +1115,9 @@ public class Main extends Application {
                             gameSystem.storeData(currentPlayer, currentPlayer.netWorth());
                         }
                     }
-
+                    // roll again
                 } while (gameSystem.repeat);
+                // TODO end turn screen (actionlog)
             }
             if (gameSystem.timeUp) {
 

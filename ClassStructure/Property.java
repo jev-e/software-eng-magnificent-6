@@ -66,9 +66,9 @@ public class Property extends BoardTile{
         this.housesNo = 0;
         this.hotelNo = 0;
 
-        this.tileName.setText(title);
-        this.tilePrice.setText(String.valueOf(cost));
-        System.out.println("Property + " + title + " constructed.");
+        //this.tileName.setText(title);
+        //this.tilePrice.setText(String.valueOf(cost));
+        //System.out.println("Property + " + title + " constructed.");
     }
 
     /**
