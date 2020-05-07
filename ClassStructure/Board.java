@@ -251,19 +251,32 @@ public class Board {
 
     /**
      * Getter for finish time
+     * return time game finished
      */
     public Instant getFinished() {
         return finished;
     }
 
+    /**
+     * Getter for time elapsed
+     * @return time taken for game to be played
+     */
     public Long getTimeElapsed() {
         return timeElapsed;
     }
 
+    /**
+     * Getter for start time
+     * @return time game started
+     */
     public Instant getStart() {
         return start;
     }
 
+    /**
+     * Getter for game version
+     * @return version of game, either abridged or full
+     */
     public String getVersion() {
         return version;
     }
