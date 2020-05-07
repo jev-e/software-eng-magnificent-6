@@ -56,6 +56,7 @@ public class Main extends Application {
 
     Stage window;
     Scene menuScene, ruleScene, playerSetupScene, gameSetupScene, gameBoardScene, tradingSetupScene, tradingScene;
+    Scene test123;
 
     // Holds the players name
     public ArrayList<TextField> playerNameTextField = new ArrayList<>();
@@ -101,7 +102,7 @@ public class Main extends Application {
         window.show();
     }
 
-    public void addKeyGameButtons() {
+/    public void addKeyGameButtons() {
         // Initialise Buttons
         Button rollBtn = new Button("Roll Dice");
         Button propManageBtn = new Button("Manage Properties");
