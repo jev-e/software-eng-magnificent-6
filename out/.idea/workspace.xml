@@ -1,24 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="d4718719-5500-4975-beb1-5c65e877021f" name="Default Changelist" comment="" />
-    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <list default="true" id="8adbff93-bb4a-47ea-ac08-103ca041f6d7" name="Default Changelist" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="CodeInsightWorkspaceSettings">
-    <option name="optimizeImportsOnTheFly" value="true" />
-  </component>
-  <component name="CoverageViewManager">
-    <option name="myElementSize" value="241" />
-  </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
+        <option value="JUnit5 Test Class" />
+        <option value="Enum" />
         <option value="Class" />
-        <option value="JavaFXApplication" />
       </list>
     </option>
   </component>
@@ -29,54 +23,59 @@
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="UPDATE_TYPE" value="MERGE" />
   </component>
-  <component name="ProjectId" id="1Zog43iGYZ5iuXMAq79DQ56Cjiy" />
+  <component name="ProjectId" id="1ZJHRclpHs19v0Sbr4XSTCQcVml" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
   <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="Downloaded.Files.Path.Enabled" value="false" />
     <property name="Git.Branch.Popup.ShowAllRemotes" value="true" />
     <property name="Repository.Attach.Annotations" value="false" />
     <property name="Repository.Attach.JavaDocs" value="false" />
     <property name="Repository.Attach.Sources" value="false" />
-    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="last_opened_file_path" value="C:/Program Files/Java/javafx-sdk-11.0.2/lib/javafx.media.jar!/" />
-    <property name="project.structure.last.edited" value="Modules" />
-    <property name="project.structure.proportion" value="0.15384616" />
+    <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary" value="JUnit5" />
+    <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5" value="" />
+    <property name="create.test.in.the.same.root" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../Part3Game" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.path.for.package.tslint" value="project" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
+    <property name="project.structure.last.edited" value="Project" />
+    <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
-    <property name="settings.editor.selected.configurable" value="org.intellij.lang.jflex.options.JFlexConfigurable" />
+    <property name="run.code.analysis.last.selected.profile" value="pProject Default" />
+    <property name="settings.editor.selected.configurable" value="preferences.customizations" />
   </component>
   <component name="RecentsManager">
+    <key name="CreateTestDialog.RecentsKey">
+      <recent name="ClassStructure" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="C:\Users\Calvin\Documents\GitHub\software-eng-magnificent-6" />
+      <recent name="C:\Users\Ayman\IdeaProjects\software-eng-magnificent-6\ClassStructure" />
+      <recent name="C:\Users\Ayman\IdeaProjects\software-eng-magnificent-6\out" />
+    </key>
+    <key name="CreateTestDialog.Recents.Supers">
+      <recent name="" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Ayman\IdeaProjects\software-eng-magnificent-6\ClassStructure" />
     </key>
   </component>
-  <component name="RunDashboard">
-    <option name="ruleStates">
-      <list>
-        <RuleState>
-          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
-        </RuleState>
-        <RuleState>
-          <option name="name" value="StatusDashboardGroupingRule" />
-        </RuleState>
-      </list>
-    </option>
-  </component>
-  <component name="RunManager" selected="JUnit.GameTest">
-    <configuration name="DataVisualisation" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="ClassStructure.DataVisualisation" />
-      <module name="software-eng-magnificent-6" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="ClassStructure.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
+  <component name="RunManager" selected="Application.Main">
     <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="GUI.Main" />
       <module name="software-eng-magnificent-6" />
@@ -90,14 +89,7 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="TestSpace" type="Application" factoryName="Application">
-      <option name="MAIN_CLASS_NAME" value="ClassStructure.TestSpace" />
-      <module name="software-eng-magnificent-6" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="GameTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="GameTest (1)" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="software-eng-magnificent-6" />
       <extension name="coverage">
         <pattern>
@@ -112,7 +104,26 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="GameTest.bankruptTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="GameTest" type="JUnit" factoryName="JUnit" nameIsGenerated="true">
+      <module name="software-eng-magnificent-6" />
+      <useClassPathOnly />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="ClassStructure.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="ClassStructure" />
+      <option name="MAIN_CLASS_NAME" value="ClassStructure.GameTest" />
+      <option name="METHOD_NAME" value="" />
+      <option name="TEST_OBJECT" value="class" />
+      <option name="VM_PARAMETERS" value="-Deditable.java.test.console=true" />
+      <option name="PARAMETERS" value="" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="GameTest.actionLogTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="software-eng-magnificent-6" />
       <extension name="coverage">
         <pattern>
@@ -122,13 +133,13 @@
       </extension>
       <option name="PACKAGE_NAME" value="ClassStructure" />
       <option name="MAIN_CLASS_NAME" value="ClassStructure.GameTest" />
-      <option name="METHOD_NAME" value="bankruptTest" />
+      <option name="METHOD_NAME" value="actionLogTest" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="ReadInDataTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="GameTest.boardIllegalVersionTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="software-eng-magnificent-6" />
       <extension name="coverage">
         <pattern>
@@ -137,19 +148,36 @@
         </pattern>
       </extension>
       <option name="PACKAGE_NAME" value="ClassStructure" />
-      <option name="MAIN_CLASS_NAME" value="ClassStructure.ReadInDataTest" />
-      <option name="TEST_OBJECT" value="class" />
+      <option name="MAIN_CLASS_NAME" value="ClassStructure.GameTest" />
+      <option name="METHOD_NAME" value="boardIllegalVersionTest" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="GameTest.tradeTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="software-eng-magnificent-6" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="ClassStructure.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="ClassStructure" />
+      <option name="MAIN_CLASS_NAME" value="ClassStructure.GameTest" />
+      <option name="METHOD_NAME" value="tradeTest" />
+      <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="JUnit.GameTest" />
-        <item itemvalue="JUnit.GameTest.bankruptTest" />
-        <item itemvalue="Application.DataVisualisation" />
         <item itemvalue="Application.Main" />
-        <item itemvalue="JUnit.ReadInDataTest" />
+        <item itemvalue="JUnit.GameTest.boardIllegalVersionTest" />
+        <item itemvalue="JUnit.GameTest (1)" />
+        <item itemvalue="JUnit.GameTest.actionLogTest" />
+        <item itemvalue="JUnit.GameTest.tradeTest" />
       </list>
     </recent_temporary>
   </component>
@@ -158,49 +186,202 @@
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="d4718719-5500-4975-beb1-5c65e877021f" name="Default Changelist" comment="" />
-      <created>1585510666066</created>
+      <changelist id="8adbff93-bb4a-47ea-ac08-103ca041f6d7" name="Default Changelist" comment="" />
+      <created>1584550269745</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1585510666066</updated>
-      <workItem from="1585510668687" duration="1748000" />
-      <workItem from="1585512489097" duration="18396000" />
-      <workItem from="1585599204082" duration="3778000" />
-      <workItem from="1585655659491" duration="602000" />
-      <workItem from="1585656290149" duration="8113000" />
-      <workItem from="1585773247408" duration="702000" />
-      <workItem from="1585823525467" duration="1418000" />
-      <workItem from="1585825715330" duration="1985000" />
-      <workItem from="1585831343563" duration="426000" />
-      <workItem from="1585851201585" duration="912000" />
-      <workItem from="1585913642640" duration="41332000" />
-      <workItem from="1586084006290" duration="9028000" />
-      <workItem from="1586174546378" duration="16093000" />
-      <workItem from="1586327674994" duration="631000" />
-      <workItem from="1586428683832" duration="2047000" />
-      <workItem from="1586452817715" duration="1590000" />
-      <workItem from="1586504182244" duration="2356000" />
-      <workItem from="1586951722887" duration="772000" />
-      <workItem from="1587030569393" duration="4722000" />
-      <workItem from="1587497531045" duration="27573000" />
-      <workItem from="1587587191289" duration="123000" />
-      <workItem from="1587632331756" duration="6640000" />
-      <workItem from="1587911532413" duration="796000" />
-      <workItem from="1587916550904" duration="5860000" />
-      <workItem from="1588080777025" duration="3007000" />
-      <workItem from="1588084744526" duration="3602000" />
-      <workItem from="1588244582849" duration="5074000" />
-      <workItem from="1588341892161" duration="13722000" />
-      <workItem from="1588697251374" duration="2493000" />
+      <updated>1584550269745</updated>
+      <workItem from="1584550275989" duration="12276000" />
+      <workItem from="1584717170391" duration="13883000" />
+      <workItem from="1584798306884" duration="10445000" />
+      <workItem from="1584976535098" duration="1897000" />
+      <workItem from="1584997447081" duration="686000" />
+      <workItem from="1585215691275" duration="157000" />
+      <workItem from="1585411237223" duration="5390000" />
+      <workItem from="1585476741991" duration="14718000" />
+      <workItem from="1585516587605" duration="1296000" />
+      <workItem from="1585564155033" duration="227000" />
+      <workItem from="1585597720822" duration="10401000" />
+      <workItem from="1585648222337" duration="6615000" />
+      <workItem from="1585826425426" duration="6232000" />
+      <workItem from="1585847853926" duration="6611000" />
+      <workItem from="1585923095955" duration="533000" />
+      <workItem from="1585923657967" duration="184000" />
+      <workItem from="1585923868332" duration="693000" />
+      <workItem from="1586108975946" duration="208000" />
+      <workItem from="1586109204481" duration="681000" />
+      <workItem from="1586109911013" duration="5589000" />
+      <workItem from="1586253894520" duration="1352000" />
+      <workItem from="1586341939543" duration="10036000" />
+      <workItem from="1586368840205" duration="5336000" />
+      <workItem from="1586427559645" duration="8285000" />
+      <workItem from="1586452340839" duration="11237000" />
+      <workItem from="1586463963511" duration="921000" />
+      <workItem from="1586510774097" duration="11720000" />
+      <workItem from="1586597910313" duration="10748000" />
+      <workItem from="1586776130382" duration="5710000" />
+      <workItem from="1586799397977" duration="20063000" />
+      <workItem from="1586852972255" duration="5412000" />
+      <workItem from="1586864205014" duration="3946000" />
+      <workItem from="1586905396018" duration="121000" />
+      <workItem from="1586942351881" duration="14828000" />
+      <workItem from="1587033354047" duration="3333000" />
+      <workItem from="1587550140620" duration="38168000" />
+      <workItem from="1587629417251" duration="9674000" />
+      <workItem from="1587679997077" duration="2257000" />
+      <workItem from="1587729384396" duration="2193000" />
+      <workItem from="1587989874839" duration="2150000" />
+      <workItem from="1588080017541" duration="30000" />
+      <workItem from="1588091447228" duration="946000" />
+      <workItem from="1588154616386" duration="22290000" />
+      <workItem from="1588250628053" duration="2014000" />
+      <workItem from="1588519990750" duration="536000" />
+      <workItem from="1588594793625" duration="3297000" />
+      <workItem from="1588699039481" duration="3455000" />
+      <workItem from="1588703449496" duration="27000" />
+      <workItem from="1588772670120" duration="12551000" />
     </task>
-    <task id="LOCAL-00001" summary="test">
-      <created>1585851452384</created>
+    <task id="LOCAL-00001" summary="Sprint 2: updated comments and methods to handel money.&#10;Bankrupting players who cannot pay added">
+      <created>1584565360002</created>
       <option name="number" value="00001" />
       <option name="presentableId" value="LOCAL-00001" />
       <option name="project" value="LOCAL" />
-      <updated>1585851452384</updated>
+      <updated>1584565360002</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Sprint 3 ready version. Updated comments and structure.">
+      <created>1584805982179</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1584805982179</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Added Jail tile and updated go to jail functions. Added jail options to player method">
+      <created>1585493366334</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1585493366334</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Sprint 4 ready version">
+      <created>1585498164241</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1585498164241</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Json Read in work in progress">
+      <created>1585608266073</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1585608266073</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Full game data demo in Test space. Added extra testing to JSON data read in">
+      <created>1585650175115</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1585650175115</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Updated game demo">
+      <created>1585653510336</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1585653510336</updated>
+    </task>
+    <task id="LOCAL-00008" summary="Updated game demo. Fixed get out of jail cards. Updated game files">
+      <created>1585850268705</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1585850268705</updated>
+    </task>
+    <task id="LOCAL-00009" summary="Sprint 5 Ready version">
+      <created>1585854841989</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1585854841989</updated>
+    </task>
+    <task id="LOCAL-00010" summary="Sprint 5 Ready version test changes">
+      <created>1586342128665</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1586342128665</updated>
+    </task>
+    <task id="LOCAL-00011" summary="Sprint 6 setup">
+      <created>1586528378971</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1586528378972</updated>
+    </task>
+    <task id="LOCAL-00012" summary="Sprint 6 ready">
+      <created>1586533687807</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1586533687807</updated>
+    </task>
+    <task id="LOCAL-00013" summary="AI version 1">
+      <created>1586956514437</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1586956514437</updated>
+    </task>
+    <task id="LOCAL-00014" summary="AI version 1">
+      <created>1587550771650</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1587550771650</updated>
+    </task>
+    <task id="LOCAL-00015" summary="AI version 2: Trading and auctioning functional">
+      <created>1587634014307</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1587634014307</updated>
+    </task>
+    <task id="LOCAL-00016" summary="Sprint 8: Full AI and data visualisation">
+      <created>1587682162477</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1587682162477</updated>
+    </task>
+    <task id="LOCAL-00017" summary="Sprint 9: Text systems removed: Game loop moved to Controller">
+      <created>1588194908441</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1588194908442</updated>
+    </task>
+    <task id="LOCAL-00018" summary="Sprint 9: Text systems removed: Game loop moved to Controller: bankruptTest fixed">
+      <created>1588701049370</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1588701049370</updated>
+    </task>
+    <task id="LOCAL-00019" summary="Action Log and roll update">
+      <created>1588787057736</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1588787057736</updated>
+    </task>
+    <task id="LOCAL-00020" summary="Action Log Test Added">
+      <created>1588790312375</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1588790312375</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -212,58 +393,223 @@
         <entry key="MAIN">
           <value>
             <State>
-              <option name="FILTERS">
-                <map>
-                  <entry key="branch">
-                    <value>
-                      <list>
-                        <option value="trading" />
-                      </list>
-                    </value>
-                  </entry>
-                </map>
-              </option>
               <option name="COLUMN_ORDER" />
             </State>
           </value>
         </entry>
       </map>
     </option>
-    <option name="RECENT_FILTERS">
-      <map>
-        <entry key="Branch">
-          <value>
-            <list>
-              <RecentGroup>
-                <option name="FILTER_VALUES">
-                  <option value="trading" />
-                </option>
-              </RecentGroup>
-            </list>
-          </value>
-        </entry>
-      </map>
-    </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="test" />
-    <option name="LAST_COMMIT_MESSAGE" value="test" />
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+    <MESSAGE value="Sprint 2: updated comments and methods to handel money.&#10;Bankrupting players who cannot pay added" />
+    <MESSAGE value="Sprint 3 ready version. Updated comments and structure." />
+    <MESSAGE value="Added Jail tile and updated go to jail functions. Added jail options to player method" />
+    <MESSAGE value="Sprint 4 ready version" />
+    <MESSAGE value="Json Read in work in progress" />
+    <MESSAGE value="Full game data demo in Test space. Added extra testing to JSON data read in" />
+    <MESSAGE value="Updated game demo" />
+    <MESSAGE value="Updated game demo. Fixed get out of jail cards. Updated game files" />
+    <MESSAGE value="Sprint 5 Ready version" />
+    <MESSAGE value="Sprint 5 Ready version test changes" />
+    <MESSAGE value="Sprint 6 setup" />
+    <MESSAGE value="Sprint 6 ready" />
+    <MESSAGE value="AI version 1" />
+    <MESSAGE value="AI version 2: Trading and auctioning functional" />
+    <MESSAGE value="Sprint 8: Full AI and data visualisation" />
+    <MESSAGE value="Sprint 9: Text systems removed: Game loop moved to Controller" />
+    <MESSAGE value="Sprint 9: Text systems removed: Game loop moved to Controller: bankruptTest fixed" />
+    <MESSAGE value="Action Log and roll update" />
+    <MESSAGE value="Action Log Test Added" />
+    <option name="LAST_COMMIT_MESSAGE" value="Action Log Test Added" />
+    <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/ClassStructure/GameTest.java</url>
-          <line>9</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
-  </component>
-  <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/software_eng_magnificent_6$GameTest.ic" NAME="GameTest Coverage Results" MODIFIED="1588709299387" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
-      <FILTER>ClassStructure.*</FILTER>
-    </SUITE>
-    <SUITE FILE_PATH="coverage/software_eng_magnificent_6$TestSpace.ic" NAME="TestSpace Coverage Results" MODIFIED="1586040959036" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+  <component name="WindowStateProjectService">
+    <state x="557" y="187" key="#GameTest" timestamp="1585496931710">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="557" y="187" key="#GameTest/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1585496931710" />
+    <state x="557" y="187" key="#GameTest_(1)" timestamp="1585496950256">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="557" y="187" key="#GameTest_(1)/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1585496950256" />
+    <state x="116" y="117" width="1688" height="806" key="#com.intellij.execution.junit2.states.ComparisonFailureState$DiffDialog" timestamp="1588189686614">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="116" y="117" width="1688" height="806" key="#com.intellij.execution.junit2.states.ComparisonFailureState$DiffDialog/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1588189686614" />
+    <state x="93" y="93" width="1350" height="638" key="#com.intellij.execution.junit2.states.ComparisonFailureState$DiffDialog/0.0.1536.824@0.0.1536.824" timestamp="1584731931171" />
+    <state x="765" y="229" key="#com.intellij.ide.util.MemberChooser" timestamp="1586864818012">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="765" y="229" key="#com.intellij.ide.util.MemberChooser/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1586864818012" />
+    <state x="808" y="409" key="#com.intellij.ide.util.projectWizard.JdkChooserPanel.MyDialog" timestamp="1587680151055">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="808" y="409" key="#com.intellij.ide.util.projectWizard.JdkChooserPanel.MyDialog/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1587680151055" />
+    <state x="707" y="376" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1" timestamp="1586780004527">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="707" y="376" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1586780004527" />
+    <state x="760" y="110" key="CommitChangelistDialog2" timestamp="1588790310849">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="388" y="0" key="CommitChangelistDialog2/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1588194906946" />
+    <state x="760" y="110" key="CommitChangelistDialog2/-1920.0.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1588790310849" />
+    <state x="310" y="0" key="CommitChangelistDialog2/0.0.1536.824@0.0.1536.824" timestamp="1584805981148" />
+    <state x="116" y="117" width="1688" height="806" key="DiffContextDialog" timestamp="1587680091978">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="116" y="117" width="1688" height="806" key="DiffContextDialog/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1587680091978" />
+    <state x="93" y="93" width="1350" height="638" key="DiffContextDialog/0.0.1536.824@0.0.1536.824" timestamp="1584807667216" />
+    <state x="686" y="175" key="FileChooserDialogImpl" timestamp="1588080039013">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="686" y="175" key="FileChooserDialogImpl/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1588080039013" />
+    <state x="549" y="139" key="FileChooserDialogImpl/0.0.1536.824@0.0.1536.824" timestamp="1584717246423" />
+    <state width="1877" height="330" key="GridCell.Tab.0.bottom" timestamp="1588790840654">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="240" key="GridCell.Tab.0.bottom/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1588195571637" />
+    <state width="1877" height="330" key="GridCell.Tab.0.bottom/-1920.0.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1588790840654" />
+    <state width="1877" height="406" key="GridCell.Tab.0.bottom/0.0.1536.824/1920.0.1920.1040@1920.0.1920.1040" timestamp="1584999328584" />
+    <state width="1493" height="666" key="GridCell.Tab.0.bottom/0.0.1536.824@0.0.1536.824" timestamp="1587641270553" />
+    <state width="1877" height="330" key="GridCell.Tab.0.center" timestamp="1588790840654">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="240" key="GridCell.Tab.0.center/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1588195571637" />
+    <state width="1877" height="330" key="GridCell.Tab.0.center/-1920.0.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1588790840654" />
+    <state width="1877" height="406" key="GridCell.Tab.0.center/0.0.1536.824/1920.0.1920.1040@1920.0.1920.1040" timestamp="1584999328584" />
+    <state width="1493" height="666" key="GridCell.Tab.0.center/0.0.1536.824@0.0.1536.824" timestamp="1587641270553" />
+    <state width="1877" height="330" key="GridCell.Tab.0.left" timestamp="1588790840654">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="240" key="GridCell.Tab.0.left/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1588195571637" />
+    <state width="1877" height="330" key="GridCell.Tab.0.left/-1920.0.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1588790840654" />
+    <state width="1877" height="406" key="GridCell.Tab.0.left/0.0.1536.824/1920.0.1920.1040@1920.0.1920.1040" timestamp="1584999328583" />
+    <state width="1493" height="666" key="GridCell.Tab.0.left/0.0.1536.824@0.0.1536.824" timestamp="1587641270553" />
+    <state width="1877" height="330" key="GridCell.Tab.0.right" timestamp="1588790840654">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="240" key="GridCell.Tab.0.right/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1588195571637" />
+    <state width="1877" height="330" key="GridCell.Tab.0.right/-1920.0.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1588790840654" />
+    <state width="1877" height="406" key="GridCell.Tab.0.right/0.0.1536.824/1920.0.1920.1040@1920.0.1920.1040" timestamp="1584999328584" />
+    <state width="1493" height="666" key="GridCell.Tab.0.right/0.0.1536.824@0.0.1536.824" timestamp="1587641270553" />
+    <state width="1877" height="348" key="GridCell.Tab.1.bottom" timestamp="1588195571637">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="348" key="GridCell.Tab.1.bottom/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1588195571637" />
+    <state width="1877" height="348" key="GridCell.Tab.1.center" timestamp="1588195571637">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="348" key="GridCell.Tab.1.center/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1588195571637" />
+    <state width="1877" height="348" key="GridCell.Tab.1.left" timestamp="1588195571637">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="348" key="GridCell.Tab.1.left/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1588195571637" />
+    <state width="1877" height="348" key="GridCell.Tab.1.right" timestamp="1588195571637">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="348" key="GridCell.Tab.1.right/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1588195571637" />
+    <state x="106" y="12" width="1814" height="979" key="MergeDialog" timestamp="1588195355153">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="106" y="12" width="1814" height="979" key="MergeDialog/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1588195355153" />
+    <state x="396" y="282" width="1185" height="549" key="MultipleFileMergeDialog" timestamp="1588787456881">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="396" y="282" width="956" height="549" key="MultipleFileMergeDialog/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1588195362908" />
+    <state x="396" y="282" width="1185" height="549" key="MultipleFileMergeDialog/-1920.0.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1588787456881" />
+    <state x="481" y="128" key="MultipleFileMergeDialog/0.0.1536.824@0.0.1536.824" timestamp="1584808064160" />
+    <state x="651" y="231" key="RollbackChangesDialog" timestamp="1588786710899">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="651" y="231" key="RollbackChangesDialog/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1588154647486" />
+    <state x="651" y="231" key="RollbackChangesDialog/-1920.0.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1588786710899" />
+    <state x="461" y="162" key="SettingsEditor" timestamp="1588701515609">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="461" y="162" key="SettingsEditor/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1586342268752" />
+    <state x="461" y="162" key="SettingsEditor/-1920.0.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1588701515609" />
+    <state x="712" y="260" key="Vcs.Multiple.Commit.Info.Dialog.Key" timestamp="1585851135989">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="712" y="260" key="Vcs.Multiple.Commit.Info.Dialog.Key/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1585851135989" />
+    <state x="451" y="183" width="769" height="575" key="Vcs.Push.Dialog.v2" timestamp="1588790329014">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="451" y="183" width="769" height="575" key="Vcs.Push.Dialog.v2/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1588194925576" />
+    <state x="451" y="183" key="Vcs.Push.Dialog.v2/-1920.0.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1588790329014" />
+    <state x="361" y="145" key="Vcs.Push.Dialog.v2/0.0.1536.824@0.0.1536.824" timestamp="1584978429861" />
+    <state x="92" y="92" width="1736" height="856" key="com.intellij.dvcs.ui.CompareBranchesDialog" timestamp="1585855367393">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="92" y="92" width="1736" height="856" key="com.intellij.dvcs.ui.CompareBranchesDialog/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1585855367393" />
+    <state x="92" y="92" width="1736" height="856" key="com.intellij.history.integration.ui.views.FileHistoryDialog" timestamp="1588701564189">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="92" y="92" width="1736" height="856" key="com.intellij.history.integration.ui.views.FileHistoryDialog/-1920.0.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1588701564189" />
+    <state x="581" y="298" key="com.intellij.ide.util.TipDialog" timestamp="1588703464527">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="581" y="298" key="com.intellij.ide.util.TipDialog/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1588250632079" />
+    <state x="581" y="298" key="com.intellij.ide.util.TipDialog/-1920.0.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1588703464527" />
+    <state x="465" y="236" key="com.intellij.ide.util.TipDialog/0.0.1536.824/1920.0.1920.1040@0.0.1536.824" timestamp="1585215737298" />
+    <state x="465" y="236" key="com.intellij.ide.util.TipDialog/0.0.1536.824@0.0.1536.824" timestamp="1587033361820" />
+    <state x="623" y="386" key="com.intellij.jarRepository.RepositoryAttachDialog-DOWNLOAD" timestamp="1585495272736">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="623" y="386" key="com.intellij.jarRepository.RepositoryAttachDialog-DOWNLOAD/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1585495272736" />
+    <state x="498" y="306" key="com.intellij.jarRepository.RepositoryAttachDialog-DOWNLOAD/0.0.1536.824@0.0.1536.824" timestamp="1584718274073" />
+    <state x="769" y="437" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1588702691576">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="769" y="437" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1588195302325" />
+    <state x="769" y="437" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/-1920.0.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1588702691576" />
+    <state x="666" y="145" key="com.intellij.testIntegration.createTest.CreateTestDialog" timestamp="1585605416880">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="666" y="145" key="com.intellij.testIntegration.createTest.CreateTestDialog/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1585605416880" />
+    <state x="533" y="115" key="com.intellij.testIntegration.createTest.CreateTestDialog/0.0.1536.824@0.0.1536.824" timestamp="1584718228074" />
+    <state x="670" y="233" key="git4idea.branch.GitSmartOperationDialog" timestamp="1588520061694">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="670" y="233" key="git4idea.branch.GitSmartOperationDialog/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1588195327223" />
+    <state x="670" y="233" key="git4idea.branch.GitSmartOperationDialog/-1920.0.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1588520061694" />
+    <state x="645" y="257" key="git4idea.merge.GitMergeDialog" timestamp="1588787334144">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="645" y="257" key="git4idea.merge.GitMergeDialog/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1587637240678" />
+    <state x="645" y="257" key="git4idea.merge.GitMergeDialog/-1920.0.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1588787334144" />
+    <state x="516" y="204" key="git4idea.merge.GitMergeDialog/0.0.1536.824@0.0.1536.824" timestamp="1584807661073" />
+    <state x="646" y="311" key="git4idea.merge.GitPullDialog" timestamp="1588853117220">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="646" y="311" key="git4idea.merge.GitPullDialog/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1588195264226" />
+    <state x="646" y="311" key="git4idea.merge.GitPullDialog/-1920.0.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1588853117220" />
+    <state x="715" y="420" key="git4idea.ui.GitStashDialog" timestamp="1588154639385">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="715" y="420" key="git4idea.ui.GitStashDialog/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1588154639385" />
+    <state x="715" y="365" key="git4idea.ui.GitTagDialog" timestamp="1585923548081">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="715" y="365" key="git4idea.ui.GitTagDialog/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1585923548081" />
+    <state x="609" y="368" key="git4idea.ui.GitUnstashDialog" timestamp="1587680501682">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="609" y="368" key="git4idea.ui.GitUnstashDialog/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1587680501682" />
+    <state x="342" y="140" key="new project wizard" timestamp="1585564381528">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="342" y="140" key="new project wizard/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1585564381528" />
+    <state x="531" y="236" key="run.anything.popup" timestamp="1585834628674">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="531" y="236" key="run.anything.popup/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1585834628674" />
+    <state x="425" y="187" key="run.anything.popup/0.0.1536.824@0.0.1536.824" timestamp="1584718423892" />
+    <state x="623" y="225" width="672" height="678" key="search.everywhere.popup" timestamp="1588193308173">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="623" y="225" width="672" height="678" key="search.everywhere.popup/-1920.0.1536.832/0.0.1920.1040@0.0.1920.1040" timestamp="1588193308173" />
   </component>
 </project>

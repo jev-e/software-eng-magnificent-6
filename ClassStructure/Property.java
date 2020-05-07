@@ -1,5 +1,6 @@
 package ClassStructure;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import javafx.scene.canvas.Canvas;
 
 import java.util.LinkedList;
@@ -24,6 +25,7 @@ public class Property extends BoardTile{
 
     // GUI Assets
 
+    @JsonIgnore
     private Canvas colour; // Displays colour of property group
 
     /**
