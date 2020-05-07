@@ -12,6 +12,9 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Test class for Property Tyccooon
+ */
 class GameTest {
 
     private static Board board;
@@ -148,7 +151,9 @@ class GameTest {
     @Test
     public void cardDrawTest() {
         opp.add(new MoveBack3());//firstCard
-        opp.add(new PlayerPaysBank("Test1",20));//secondCard
+        PlayerPaysBank ppb = new PlayerPaysBank("Test1", 20);
+        opp.add(ppb);//secondCard
+        assertEquals(ppb.getAmount(),20);
         opp.add(new Birthday());//thirdCard
         GetOutOfJail jailCard = new GetOutOfJail("Eh lad yahrr free t'go");
         jailCard.setDeck("opportunity");
@@ -264,6 +269,8 @@ class GameTest {
     @Test
     public void taxPaying() {
         tileSet = new HashMap<>();
+        PlayerPaysTax ppt = new PlayerPaysTax("Bob variable tax", 10);
+        assertEquals(ppt.getAmount(), 10);
         pot.add(new PlayerPaysTax("Bob variable tax", 10));
         pot.add(new PlayerPaysTax("Bob variable tax", 10));
         pot.add(new PlayerPaysTax("Bob variable tax", 10));
@@ -437,6 +444,17 @@ class GameTest {
         board.tiles.get(28).activeEffect(a);//activate tile
         assertEquals(1400, a.getMoney());
         assertEquals(1600, d.getMoney());
+
+        //basic utility
+        Player owner = board.turnOrder.getFirst();
+        Utility test = new Utility(1, "Test");
+        owner.addAsset(test);
+        assertEquals(test.sellUtility(),150);
+        assertEquals(test.getCost(), 150);
+        test.setOwner(owner);
+        assertEquals(test.getOwner(),owner);
+
+
     }
 
     /**
@@ -830,6 +848,7 @@ class GameTest {
         System.out.println(currentPlayer.getActionLog());//visual test
         assertEquals(currentPlayer.getActionLog(), "");//check that action log is cleared
         Station hove = (Station) board.tiles.get(15);
+        Station test = new Station(4, "Test");
         hove.activeEffect(currentPlayer);//player should buy station
         expectedString = "Landed on Hove Station\n" +
                 "Purchased Hove Station for £200\n";
@@ -937,6 +956,24 @@ class GameTest {
     }
 
     /**
+     * Test Opportunity Knocks correct creation and activation
+     */
+    @Test
+    public void testPotLuck() {
+        PotLuck temp = new PotLuck(3);
+        pot.add(new PlayerPaysBank("Test1",20));
+
+        tileSet = new HashMap<>();
+        tileSet.put(3,temp);
+        board = new Board(order, tileSet, pot, opp, "full");
+        int currentAmount = board.turnOrder.getFirst().getMoney();
+        temp.activeEffect(board.turnOrder.getFirst());
+        int newAmount = board.turnOrder.getFirst().getMoney();
+        assertEquals(currentAmount-20, newAmount);
+        assertEquals("", temp.getCurrentCardText());
+    }
+
+    /**
      * Test pay bank tax correct creation and activation
      */
     @Test
@@ -1011,4 +1048,83 @@ class GameTest {
         board.storeData( board.turnOrder.getFirst(), 100);
         board.dataStore.get(board.turnOrder.getFirst().getName()).contains(test);
     }
+
+    /**
+     * Player basic functionality, tests correct creation additionally
+     */
+    @Test
+    public void testBasicPlayer() {
+        Player basic = new Player("Calvin", Token.SPOON, board, false);
+        Player basicAI = new Player("Fred", Token.BOOT, board, true);
+        assertNotEquals(basicAI.getPersonality(), null);
+        //positions testing
+        basic.setPreviousPos(10);
+        assertEquals(basic.getPreviousPos(), 10);
+        //name testing
+        basic.setName("Bob");
+        assertEquals(basic.getName(), "Bob");
+        //token testing
+        basic.setToken(Token.SMARTPHONE);
+        assertEquals(basic.getToken(),Token.SMARTPHONE);
+        //board getting
+        assertEquals(basic.getBoard(), board);
+        //asset selling can be called
+        basic.assetSelling(10);
+        //improvable properties should be empty
+        assertEquals(basic.improvableProperties().size(), 0);
+    }
+
+    /**
+     * Basic property tests
+     */
+    @Test
+    public void testBasicProperty() {
+        int[] buildingRents = {10,10,20,30};
+        Player basic = new Player("Calvin", Token.SPOON, board, false);
+        Property test = new Property(1, "Test", Group.DEEP_BLUE, 100, 10, buildingRents, 50, basic);
+        test.setCost(150);
+        assertEquals(test.getCost(), 150);
+        assertFalse(test.isDeveloped());
+        test.setRent(20);
+        assertEquals(test.getRent(), 20);
+        assertEquals(test.getBuildingRents(), buildingRents);
+        assertEquals(test.getHotelRent(), 50);
+        test.setMortgaged(true);
+        assertTrue(test.isMortgaged());
+        test.setRentDoubled(true);
+        assertTrue(test.isRentDoubled());
+        test.setDeveloped(true);
+        assertTrue(test.isDeveloped());
+        test.setCompletedSet(true);
+        assertTrue(test.isCompletedSet());
+        test.setHotelRent(30);
+        assertEquals(test.getHotelRent(),30);
+
+    }
+
+    /**
+     * Basic Tile Effect Tests
+     */
+    @Test
+    public void testBasicTileEffect() {
+        TileEffect te = new GoToJail(1, "Test", 10);
+        assertEquals(te.getText(),"Test");
+        te.setBoard(board);
+        assertEquals(te.getBoard(),board);
+    }
+
+    /**
+     * Basic token tests
+     */
+    @Test
+    public void testToken() {
+        Token token = Token.SMARTPHONE;
+        token.setName("Test");
+        assertEquals(token.getName(), "Test");
+        token.setImgPath("test.png");
+        assertEquals(token.getImgPath(),"test.png");
+        assertEquals(token.getSymbol(),"$");
+        token.toString();
+    }
+
 }

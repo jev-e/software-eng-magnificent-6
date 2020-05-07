@@ -99,13 +99,6 @@ public class Property extends BoardTile{
     public Player getOwner() { return owner; }
 
     /**
-     * Getter for if property has been developed or not
-     * @return boolean true if property developed, false otherwise
-     */
-    public boolean getDeveloped() { return developed; }
-
-
-    /**
      * Function to sell houses and hotels on a property.
      * @return Either the cost of the building or 0 if their is no buildings to sell.
      */

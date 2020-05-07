@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="d4718719-5500-4975-beb1-5c65e877021f" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/ClassStructure/Board.java" beforeDir="false" afterPath="$PROJECT_DIR$/ClassStructure/Board.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ClassStructure/GameTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/ClassStructure/GameTest.java" afterDir="false" />
-    </list>
+    <list default="true" id="d4718719-5500-4975-beb1-5c65e877021f" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -214,7 +211,7 @@
       <workItem from="1588341892161" duration="13722000" />
       <workItem from="1588697251374" duration="2493000" />
       <workItem from="1588772194126" duration="19529000" />
-      <workItem from="1588803248703" duration="107000" />
+      <workItem from="1588803248703" duration="272000" />
     </task>
     <task id="LOCAL-00001" summary="test">
       <created>1585851452384</created>
@@ -292,14 +289,10 @@
     </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/software_eng_magnificent_6$GameTest.ic" NAME="GameTest Coverage Results" MODIFIED="1588797156430" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
-      <FILTER>ClassStructure.*</FILTER>
-      <EXCLUDED_FILTER>ClassStructure.DataVisualisation</EXCLUDED_FILTER>
-      <EXCLUDED_FILTER>ClassStructure.PropertyTest</EXCLUDED_FILTER>
-      <EXCLUDED_FILTER>ClassStructure.ReadInDataTest</EXCLUDED_FILTER>
-      <EXCLUDED_FILTER>ClassStructure.GameTest</EXCLUDED_FILTER>
-    </SUITE>
     <SUITE FILE_PATH="coverage/software_eng_magnificent_6$GameTest_testOpportunityKnocks.ic" NAME="GameTest.testOpportunityKnocks Coverage Results" MODIFIED="1588802396605" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
+      <FILTER>ClassStructure.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/software_eng_magnificent_6$GameTest.ic" NAME="GameTest Coverage Results" MODIFIED="1588803384528" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
       <FILTER>ClassStructure.*</FILTER>
     </SUITE>
     <SUITE FILE_PATH="coverage/software_eng_magnificent_6$GameTest_testGoToJail.ic" NAME="GameTest.testGoToJail Coverage Results" MODIFIED="1588800548936" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
