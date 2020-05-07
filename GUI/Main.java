@@ -870,9 +870,7 @@ public class Main extends Application {
                 listOfPlayer.setValue(tempPlayerList.get(1).getName());
             }
         }
-
-
-
+        
         title.setStyle(
                 "-fx-label-padding: 20 0 10 0;" + "-fx-font-size: 14;" + "-fx-font-weight: bold;"
         );
