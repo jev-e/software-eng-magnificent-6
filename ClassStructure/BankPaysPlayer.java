@@ -31,6 +31,7 @@ public class BankPaysPlayer extends CardEffect {
      */
     @Override
     void effect(Player currentPlayer) {
+        currentPlayer.addAction(cardText);//add text to log
         currentPlayer.payPlayerAmount(amount);
     }
 

@@ -1,7 +1,9 @@
 package ClassStructure;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import javafx.scene.canvas.Canvas;
+
 import java.util.LinkedList;
-import java.util.Scanner;
 
 /**
  * @author Ayman Bensreti, Calvin Boreham
@@ -20,6 +22,11 @@ public class Property extends BoardTile{
     private boolean completedSet;//If a single player owns all properties in group this is true and false otherwise
     private boolean rentDoubled; //Flag representing whether the rent on this property has been doubled
     private boolean developed; //flag for if property improved
+
+    // GUI Assets
+
+    @JsonIgnore
+    private Canvas colour; // Displays colour of property group
 
     /**
      * Default constructor for Jackson
@@ -58,6 +65,10 @@ public class Property extends BoardTile{
         this.rentDoubled = false;
         this.housesNo = 0;
         this.hotelNo = 0;
+
+        //this.tileName.setText(title);
+        //this.tilePrice.setText(String.valueOf(cost));
+        //System.out.println("Property + " + title + " constructed.");
     }
 
     /**
@@ -66,6 +77,7 @@ public class Property extends BoardTile{
      */
     @Override
     public void activeEffect(Player currentPlayer) {
+        currentPlayer.addAction("Landed on " + title);
         if (owner != null && owner != currentPlayer && !mortgaged && !owner.isInJail()) {
             //there is an owner that is allowed to collect rent,so collect rent
             collectRent(currentPlayer);
@@ -201,7 +213,7 @@ public class Property extends BoardTile{
                 //transfer ownership
                 owner = currentPlayer;
                 currentPlayer.addAsset(this);
-                //System.out.println("You have purchased " + title + " for £" + cost);
+                currentPlayer.addAction("Purchased " + title + " for £" + cost);
             }
         } else {
             //trigger auction
@@ -234,6 +246,7 @@ public class Property extends BoardTile{
      */
     private void collectRent( Player currentPlayer) {
         //deduct rent from current player
+        currentPlayer.addAction("Pay £" + rent + " rent to " + owner.getName());
         int amountPayed = currentPlayer.deductAmount( rent ); //deduct amount from player
         //give owner rent
         owner.payPlayerAmount( amountPayed ); //gives owner amount renter was able to pay (e.g. if bankrupt)
@@ -474,4 +487,8 @@ public class Property extends BoardTile{
     public void setDeveloped(boolean developed) {
         this.developed = developed;
     }
+
+    // GUI Functions
+
+    public void setColour(Canvas colour) { this.colour = colour; }
 }

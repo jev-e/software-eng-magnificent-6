@@ -32,6 +32,7 @@ public class MovePlayerNoPassGo extends CardEffect{
     @Override
     void effect(Player currentPlayer) {
         currentPlayer.setCurrentPos(destination);
+        currentPlayer.addAction(cardText);//add text to log
         board.tiles.get(destination).activeEffect(currentPlayer);//triggers tiles effect
     }
 

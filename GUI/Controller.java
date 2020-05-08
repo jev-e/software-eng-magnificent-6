@@ -1103,7 +1103,7 @@ public class Controller implements Initializable {
                         }
                     }
                     System.out.print("reached gui do statement");
-                    currentPlayer.setLastRoll(gameSystem.roll(currentPlayer, count));//keep track of player roll
+                    gameSystem.roll(currentPlayer, count);
                     currentPlayer.passGo();
                     gameSystem.tiles.get(currentPlayer.getCurrentPos()).activeEffect(currentPlayer);
 
@@ -1111,7 +1111,6 @@ public class Controller implements Initializable {
                         if (!currentPlayer.isAiAgent()) {
                             currentPlayer.leaveGame();
                             //TODO Player property management GUI here
-                            //TODO Ask player if they want to trade/ GUI trade here
 
                         } else {
                             currentPlayer.initiateTrade();
@@ -1129,6 +1128,7 @@ public class Controller implements Initializable {
                 } while (gameSystem.repeat);
             }
             if (gameSystem.timeUp) {
+
                 break;
             }
         }

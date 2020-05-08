@@ -1,16 +1,19 @@
 package ClassStructure;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-
+import javafx.scene.control.Label;
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
         property = "type")
 @JsonSubTypes({
         @Type(value = TileEffect.class, name = "tileEffect"),
         @Type(value = Property.class, name = "property")
+
 })
 /**
  * @author Ayman Bensreti, Calvin Boreham
@@ -23,6 +26,13 @@ public abstract class BoardTile {
     String title;
     boolean canPurchase;
     Board board;
+
+    // GUI Assets
+    @JsonIgnore
+    Label tileName;
+    @JsonIgnore
+    Label tilePrice;
+
 
     /**
      * Handles the desired effect for card or tiles
@@ -61,4 +71,9 @@ public abstract class BoardTile {
     public void setCanPurchase(boolean canPurchase) {
         this.canPurchase = canPurchase;
     }
+
+    // GUI Functions
+    public Label getNameLabel() { return this.tileName; }
+
+    public void updateValue(int newValue) { this.tilePrice.setText(Integer.toString(newValue)); }
 }

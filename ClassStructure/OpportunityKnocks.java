@@ -30,9 +30,8 @@ public class OpportunityKnocks extends TileEffect{
      */
     @Override
     public void activeEffect(Player currentPlayer) {
-
         CardEffect currentCard = this.board.drawOpportunityKnocks();
-        currentCardText = currentCard.getCardText();//fetch card text
+        currentPlayer.addAction(text);//add text to log
         currentCard.effect(currentPlayer);
     }
 

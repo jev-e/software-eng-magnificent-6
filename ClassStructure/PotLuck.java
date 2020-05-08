@@ -31,7 +31,7 @@ public class PotLuck extends TileEffect {
     @Override
     public void activeEffect(Player currentPlayer) {
         CardEffect currentCard = this.board.drawPotLuck();
-        currentCardText = currentCard.getCardText();//fetch card text that has been drawn
+        currentPlayer.addAction(text);//add text to log
         currentCard.effect(currentPlayer);
     }
 

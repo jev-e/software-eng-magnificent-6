@@ -29,6 +29,7 @@ public class PlayerPaysBank extends CardEffect{
      */
     @Override
     void effect(Player currentPlayer) {
+        currentPlayer.addAction(cardText);//add text to log
         currentPlayer.deductAmount(amount);
     }
 

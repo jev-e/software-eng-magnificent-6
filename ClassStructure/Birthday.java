@@ -28,6 +28,7 @@ public class Birthday extends CardEffect{
                 payment += temp;
             }
         }
+        currentPlayer.addAction(cardText);//add card text to log
         currentPlayer.payPlayerAmount(payment);//give player the total collected
     }
 }

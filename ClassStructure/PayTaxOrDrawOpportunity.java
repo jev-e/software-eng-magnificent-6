@@ -33,6 +33,7 @@ public class PayTaxOrDrawOpportunity extends CardEffect {
      */
     @Override
     void effect(Player currentPlayer) {
+        currentPlayer.addAction(cardText);//add text to log
         if (!currentPlayer.isAiAgent()) {
             //TODO GUI method here to fetch input 1 to pay amount else draw card
             int input = 0;
@@ -44,9 +45,11 @@ public class PayTaxOrDrawOpportunity extends CardEffect {
             }
         } else {//AI decision
             if (currentPlayer.payTaxOrDraw()) {
+                currentPlayer.addAction("pay £10");//add text to log
                 int payment = currentPlayer.deductAmount(amount);
                 this.board.taxPot += payment;//add the amount the player paid to the tax pot
             } else {
+                currentPlayer.addAction("draw Opportunity Knocks card");//add text to log
                 this.board.drawOpportunityKnocks().effect(currentPlayer);//draw card and activate it's effect
             }
         }
