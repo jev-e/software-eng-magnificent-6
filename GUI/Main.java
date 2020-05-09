@@ -13,15 +13,16 @@ import javafx.geometry.Pos;
 
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-import javax.swing.*;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * GUI Main Executable, Handles all GUI Displaying
@@ -56,7 +57,7 @@ public class Main extends Application {
     private VBox playersVB; // Player cards, Right side of Screen
 
     Stage window;
-    Scene menuScene, ruleScene, playerSetupScene, gameSetupScene, gameBoardScene, tradingSetupScene, tradingScene;
+    Scene menuScene, ruleScene, playerSetupScene, gameSetupScene, gameBoardScene, tradingSetupScene, tradingScene, jailSetupScene;
 
     // Holds the players name
     public ArrayList<TextField> playerNameTextField = new ArrayList<>();
@@ -880,6 +881,17 @@ public class Main extends Application {
         Button back = new Button("Select Another Player");
         Button cancelTrade = new Button("Cancel Trade");
 
+        // CSS
+        title.setStyle(
+                "-fx-label-padding: 20 0 10 0;" + "-fx-font-size: 14;" + "-fx-font-weight: bold;"
+        );
+        playerOneName.setStyle(
+                "-fx-font-size: 12;" + "-fx-font-weight: bold;"
+        );
+        playerTwoName.setStyle(
+                "-fx-font-size: 12;" + "-fx-font-weight: bold;"
+        );
+
         // Button Functionality
         back.setOnAction(e -> {
             tradingSetupScene(currentPlayer);
@@ -1016,6 +1028,7 @@ public class Main extends Application {
             }
         }
 
+        // CSS
         title.setStyle(
                 "-fx-label-padding: 20 0 10 0;" + "-fx-font-size: 14;" + "-fx-font-weight: bold;"
         );
@@ -1053,6 +1066,59 @@ public class Main extends Application {
         tradeSetupPopUpStage.show();
     }
 
+    // TODO implement the functionality
+    public int sentToJailSetupScene(Player currentPlayer){
+        Stage jailPopUpStage = new Stage();
+        AtomicInteger jailDecision = new AtomicInteger();
+        VBox sentToJailSetupPane = new VBox(10);
+        sentToJailSetupPane.setPadding(new Insets(0, 20, 10, 20));
+        sentToJailSetupPane.setAlignment(Pos.CENTER);
+        HBox optionPane = new HBox(10);
+
+        Label title = new Label("Property Tycoon Jail Decision " + currentPlayer.getName());
+        ImageView jailImg = new ImageView("/Lib/TilesDesign/goJail64bit.png");
+
+        Button serveTime = new Button("Serve Time");
+        Button bail = new Button("Bail");
+        Button getOutCard = new Button("Use Get Out of Jail Card");
+        Button help = new Button("Help");
+
+        // CSS
+        title.setStyle(
+                "-fx-label-padding: 20 0 10 0;" + "-fx-font-size: 14;" + "-fx-font-weight: bold;"
+        );
+
+        // Button Functionality
+        serveTime.setOnAction(e -> {
+            jailDecision.set(1);
+            // Close the popup effect
+            jailPopUpStage.close();
+        });
+        bail.setOnAction(e -> {
+            jailDecision.set(2);
+            jailPopUpStage.close();
+        });
+        getOutCard.setOnAction(e -> {
+            jailDecision.set(3);
+            jailPopUpStage.close();
+        });
+        help.setOnAction(e -> {
+            Alert jailHelpMessage = new Alert(Alert.AlertType.INFORMATION);
+            jailHelpMessage.setTitle("Property Tycoon Jail Reminder");
+            jailHelpMessage.setHeaderText("Remember once you make a decision you cannot reverse it");
+            jailHelpMessage.setContentText("So choose wisely " + currentPlayer.getName());
+            jailHelpMessage.show();
+        });
+
+        optionPane.getChildren().addAll(serveTime, bail, getOutCard, help);
+        sentToJailSetupPane.getChildren().addAll(title, jailImg, optionPane);
+        jailSetupScene = new Scene(sentToJailSetupPane);
+        // Creating the popup effect
+        jailPopUpStage.setScene(jailSetupScene);
+        jailPopUpStage.initModality(Modality.APPLICATION_MODAL);
+        jailPopUpStage.show();
+        return jailDecision.get();
+    }
 
     /***
      * Create a alert message which congratulate the winner
