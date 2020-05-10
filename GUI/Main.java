@@ -1066,7 +1066,7 @@ public class Main extends Application {
     }
 
     // TODO implement the functionality
-    public int sentToJailSetupScene(Player currentPlayer){
+    public void sentToJailSetupScene(Player currentPlayer, GetOutOfJail jailCard){
         Stage jailPopUpStage = new Stage();
         AtomicInteger jailDecision = new AtomicInteger();
         VBox sentToJailSetupPane = new VBox(10);
@@ -1089,16 +1089,24 @@ public class Main extends Application {
 
         // Button Functionality
         serveTime.setOnAction(e -> {
+            // TODO ask ayman which functions to call
             jailDecision.set(1);
             // Close the popup effect
             jailPopUpStage.close();
         });
         bail.setOnAction(e -> {
+            // TODO ask ayman?
             jailDecision.set(2);
+            currentPlayer.deductAmount(50);
+            currentPlayer.addAction("pay bail");
+            currentPlayer.leaveJail();
             jailPopUpStage.close();
         });
         getOutCard.setOnAction(e -> {
             jailDecision.set(3);
+            // Player activated the get out of jail card
+            jailCard.playCard();
+            currentPlayer.addAction("Used a Get Out of Jail card");
             jailPopUpStage.close();
         });
         help.setOnAction(e -> {
@@ -1109,14 +1117,19 @@ public class Main extends Application {
             jailHelpMessage.show();
         });
 
-        optionPane.getChildren().addAll(serveTime, bail, getOutCard, help);
+        // If current player has a get out of jail card, show the options if not dont show the options
+        if(jailCard == null){
+            optionPane.getChildren().addAll(serveTime, bail, help);
+        }else{
+            optionPane.getChildren().addAll(serveTime, bail, getOutCard, help);
+        }
+
         sentToJailSetupPane.getChildren().addAll(title, jailImg, optionPane);
         jailSetupScene = new Scene(sentToJailSetupPane);
         // Creating the popup effect
         jailPopUpStage.setScene(jailSetupScene);
         jailPopUpStage.initModality(Modality.APPLICATION_MODAL);
         jailPopUpStage.show();
-        return jailDecision.get();
     }
 
     /***

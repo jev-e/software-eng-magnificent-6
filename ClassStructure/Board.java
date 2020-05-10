@@ -105,7 +105,6 @@ public class Board {
         for (BoardTile b : tiles.values()) {
             b.setBoard(this);
         }
-
     }
 
     /**
@@ -162,10 +161,14 @@ public class Board {
         timer.schedule(endGame, (timeLimit * 60) * 1000);
     }
 
-
-
-
-
+    /***
+     * Call the front-end function to create the Scene for jail decision
+     * @param currentPlayer The current player
+     * @param jailCard A parameter to see if they have a get out of jail card they can activate
+     */
+    public void callJailSetupScene(Player currentPlayer, GetOutOfJail jailCard){
+        guiMain.sentToJailSetupScene(currentPlayer, jailCard);
+    }
     /**
      * draw pot luck card from the top of the deque
      * @return Effect
