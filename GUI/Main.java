@@ -13,6 +13,7 @@ import javafx.geometry.Pos;
 
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 
@@ -57,7 +58,7 @@ public class Main extends Application {
     private VBox playersVB; // Player cards, Right side of Screen
 
     Stage window;
-    Scene menuScene, ruleScene, playerSetupScene, gameSetupScene, gameBoardScene, tradingSetupScene, tradingScene, jailSetupScene;
+    Scene menuScene, ruleScene, playerSetupScene, gameSetupScene, gameBoardScene, tradingSetupScene, tradingScene, auctionScene,jailSetupScene;
 
     // Holds the players name
     public ArrayList<TextField> playerNameTextField = new ArrayList<>();
@@ -79,10 +80,13 @@ public class Main extends Application {
         window = primaryStage;
         window.setTitle("Property Tycoon");
 
-        createMainMenuScene();
-        window.setScene(menuScene);
-        window.show();
+//        createMainMenuScene();
+//        window.setScene(menuScene);
+//        window.show();
         //displayGameScene();
+        auctionSetupScene();
+        window.setScene(auctionScene);
+        window.show();
     }
 
     public static void main(String[] args) {
@@ -1065,7 +1069,31 @@ public class Main extends Application {
         tradeSetupPopUpStage.show();
     }
 
-    // TODO implement the functionality
+    public void auctionSetupScene(){
+        VBox auctionSetupPane = new VBox(10);
+        auctionSetupPane.setAlignment(Pos.CENTER);
+        auctionSetupPane.setPadding(new Insets(0, 20, 10, 20));
+        HBox optionPane = new HBox(10);
+
+        Label title = new Label("Property Tycoon Auctioning");
+        Label propName = new Label("Testing 123");
+        ImageView propImg = new ImageView();
+        Button bid = new Button("Bid");
+        Button withdraw = new Button("Withdraw");
+        Button help = new Button("Help");
+
+        propImg.setImage(new Image("/Lib/TilesDesign/goJail64bit.png"));
+
+        // CSS
+        title.setStyle(
+                "-fx-label-padding: 20 0 10 0;" + "-fx-font-size: 14;" + "-fx-font-weight: bold;"
+        );
+
+        optionPane.getChildren().addAll(bid, withdraw, help);
+        auctionSetupPane.getChildren().addAll(title, propImg);
+        auctionScene = new Scene(auctionSetupPane);
+    }
+
     public void sentToJailSetupScene(Player currentPlayer, GetOutOfJail jailCard){
         Stage jailPopUpStage = new Stage();
         AtomicInteger jailDecision = new AtomicInteger();
