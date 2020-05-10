@@ -98,7 +98,6 @@ public class Main extends Application {
         displayPlayerCards(); // Displays player cards to the gameBP
         displayGameBoard();   // Displays main game board
 
-
         // Show Game Screen
         window.setScene(gameScene);
         window.show();
