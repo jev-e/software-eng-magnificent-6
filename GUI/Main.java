@@ -80,13 +80,13 @@ public class Main extends Application {
         window = primaryStage;
         window.setTitle("Property Tycoon");
 
-//        createMainMenuScene();
-//        window.setScene(menuScene);
-//        window.show();
-        //displayGameScene();
-        auctionSetupScene();
-        window.setScene(auctionScene);
+        createMainMenuScene();
+        window.setScene(menuScene);
         window.show();
+        //displayGameScene();
+//        auctionSetupScene();
+//        window.setScene(auctionScene);
+//        window.show();
     }
 
     public static void main(String[] args) {
@@ -792,8 +792,8 @@ public class Main extends Application {
             diceRoll(currentPlayer, diceCount);
         }
         // TODO double check showAndWait is not needed
-        //diceMessage.show();
         //diceMessage.showAndWait();
+        diceMessage.show();
     }
 
     /***
@@ -813,7 +813,8 @@ public class Main extends Application {
         diceMessage.setTitle("Property Tycoon Dice Generated");
         diceMessage.setHeaderText(currentPlayer.getName() + " rolled " + (dice1 + dice2));
         diceMessage.setContentText("Die one rolled " + dice1 + "\nDie two rolled " + dice2);
-        diceMessage.showAndWait();
+        //diceMessage.showAndWait();
+        diceMessage.show();
     }
 
     /***
@@ -1023,11 +1024,12 @@ public class Main extends Application {
         // Copying all of the players - current player (choices for current player to trade with)
         LinkedList<Player> tempPlayerList = (LinkedList<Player>) order.clone();
         for(int i = 0; i < order.size(); i++){
+            System.out.print(tempPlayerList.get(i).getName() + "\n");
             // Make sure you cant trade with yourself
             if(currentPlayer.getName() != tempPlayerList.get(i).getName()){
                 listOfPlayer.getItems().add(tempPlayerList.get(i).getName());
                 // Default value set to the first player that is not itself
-                listOfPlayer.setValue(tempPlayerList.get(0).getName());
+                //listOfPlayer.setValue(tempPlayerList.get(0).getName());
             }
         }
 
@@ -1066,7 +1068,7 @@ public class Main extends Application {
         // Creating the popup effect
         tradeSetupPopUpStage.setScene(tradingSetupScene);
         tradeSetupPopUpStage.initModality(Modality.APPLICATION_MODAL);
-        tradeSetupPopUpStage.show();
+        tradeSetupPopUpStage.showAndWait();
     }
 
     public void auctionSetupScene(){
