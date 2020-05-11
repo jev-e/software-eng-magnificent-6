@@ -31,9 +31,9 @@ import java.util.*;
 public class Main extends Application {
 
     // Variables
-    private Label[] tiles;
     private FlowPane[] playerCards;
-    private int playerNo = 6; // Temp variable to simulate number of players TODO Update to actual player number
+    private int playerNo; // Number of players in the game
+    private Player[] players; // Keep permanent order of players for player cards
 
     // Scenes
     private Scene gameScene; // Shows gameBP
@@ -41,10 +41,11 @@ public class Main extends Application {
     // BorderPanes
     private BorderPane gameBP; // Holds entire game screen
 
+    // FlowPanes
+    private FlowPane buttonFP;   // Bottom FlowPane for game buttons
+
     // GridPanes
     private GridPane boardGP;    // Main Board, Left side of screen
-
-    private GridPane buttonGP;   // Bottom GridPane for game buttons
 
     private GridPane topRowGP;   // Top 9 tiles container (Not the top two corners)
     private GridPane leftColGP;  // Left 9 tiles container (Not the Corners)
@@ -93,49 +94,44 @@ public class Main extends Application {
      */
     public void displayGameScene() {
         initGameVariables();  // Initalise Variables and Containers
+        formatGameScene();    // Formats Game Scene
+        retrieveBoardData();  // Provides initial data from board to scene
         addKeyGameButtons();  // Adds Roll, Property Management, Quit and Trading buttons
         displayPlayerCards(); // Displays player cards to the gameBP
         displayGameBoard();   // Displays main game board
-
 
         // Show Game Screen
         window.setScene(gameScene);
         window.show();
     }
 
+    public void retrieveBoardData() {
+        for(int i = 0; i < 40; i++) {
+            board.get(i).setTileName();
+
+        }
+    }
+
     public void addKeyGameButtons() {
         // Initialise Buttons
-        Button rollBtn = new Button("Roll Dice");
         Button propManageBtn = new Button("Manage Properties");
-        Button tradeBtn = new Button("Trade");
+        Button endTurnBtn = new Button("End Turn");
         Button quitBtn = new Button("Quit");
-
-        // Set Button Actions
-        rollBtn.setOnAction((ActionEvent event) -> {
-            // Roll Dice
-        });
 
         propManageBtn.setOnAction((ActionEvent event) -> {
 
         });
 
-        tradeBtn.setOnAction((ActionEvent event) -> {
+        endTurnBtn.setOnAction((ActionEvent event) -> {
 
         });
 
         quitBtn.setOnAction((ActionEvent event) -> {
 
         });
+        
+        buttonFP.getChildren().addAll(propManageBtn, endTurnBtn, quitBtn);
 
-        // Add buttons to GridPane
-        buttonGP.add(rollBtn, 0,0);
-        buttonGP.add(propManageBtn, 1, 0);
-        buttonGP.add(tradeBtn, 2, 0);
-        buttonGP.add(quitBtn, 3, 0);
-
-        // Set Button's start state (Visible or Not Visible
-        //propManageBtn.setVisible(false);
-        //tradeBtn.setVisible(false);
     }
 
     /**
@@ -146,8 +142,7 @@ public class Main extends Application {
         int shortSide = 60, longSide = 100;
         for (int i = 0; i < 40; i++) {
 
-            String labelValue = String.valueOf(i);
-            Label label = new Label("Tile: " + labelValue);
+            Label label = board.get(i).getNameLabel();
 
             // Add Tiles to Gridpane
             switch (i) {
@@ -197,21 +192,25 @@ public class Main extends Application {
                     break;
             }
 
-            tiles[i] = label;
+            //tileNames[i] = label;
         }
-        tiles[0].setText("Go Tile");
-        tiles[10].setText("Jail Tile");
     }
 
     /**
      * Display Player Cards to primaryStage
+     * Called Before game scene showed
      */
     public void displayPlayerCards() {
 
-
         for(int i = 0; i < playerNo; i++) {
             FlowPane playerPane = new FlowPane();
-            Label playerName = new Label("Player: " + String.valueOf(i + 1));
+            Label playerName;
+
+            if (!players[i].isAiAgent()) {
+                playerName = new Label("Player: " + players[i].getName());
+            } else {
+                playerName = new Label("AI: " + players[i].getName());
+            }
 
             playerPane.getChildren().add(playerName);
 
@@ -223,14 +222,14 @@ public class Main extends Application {
 
     /**
      * Initialises all Panes and Variables for Game Scene
-     * Formats gameGP and buttonGP
+     * Formats gameGP and buttonFP
      */
     public void initGameVariables() {
 
         // Initialise main Game containers
         gameBP = new BorderPane();
         boardGP = new GridPane();
-        buttonGP = new GridPane();
+        buttonFP = new FlowPane();
         playersVB = new VBox();
 
         // Initialise Scene
@@ -239,7 +238,7 @@ public class Main extends Application {
         // Add Panes to gameBP
         gameBP.setLeft(boardGP);
         gameBP.setRight(playersVB);
-        gameBP.setBottom(buttonGP);
+        gameBP.setBottom(buttonFP);
 
         // Initialise inner containers
         topRowGP = new GridPane();
@@ -254,10 +253,10 @@ public class Main extends Application {
         // Format GameBP
         gameBP.setCenter(label);
         gameBP.setMargin(label, insets);
-        gameBP.setMargin(buttonGP, insets);
+        gameBP.setMargin(buttonFP, insets);
 
         // Format buttonGP
-        buttonGP.setHgap(10);
+        buttonFP.setHgap(10);
 
         // Add inner containers to boardGP
         boardGP.add(topRowGP, 1, 0);
@@ -266,10 +265,30 @@ public class Main extends Application {
         boardGP.add(botRowGP,1,2);
 
         // Initialise Variables
-        tiles = new Label[40];
+        playerNo = gameSystem.turnOrder.size();
+        players = new Player[playerNo];
         playerCards = new FlowPane[playerNo];
+        for(int i = 0; i < playerNo; i++) {
+            players[i] = gameSystem.turnOrder.get(i);
+        }
     }
 
+    public void initGameImages() {
+
+    }
+    /**
+     * Provides most formatting for the Game Scene
+     */
+    public void formatGameScene() {
+        Insets insets = new Insets(10);
+
+        boardGP.setGridLinesVisible(true);
+        topRowGP.setGridLinesVisible(true);
+        leftColGP.setGridLinesVisible(true);
+        rightColGP.setGridLinesVisible(true);
+        botRowGP.setGridLinesVisible(true);
+
+    }
 
     /***
      * A main menu scene which contains a label, start button, rule button and a quit button
@@ -760,6 +779,7 @@ public class Main extends Application {
      */
     public void assignPlayerToTurnOrder(){
         // Add player to the turn order if playerSize >= 1
+
         for(int i = 0; i < playerNameTextField.size(); i++){
             // Creating a new player and assigning it to turn order
             Player player = new Player(playerNameTextField.get(i).getText(), Token.valueOf(playerTokenSpin.get(i).getValue().toString().toUpperCase()), gameSystem,false);

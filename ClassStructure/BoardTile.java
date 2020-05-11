@@ -29,9 +29,7 @@ public abstract class BoardTile {
 
     // GUI Assets
     @JsonIgnore
-    Label tileName;
-    @JsonIgnore
-    Label tilePrice;
+    Label tileName = new Label();
 
 
     /**
@@ -73,7 +71,10 @@ public abstract class BoardTile {
     }
 
     // GUI Functions
+    public void setTileName() {
+        this.tileName.setText(title);
+    }
+
     public Label getNameLabel() { return this.tileName; }
 
-    public void updateValue(int newValue) { this.tilePrice.setText(Integer.toString(newValue)); }
 }

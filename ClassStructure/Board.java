@@ -36,8 +36,6 @@ public class Board {
     private Instant finished;
     public long timeElapsed;
 
-
-
     /**
      * Board constructor with specified version
      * @param turnOrder linked list of players in their turn order
@@ -127,10 +125,6 @@ public class Board {
         };
         timer.schedule(endGame, (timeLimit * 60) * 1000);
     }
-
-
-
-
 
     /**
      * draw pot luck card from the top of the deque
