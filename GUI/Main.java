@@ -80,13 +80,13 @@ public class Main extends Application {
         window = primaryStage;
         window.setTitle("Property Tycoon");
 
-        createMainMenuScene();
-        window.setScene(menuScene);
-        window.show();
-        //displayGameScene();
-//        auctionSetupScene();
-//        window.setScene(auctionScene);
+//        createMainMenuScene();
+//        window.setScene(menuScene);
 //        window.show();
+        //displayGameScene();
+        auctionSetupScene();
+        window.setScene(auctionScene);
+        window.show();
     }
 
     public static void main(String[] args) {
@@ -595,6 +595,7 @@ public class Main extends Application {
             );
             // Setting the default value for all spinners for all the players to be boot
             SpinnerValueFactory<String> tokenChoice = new SpinnerValueFactory.ListSpinnerValueFactory<>(tokenName);
+            tokenChoice.setWrapAround(true);
             tokenChoice.setValue("Boot");
             token.setValueFactory(tokenChoice);
             playerTokenSpin.add(token);
@@ -628,6 +629,7 @@ public class Main extends Application {
             );
             // Setting the default value for all spinners for all the AIs to be boot
             SpinnerValueFactory<String> tokenChoice = new SpinnerValueFactory.ListSpinnerValueFactory<>(tokenName);
+            tokenChoice.setWrapAround(true);
             tokenChoice.setValue("Boot");
             token.setValueFactory(tokenChoice);
             aiTokenSpin.add(token);
@@ -783,7 +785,7 @@ public class Main extends Application {
         ButtonType roll = new ButtonType("Roll Dice");
 
         diceMessage.setTitle("Property Tycoon Roll Dice");
-        diceMessage.setContentText("Click Roll Dice down below to roll your dices");
+        diceMessage.setContentText("Click Roll Dice down below to roll your dices " + currentPlayer.getName());
         diceMessage.getButtonTypes().add(roll);
 
         Optional<ButtonType> option = diceMessage.showAndWait();
@@ -791,9 +793,11 @@ public class Main extends Application {
         if(option.get() == roll){
             diceRoll(currentPlayer, diceCount);
         }
-        // TODO double check showAndWait is not needed
-        //diceMessage.showAndWait();
+        // TODO change
         diceMessage.show();
+        diceMessage.close();
+        //diceMessage.showAndWait();
+        //diceMessage.show();
     }
 
     /***
@@ -813,8 +817,10 @@ public class Main extends Application {
         diceMessage.setTitle("Property Tycoon Dice Generated");
         diceMessage.setHeaderText(currentPlayer.getName() + " rolled " + (dice1 + dice2));
         diceMessage.setContentText("Die one rolled " + dice1 + "\nDie two rolled " + dice2);
+        // TODO change
         //diceMessage.showAndWait();
-        diceMessage.show();
+        diceMessage.showAndWait();
+        diceMessage.close();
     }
 
     /***
@@ -1024,6 +1030,7 @@ public class Main extends Application {
         // Copying all of the players - current player (choices for current player to trade with)
         LinkedList<Player> tempPlayerList = (LinkedList<Player>) order.clone();
         for(int i = 0; i < order.size(); i++){
+            // todo remove after test
             System.out.print(tempPlayerList.get(i).getName() + "\n");
             // Make sure you cant trade with yourself
             if(currentPlayer.getName() != tempPlayerList.get(i).getName()){
@@ -1068,7 +1075,9 @@ public class Main extends Application {
         // Creating the popup effect
         tradeSetupPopUpStage.setScene(tradingSetupScene);
         tradeSetupPopUpStage.initModality(Modality.APPLICATION_MODAL);
+        // TODO change
         tradeSetupPopUpStage.showAndWait();
+        tradeSetupPopUpStage.close();
     }
 
     public void auctionSetupScene(){
@@ -1079,20 +1088,42 @@ public class Main extends Application {
 
         Label title = new Label("Property Tycoon Auctioning");
         Label propName = new Label("Testing 123");
+
         ImageView propImg = new ImageView();
+
         Button bid = new Button("Bid");
         Button withdraw = new Button("Withdraw");
         Button help = new Button("Help");
 
-        propImg.setImage(new Image("/Lib/TilesDesign/goJail64bit.png"));
+        // TODO temp place holder but change later
+        Property property = new Property();
+        Utility utility = new Utility();
+        Station station = new Station();
+        if(property instanceof Property){
+            propImg.setImage(new Image("/Lib/TilesDesign/edisonWater64bit.png"));
+            //propName.setText(property.getTitle());
+            propName.setText("Testing one two three");
+        }else if(utility instanceof Utility){
+            String utilName = "Edison Water";
+            if(station.getTitle() == utilName){
+                propImg.setImage(new Image("/Lib/TilesDesign/edisonWater64bit.png"));
+                // TODO fetch utility name
+            }else{
+                propImg.setImage(new Image("/Lib/TilesDesign/teslaPower64bit.png"));
+            }
+        }else if(station instanceof Station){
+            propImg.setImage(new Image("/Lib/TilesDesign/trainStation64bit.png"));
+            propName.setText(station.getTitle());
+        }
 
         // CSS
         title.setStyle(
                 "-fx-label-padding: 20 0 10 0;" + "-fx-font-size: 14;" + "-fx-font-weight: bold;"
         );
+        propName.setStyle("-fx-font-size: 15;");
 
         optionPane.getChildren().addAll(bid, withdraw, help);
-        auctionSetupPane.getChildren().addAll(title, propImg);
+        auctionSetupPane.getChildren().addAll(title, propImg, propName);
         auctionScene = new Scene(auctionSetupPane);
     }
 
@@ -1243,6 +1274,8 @@ public class Main extends Application {
                     if (!currentPlayer.isAiAgent()) {
                         // Player click roll dice from alert
                         diceRollMessage(currentPlayer, count);
+                        System.out.println(count+"\n");
+                        System.out.println(currentPlayer.getName()+"\n");
                     }
                     //currentPlayer.setLastRoll(gameSystem.roll(currentPlayer, count));//keep track of player roll
                     currentPlayer.passGo();
