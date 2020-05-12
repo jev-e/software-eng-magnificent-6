@@ -911,6 +911,7 @@ class GameTest {
         gtj.setBoard(board);
         board.turnOrder.getFirst().setAiAgent(true);
         board.turnOrder.getFirst().setMoney(1);
+        board.turnOrder.getFirst().assets = new LinkedList<>();
         gtj.activeEffect(board.turnOrder.getFirst());
         assertEquals(board.turnOrder.getFirst().getCurrentPos(),10);
         assertEquals(board.turnOrder.getFirst().isInJail(), true);
@@ -932,6 +933,7 @@ class GameTest {
         card.setBoard(board);
         board.turnOrder.getFirst().setAiAgent(true);
         board.turnOrder.getFirst().setMoney(1);
+        board.turnOrder.getFirst().assets = new LinkedList<>();
         card.effect(board.turnOrder.getFirst());
         assertEquals(board.turnOrder.getFirst().getCurrentPos(),10);
         assertEquals(board.turnOrder.getFirst().isInJail(), true);
