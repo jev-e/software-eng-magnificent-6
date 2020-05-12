@@ -80,13 +80,13 @@ public class Main extends Application {
         window = primaryStage;
         window.setTitle("Property Tycoon");
 
-//        createMainMenuScene();
-//        window.setScene(menuScene);
-//        window.show();
-        //displayGameScene();
-        auctionSetupScene();
-        window.setScene(auctionScene);
+        createMainMenuScene();
+        window.setScene(menuScene);
         window.show();
+        //displayGameScene();
+//        auctionSetupScene(null);
+//        window.setScene(auctionScene);
+//        window.show();
     }
 
     public static void main(String[] args) {
@@ -1080,40 +1080,40 @@ public class Main extends Application {
         tradeSetupPopUpStage.close();
     }
 
-    public void auctionSetupScene(){
+    public void auctionSetupScene(BoardTile asset){
         VBox auctionSetupPane = new VBox(10);
         auctionSetupPane.setAlignment(Pos.CENTER);
         auctionSetupPane.setPadding(new Insets(0, 20, 10, 20));
         HBox optionPane = new HBox(10);
+        optionPane.setAlignment(Pos.CENTER);
 
         Label title = new Label("Property Tycoon Auctioning");
         Label propName = new Label("Testing 123");
+        Label bidTitle= new Label("Enter in your Bid");
 
         ImageView propImg = new ImageView();
+
+        TextField bidTxt = new TextField();
 
         Button bid = new Button("Bid");
         Button withdraw = new Button("Withdraw");
         Button help = new Button("Help");
 
-        // TODO temp place holder but change later
-        Property property = new Property();
-        Utility utility = new Utility();
-        Station station = new Station();
-        if(property instanceof Property){
+        if(asset instanceof Property){
             propImg.setImage(new Image("/Lib/TilesDesign/edisonWater64bit.png"));
             //propName.setText(property.getTitle());
             propName.setText("Testing one two three");
-        }else if(utility instanceof Utility){
+        }else if(asset instanceof Utility){
             String utilName = "Edison Water";
-            if(station.getTitle() == utilName){
+            if(asset.getTitle() == utilName){
                 propImg.setImage(new Image("/Lib/TilesDesign/edisonWater64bit.png"));
                 // TODO fetch utility name
             }else{
                 propImg.setImage(new Image("/Lib/TilesDesign/teslaPower64bit.png"));
             }
-        }else if(station instanceof Station){
+        }else if(asset instanceof Station){
             propImg.setImage(new Image("/Lib/TilesDesign/trainStation64bit.png"));
-            propName.setText(station.getTitle());
+            propName.setText(asset.getTitle());
         }
 
         // CSS
@@ -1122,8 +1122,11 @@ public class Main extends Application {
         );
         propName.setStyle("-fx-font-size: 15;");
 
+        // Button functionality
+        
+
         optionPane.getChildren().addAll(bid, withdraw, help);
-        auctionSetupPane.getChildren().addAll(title, propImg, propName);
+        auctionSetupPane.getChildren().addAll(title, propImg, propName, bidTitle, bidTxt, optionPane);
         auctionScene = new Scene(auctionSetupPane);
     }
 
