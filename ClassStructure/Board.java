@@ -178,6 +178,15 @@ public class Board {
         }
     }
 
+    /***
+     * Call the front-end function to create the Scene for jail decision
+     * @param currentPlayer The current player
+     * @param jailCard A parameter to see if they have a get out of jail card they can activate
+     */
+    public void callJailSetupScene(Player currentPlayer, GetOutOfJail jailCard){
+        guiMain.sentToJailSetupScene(currentPlayer, jailCard);
+    }
+
     /**
      * Starts the game timer, must be called before starting main game loop
      */
