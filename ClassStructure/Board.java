@@ -25,14 +25,6 @@ public class Board {
     public boolean timeUp = false;
     public HashMap<String, ArrayList<Pair>> dataStore; //key : playerName value: networths at each turn in game
 
-    public Instant getStart() {
-        return start;
-    }
-
-    public void setStart(Instant start) {
-        this.start = start;
-    }
-
     private Instant start;
     private Instant finished;
     public long timeElapsed;
@@ -187,26 +179,20 @@ public class Board {
     }
 
     /**
-     * Starts the game timer for an abridged game
+     * Starts the game timer, must be called before starting main game loop
      */
     public void startGameTimer(){
-        timer = new Timer();
-        TimerTask endGame = new TimerTask() {
-            @Override
-            public void run() {
-                timeUp = true; System.out.println("timeUp" + timeUp);
-            }
-        };
-        timer.schedule(endGame, (timeLimit * 60) * 1000);
-    }
-
-    /***
-     * Call the front-end function to create the Scene for jail decision
-     * @param currentPlayer The current player
-     * @param jailCard A parameter to see if they have a get out of jail card they can activate
-     */
-    public void callJailSetupScene(Player currentPlayer, GetOutOfJail jailCard){
-        guiMain.sentToJailSetupScene(currentPlayer, jailCard);
+        if( version == "abridged"){
+            timer = new Timer();
+            TimerTask endGame = new TimerTask() {
+                @Override
+                public void run() {
+                    timeUp = true; System.out.println("timeUp" + timeUp);
+                }
+            };
+            timer.schedule(endGame, (timeLimit * 60) * 1000);
+        }
+        start = Instant.now();
     }
 
     /**
@@ -329,21 +315,56 @@ public class Board {
         return canLeave;
     }
 
+    /**
+     * Stores data for a player in the board data store
+     * data stored is pair (turns, networth)
+     * @param p player
+     * @param netWorth current networth of player
+     */
     public void storeData( Player p, int netWorth ){
         Pair pair = new Pair( turns, netWorth);
         dataStore.get(p.getName()).add(pair);
     }
 
+
     /**
-     * Getter for version
-     * @return version
+     * Getter for finish time
+     * return time game finished
+     */
+    public Instant getFinished() {
+        return finished;
+    }
+
+    /**
+     * Getter for time elapsed
+     * @return time taken for game to be played
+     */
+    public Long getTimeElapsed() {
+        return timeElapsed;
+    }
+
+    /**
+     * Getter for start time
+     * @return time game started
+     */
+    public Instant getStart() {
+        return start;
+    }
+
+    /**
+     * Setter for start
+     * @param start
+     */
+    public void setStart(Instant start) {
+        this.start = start;
+    }
+
+    /**
+     * Getter for game version
+     * @return version of game, either abridged or full
      */
     public String getVersion() {
         return version;
-    }
-
-    public Instant getFinished() {
-        return finished;
     }
 
 }
