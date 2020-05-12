@@ -3,23 +3,25 @@ package GUI;
 import ClassStructure.*;
 import javafx.application.Application;
 import javafx.application.Platform;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
-
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+
+import java.lang.Object;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
@@ -33,9 +35,33 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Main extends Application {
 
     // Variables
-    private Label[] tiles;
     private FlowPane[] playerCards;
-    private int playerNo = 6; // Temp variable to simulate number of players TODO Update to actual player number
+    private int playerNo; // Number of players in the game
+    private Player[] players; // Keep permanent order of players for player cards
+
+    // Images - Tiles
+    private Image goTilePNG;
+    private Image goJailPNG;
+    private Image freeParkingPNG;
+    private Image visitingPNG;
+    private Image waterPNG; // Edison Water Utility
+    private Image powerPNG; // Tesla Power Utility
+    private Image oppKnocksPNG;
+    private Image potLuckPNG;
+    private Image stationPNG;
+
+    // Images - Assets
+    private Image hotelPNG;
+    private Image housePNG;
+    private Image jailFreePNG;
+
+    // Images - Tokens
+    private Image bootToken;
+    private Image catToken;
+    private Image gobletToken;
+    private Image hatstandToken;
+    private Image phoneToken;
+    private Image spoonToken;
 
     // Scenes
     private Scene gameScene; // Shows gameBP
@@ -43,10 +69,11 @@ public class Main extends Application {
     // BorderPanes
     private BorderPane gameBP; // Holds entire game screen
 
+    // FlowPanes
+    private FlowPane buttonFP;   // Bottom FlowPane for game buttons
+
     // GridPanes
     private GridPane boardGP;    // Main Board, Left side of screen
-
-    private GridPane buttonGP;   // Bottom GridPane for game buttons
 
     private GridPane topRowGP;   // Top 9 tiles container (Not the top two corners)
     private GridPane leftColGP;  // Left 9 tiles container (Not the Corners)
@@ -57,8 +84,11 @@ public class Main extends Application {
 
     private VBox playersVB; // Player cards, Right side of Screen
 
+    // Danny's Variables
+
     Stage window;
-    Scene menuScene, ruleScene, playerSetupScene, gameSetupScene, gameBoardScene, tradingSetupScene, tradingScene, auctionScene,jailSetupScene;
+    Scene menuScene, ruleScene, playerSetupScene, gameSetupScene, gameBoardScene, tradingSetupScene, tradingScene, auctionScene, jailSetupScene;
+    Scene test123;
 
     // Holds the players name
     public ArrayList<TextField> playerNameTextField = new ArrayList<>();
@@ -84,9 +114,6 @@ public class Main extends Application {
         window.setScene(menuScene);
         window.show();
         //displayGameScene();
-//        auctionSetupScene(null);
-//        window.setScene(auctionScene);
-//        window.show();
     }
 
     public static void main(String[] args) {
@@ -98,6 +125,9 @@ public class Main extends Application {
      */
     public void displayGameScene() {
         initGameVariables();  // Initalise Variables and Containers
+        initGameImages();     // Load Game Images
+        formatGameScene();    // Formats Game Scene
+        retrieveBoardData();  // Provides initial data from board to scene
         addKeyGameButtons();  // Adds Roll, Property Management, Quit and Trading buttons
         displayPlayerCards(); // Displays player cards to the gameBP
         displayGameBoard();   // Displays main game board
@@ -107,39 +137,35 @@ public class Main extends Application {
         window.show();
     }
 
+    /**
+     * Retrieves necessary data from the board
+     */
+    public void retrieveBoardData() {
+        for(int i = 0; i < 40; i++) {
+            board.get(i).setTileName();
+        }
+    }
+
     public void addKeyGameButtons() {
         // Initialise Buttons
-        Button rollBtn = new Button("Roll Dice");
         Button propManageBtn = new Button("Manage Properties");
-        Button tradeBtn = new Button("Trade");
-        Button quitBtn = new Button("Quit");
-
-        // Set Button Actions
-        rollBtn.setOnAction((ActionEvent event) -> {
-            // Roll Dice
-        });
+        Button endTurnBtn = new Button("End Turn");
+        Button leaveBtn = new Button("Leave");
 
         propManageBtn.setOnAction((ActionEvent event) -> {
 
         });
 
-        tradeBtn.setOnAction((ActionEvent event) -> {
+        endTurnBtn.setOnAction((ActionEvent event) -> {
 
         });
 
-        quitBtn.setOnAction((ActionEvent event) -> {
+        leaveBtn.setOnAction((ActionEvent event) -> {
 
         });
+        
+        buttonFP.getChildren().addAll(propManageBtn, endTurnBtn, leaveBtn);
 
-        // Add buttons to GridPane
-        buttonGP.add(rollBtn, 0,0);
-        buttonGP.add(propManageBtn, 1, 0);
-        buttonGP.add(tradeBtn, 2, 0);
-        buttonGP.add(quitBtn, 3, 0);
-
-        // Set Button's start state (Visible or Not Visible
-        //propManageBtn.setVisible(false);
-        //tradeBtn.setVisible(false);
     }
 
     /**
@@ -148,22 +174,32 @@ public class Main extends Application {
     public void displayGameBoard() {
 
         int shortSide = 60, longSide = 100;
+
         for (int i = 0; i < 40; i++) {
+            Label label = board.get(i).getNameLabel();
+            Canvas canvas = board.get(i).getColourDisplay();
+            GridPane container = new GridPane();
 
-            String labelValue = String.valueOf(i);
-            Label label = new Label("Tile: " + labelValue);
 
-            // Add Tiles to Gridpane
+            // Add Tiles to GridPane
             switch (i) {
 
                 // Go Tile
                 case 0:
-                    boardGP.add(label, 2, 2);
+                    container.add(label,0,1);
+                    boardGP.add(container, 2, 2);
                     break;
 
                 // Bottom Row
                 case 1: case 2: case 3: case 4: case 5: case 6: case 7: case 8: case 9:
-                    botRowGP.add(label, (9 - i), 0);
+                    container.add(label, 0,1);
+
+                    if(!(i == 2 || i == 4 || i == 7)) {
+                        board.get(i).setColour();
+                        container.add(canvas,0,0);
+                    }
+
+                    botRowGP.add(container, (9 - i), 0);
                     break;
 
                 // Jail Tile
@@ -173,7 +209,13 @@ public class Main extends Application {
 
                 // Left Column
                 case 11: case 12: case 13: case 14: case 15: case 16: case 17: case 18: case 19:
-                    leftColGP.add(label, 0, (20 - i));
+                    container.add(label, 0, 1);
+
+                    if(!(i == 12 || i == 15 || i == 17)) {
+                        board.get(i).setColour();
+                        container.add(canvas,0,0);
+                    }
+                    leftColGP.add(container, 0, (20 - i));
                     break;
 
                 // Free Parking Tile
@@ -183,7 +225,14 @@ public class Main extends Application {
 
                 // Top Row
                 case 21: case 22: case 23: case 24: case 25: case 26: case 27: case 28: case 29:
-                    topRowGP.add(label, i, 0);
+                    container.add(label, 0, 1);
+
+                    if(!(i == 22 || i == 25 || i == 28)) {
+                        board.get(i).setColour();
+                        container.add(canvas,0,0);
+                    }
+
+                    topRowGP.add(container, (i - 21), 0);
                     break;
 
                 // Go To Jail Tile
@@ -193,7 +242,14 @@ public class Main extends Application {
 
                 // Right Column
                 case 31: case 32: case 33: case 34: case 35: case 36: case 37: case 38: case 39:
-                    rightColGP.add(label, 0, i);
+                    container.add(label, 0, 1);
+
+                    if(!(i == 33 || i == 35 || i == 36 || i == 38)) {
+                        board.get(i).setColour();
+                        container.add(canvas,0,0);
+                    }
+
+                    rightColGP.add(container, 0, (i - 31));
                     break;
 
                 default:
@@ -201,21 +257,25 @@ public class Main extends Application {
                     break;
             }
 
-            tiles[i] = label;
+            //tileNames[i] = label;
         }
-        tiles[0].setText("Go Tile");
-        tiles[10].setText("Jail Tile");
     }
 
     /**
      * Display Player Cards to primaryStage
+     * Called Before game scene showed
      */
     public void displayPlayerCards() {
 
-
         for(int i = 0; i < playerNo; i++) {
             FlowPane playerPane = new FlowPane();
-            Label playerName = new Label("Player: " + String.valueOf(i + 1));
+            Label playerName;
+
+            if (!players[i].isAiAgent()) {
+                playerName = new Label("Player: " + players[i].getName());
+            } else {
+                playerName = new Label("AI: " + players[i].getName());
+            }
 
             playerPane.getChildren().add(playerName);
 
@@ -227,23 +287,28 @@ public class Main extends Application {
 
     /**
      * Initialises all Panes and Variables for Game Scene
-     * Formats gameGP and buttonGP
+     * Formats gameGP and buttonFP
      */
     public void initGameVariables() {
 
         // Initialise main Game containers
         gameBP = new BorderPane();
         boardGP = new GridPane();
-        buttonGP = new GridPane();
+        buttonFP = new FlowPane();
         playersVB = new VBox();
 
         // Initialise Scene
         gameScene = new Scene(gameBP);
 
+        // Initialise formatting
+        Insets insets = new Insets(10);
+        Label label = new Label();
+
         // Add Panes to gameBP
         gameBP.setLeft(boardGP);
         gameBP.setRight(playersVB);
-        gameBP.setBottom(buttonGP);
+        gameBP.setBottom(buttonFP);
+        gameBP.setPadding(insets);
 
         // Initialise inner containers
         topRowGP = new GridPane();
@@ -251,17 +316,13 @@ public class Main extends Application {
         rightColGP = new GridPane();
         botRowGP = new GridPane();
 
-        // Initialise formatting
-        Insets insets = new Insets(10);
-        Label label = new Label();
-
         // Format GameBP
         gameBP.setCenter(label);
         gameBP.setMargin(label, insets);
-        gameBP.setMargin(buttonGP, insets);
+        gameBP.setMargin(buttonFP, insets);
 
         // Format buttonGP
-        buttonGP.setHgap(10);
+        buttonFP.setHgap(10);
 
         // Add inner containers to boardGP
         boardGP.add(topRowGP, 1, 0);
@@ -270,10 +331,61 @@ public class Main extends Application {
         boardGP.add(botRowGP,1,2);
 
         // Initialise Variables
-        tiles = new Label[40];
+        playerNo = gameSystem.turnOrder.size();
+        players = new Player[playerNo];
         playerCards = new FlowPane[playerNo];
+        for(int i = 0; i < playerNo; i++) {
+            players[i] = gameSystem.turnOrder.get(i);
+        }
     }
 
+    /**
+     * Load Game Images from Lib into Image objects
+     */
+    public void initGameImages() {
+        try {
+            // Tiles
+            goTilePNG = new Image(new FileInputStream("Lib/TilesDesign/goWithColour64bit.png"));
+            goJailPNG = new Image(new FileInputStream("Lib/TilesDesign/goJail64bit.png"));
+            freeParkingPNG = new Image(new FileInputStream("Lib/TilesDesign/freeParking64bit.png"));
+            visitingPNG = new Image(new FileInputStream("Lib/TilesDesign/visiting64bit.png"));
+            waterPNG = new Image(new FileInputStream("Lib/TilesDesign/edisonWater64bit.png"));
+            powerPNG = new Image(new FileInputStream("Lib/TilesDesign/teslaPower64bit.png"));
+            oppKnocksPNG = new Image(new FileInputStream("Lib/TilesDesign/opportunityKnocks64bit.png"));
+            potLuckPNG = new Image(new FileInputStream("Lib/TilesDesign/potLuck64bit.png"));
+            stationPNG = new Image(new FileInputStream("Lib/TilesDesign/trainStation64bit.png"));
+
+            // Assets
+            hotelPNG = new Image(new FileInputStream("Lib/Assets/hotel64bit.png"));
+            housePNG = new Image(new FileInputStream("Lib/Assets/house64bit.png"));
+            jailFreePNG = new Image(new FileInputStream("Lib/Assets/jailFree64bit.png"));
+
+            // Tokens
+            bootToken = new Image(new FileInputStream("Lib/Tokens/BootToken.png"));
+            catToken = new Image(new FileInputStream("Lib/Tokens/CatToken.png"));
+            gobletToken = new Image(new FileInputStream("Lib/Tokens/GobletToken.png"));
+            hatstandToken = new Image(new FileInputStream("Lib/Tokens/HatstandToken.png"));
+            phoneToken = new Image(new FileInputStream("Lib/Tokens/SmartphoneToken.png"));
+            spoonToken = new Image(new FileInputStream("Lib/Tokens/BootToken.png"));
+
+        } catch (FileNotFoundException e) {
+
+        }
+    }
+
+    /**
+     * Provides most formatting for the Game Scene
+     */
+    public void formatGameScene() {
+        Insets insets = new Insets(10);
+
+        boardGP.setGridLinesVisible(true);
+        topRowGP.setGridLinesVisible(true);
+        leftColGP.setGridLinesVisible(true);
+        rightColGP.setGridLinesVisible(true);
+        botRowGP.setGridLinesVisible(true);
+
+    }
 
     /***
      * A main menu scene which contains a label, start button, rule button and a quit button
@@ -766,6 +878,7 @@ public class Main extends Application {
      */
     public void assignPlayerToTurnOrder(){
         // Add player to the turn order if playerSize >= 1
+
         for(int i = 0; i < playerNameTextField.size(); i++){
             // Creating a new player and assigning it to turn order
             Player player = new Player(playerNameTextField.get(i).getText(), Token.valueOf(playerTokenSpin.get(i).getValue().toString().toUpperCase()), gameSystem,false);
@@ -1099,7 +1212,7 @@ public class Main extends Application {
         optionPane.setAlignment(Pos.CENTER);
 
         Label title = new Label("Property Tycoon Auctioning");
-        Label propName = new Label("Testing 123");
+        Label propName = new Label();
         Label bidTitle= new Label("Enter in your Bid");
 
         ImageView propImg = new ImageView();
@@ -1111,19 +1224,22 @@ public class Main extends Application {
         Button help = new Button("Help");
 
         if(asset instanceof Property){
-            propImg.setImage(new Image("/Lib/TilesDesign/edisonWater64bit.png"));
-            //propName.setText(property.getTitle());
-            propName.setText("Testing one two three");
+            propImg.setImage(new Image("/Lib/TilesDesign/property64bit.png"));
+            // Fetch the name of the property
+            propName.setText(asset.getTitle());
         }else if(asset instanceof Utility){
             String utilName = "Edison Water";
+            // Check which utility it is (electricity or water)
             if(asset.getTitle() == utilName){
                 propImg.setImage(new Image("/Lib/TilesDesign/edisonWater64bit.png"));
-                // TODO fetch utility name
             }else{
                 propImg.setImage(new Image("/Lib/TilesDesign/teslaPower64bit.png"));
             }
+            // Fetch the utility name (either electricity or water)
+            propName.setText(asset.getTitle());
         }else if(asset instanceof Station){
             propImg.setImage(new Image("/Lib/TilesDesign/trainStation64bit.png"));
+            // Fetch the train station name
             propName.setText(asset.getTitle());
         }
 
@@ -1134,7 +1250,7 @@ public class Main extends Application {
         propName.setStyle("-fx-font-size: 15;");
 
         // Button functionality
-        
+
 
         optionPane.getChildren().addAll(bid, withdraw, help);
         auctionSetupPane.getChildren().addAll(title, propImg, propName, bidTitle, bidTxt, optionPane);
@@ -1250,7 +1366,7 @@ public class Main extends Application {
         //Load shuffled pack into decks
         pot = new ArrayDeque<>(potLuckPack);
         opp = new ArrayDeque<>(opportunityKnocksPack);
-        gameSystem = new Board(order, board, pot, opp, gameMode,this);
+        gameSystem = new Board(order, board, pot, opp, gameMode, this);
     }
 
     /***
@@ -1287,8 +1403,6 @@ public class Main extends Application {
                     if (!currentPlayer.isAiAgent()) {
                         // Player click roll dice from alert
                         diceRollMessage(currentPlayer, count);
-                        System.out.println(count+"\n");
-                        System.out.println(currentPlayer.getName()+"\n");
                     }
                     //currentPlayer.setLastRoll(gameSystem.roll(currentPlayer, count));//keep track of player roll
                     currentPlayer.passGo();
@@ -1296,11 +1410,11 @@ public class Main extends Application {
 
                     if (gameSystem.turnOrder.contains(currentPlayer) && !currentPlayer.isInJail()) {
                         if (!currentPlayer.isAiAgent()) {
+                            currentPlayer.leaveGame();
                             // Changes to the trading setup scene (popup)
                             tradingSetupScene(currentPlayer);
                             //TODO Player property management GUI here
-                            // Show and wait need implemented for leaving game
-                            //currentPlayer.leaveGame();
+                            //TODO Ask player if they want to trade/ GUI trade here
                         } else {
                             currentPlayer.initiateTrade();
                             if (gameSystem.turns > retirePoint && gameSystem.turnOrder.size() > 4) {

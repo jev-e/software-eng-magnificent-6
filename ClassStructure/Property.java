@@ -2,6 +2,10 @@ package ClassStructure;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Label;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 
 import java.util.LinkedList;
 
@@ -24,9 +28,10 @@ public class Property extends BoardTile{
     private boolean developed; //flag for if property improved
 
     // GUI Assets
-
     @JsonIgnore
-    private Canvas colour; // Displays colour of property group
+    Label tilePrice = new Label();
+    @JsonIgnore
+    private Canvas colourDisplay = new Canvas(100,15); // Displays colour of property group
 
     /**
      * Default constructor for Jackson
@@ -65,10 +70,6 @@ public class Property extends BoardTile{
         this.rentDoubled = false;
         this.housesNo = 0;
         this.hotelNo = 0;
-
-        //this.tileName.setText(title);
-        //this.tilePrice.setText(String.valueOf(cost));
-        //System.out.println("Property + " + title + " constructed.");
     }
 
     /**
@@ -490,5 +491,50 @@ public class Property extends BoardTile{
 
     // GUI Functions
 
-    public void setColour(Canvas colour) { this.colour = colour; }
+    // Label getter and setter
+    public void setTilePrice() { this.tilePrice.setText(String.valueOf(tilePrice)); }
+
+    public Label getTilePrice() { return this.tilePrice; }
+
+    // Canvas Functions
+    @Override
+    public Canvas getColourDisplay() { return this.colourDisplay; }
+
+    @Override
+    public void setColour() {
+
+        Paint temp;
+        switch (this.group.name()) {
+            case "BLUE":
+                temp = Color.BLUE;
+                break;
+            case "BROWN":
+                temp = Color.BROWN;
+                break;
+            case "DEEP_BLUE":
+                temp = Color.DARKBLUE;
+                break;
+            case "GREEN":
+                temp = Color.GREEN;
+                break;
+            case "ORANGE":
+                temp = Color.ORANGE;
+                break;
+            case "PURPLE":
+                temp = Color.PURPLE;
+                break;
+            case "RED":
+                temp = Color.RED;
+                break;
+            case "YELLOW":
+                temp = Color.YELLOW;
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + this.group.name());
+        }
+
+        GraphicsContext gc = this.colourDisplay.getGraphicsContext2D();
+        gc.setFill(temp);
+        gc.fillRect(0, 0, 100, 15);
+    }
 }

@@ -2,10 +2,10 @@ package ClassStructure;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Label;
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
@@ -15,6 +15,7 @@ import javafx.scene.control.Label;
         @Type(value = Property.class, name = "property")
 
 })
+
 /**
  * @author Ayman Bensreti, Calvin Boreham
  * Structure for board tile objects
@@ -29,9 +30,7 @@ public abstract class BoardTile {
 
     // GUI Assets
     @JsonIgnore
-    Label tileName;
-    @JsonIgnore
-    Label tilePrice;
+    Label tileName = new Label();
 
 
     /**
@@ -73,7 +72,14 @@ public abstract class BoardTile {
     }
 
     // GUI Functions
+    public void setTileName() {
+        this.tileName.setText(title);
+    }
+
     public Label getNameLabel() { return this.tileName; }
 
-    public void updateValue(int newValue) { this.tilePrice.setText(Integer.toString(newValue)); }
+    public void setColour() { }
+
+    public Canvas getColourDisplay() { return new Canvas();}
+
 }

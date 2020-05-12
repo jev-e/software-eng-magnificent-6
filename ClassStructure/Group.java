@@ -49,6 +49,12 @@ public enum Group {
      */
     public int getMemberCount() { return memberCount; }
 
+    /**
+     * Fetches the name of the group for use in property colour displaying
+     * @return String associated Colour
+     */
+    public String getName() { return name; }
+
     @JsonValue
     final Group value() {
         return this;

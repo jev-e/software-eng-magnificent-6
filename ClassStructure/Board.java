@@ -1,7 +1,8 @@
 package ClassStructure;
 
-import javafx.util.Pair;
 import GUI.Main;
+import javafx.util.Pair;
+
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
@@ -24,20 +25,10 @@ public class Board {
     public boolean timeUp = false;
     public HashMap<String, ArrayList<Pair>> dataStore; //key : playerName value: networths at each turn in game
 
-    public Instant getStart() {
-        return start;
-    }
-
-    public void setStart(Instant start) {
-        this.start = start;
-    }
-
     private Instant start;
     private Instant finished;
     public long timeElapsed;
     private Main guiMain;
-
-
 
     /**
      * Board constructor with specified version
@@ -148,17 +139,43 @@ public class Board {
     }
 
     /**
-     * Starts the game timer for an abridged game
+     * Board constructor with specified version
+     * @param turnOrder linked list of players in their turn order
+     * @param tiles board representation as a hash map
+     * @param potLuck deque of pot luck cards
+     * @param opportunityKnocks deque of opportunity knocks cards
+     * @param version one of "full" or "abridged"
+     * @param timeLimit time limit
      */
-    public void startGameTimer(){
-        timer = new Timer();
-        TimerTask endGame = new TimerTask() {
-            @Override
-            public void run() {
-                timeUp = true; System.out.println("timeUp" + timeUp);
-            }
-        };
-        timer.schedule(endGame, (timeLimit * 60) * 1000);
+    public Board(LinkedList<Player> turnOrder, HashMap<Integer,BoardTile> tiles, Deque<CardEffect> potLuck, Deque<CardEffect> opportunityKnocks, String version, int timeLimit) {
+
+        if( version.equals("abridged") ){
+            this.version = version;
+        } else {
+            System.out.println("Error in version");
+            throw new IllegalArgumentException();
+        }
+
+        this.timeLimit = timeLimit;
+        this.potLuck = potLuck;
+        this.opportunityKnocks = opportunityKnocks;
+        this.turnOrder = turnOrder;
+        this.tiles = tiles;
+        turns = 0;
+        taxPot = 0;
+        repeat =  false;
+        dataStore = new HashMap<>();
+        this.guiMain = guiMain;
+        //Set board references for activation methods in tiles and cards
+        for (CardEffect c : potLuck) {
+            c.setBoard(this);
+        }
+        for (CardEffect c : opportunityKnocks) {
+            c.setBoard(this);
+        }
+        for (BoardTile b : tiles.values()) {
+            b.setBoard(this);
+        }
     }
 
     /***
@@ -169,6 +186,24 @@ public class Board {
     public void callJailSetupScene(Player currentPlayer, GetOutOfJail jailCard){
         guiMain.sentToJailSetupScene(currentPlayer, jailCard);
     }
+
+    /**
+     * Starts the game timer, must be called before starting main game loop
+     */
+    public void startGameTimer(){
+        if( version == "abridged"){
+            timer = new Timer();
+            TimerTask endGame = new TimerTask() {
+                @Override
+                public void run() {
+                    timeUp = true; System.out.println("timeUp" + timeUp);
+                }
+            };
+            timer.schedule(endGame, (timeLimit * 60) * 1000);
+        }
+        start = Instant.now();
+    }
+
     /**
      * draw pot luck card from the top of the deque
      * @return Effect
@@ -254,11 +289,16 @@ public class Board {
 
 
         assert winner != null;
+        //TODO GUI Results screen here and remove prints (done but double check)
+        guiMain.winnerSetupScene(winner);
+//        System.out.println(winner.getName() + " has won the game with a net worth of " + winner.netWorth());
+//        storeData( winner, winner.netWorth() );
+//        for( String key: dataStore.keySet() ){
+//            System.out.println(dataStore.get(key).size() + " " + key + " " + dataStore.get(key).toString());
+//        }
 
-        // Create a alert box which congratulate the winner
-        if(guiMain != null){
-            guiMain.winnerSetupScene(winner);
-        }
+
+
     }
 
     /**
@@ -285,16 +325,56 @@ public class Board {
         return canLeave;
     }
 
+    /**
+     * Stores data for a player in the board data store
+     * data stored is pair (turns, networth)
+     * @param p player
+     * @param netWorth current networth of player
+     */
     public void storeData( Player p, int netWorth ){
         Pair pair = new Pair( turns, netWorth);
         dataStore.get(p.getName()).add(pair);
     }
 
+
     /**
-     * Getter for version
-     * @return version
+     * Getter for finish time
+     * return time game finished
+     */
+    public Instant getFinished() {
+        return finished;
+    }
+
+    /**
+     * Getter for time elapsed
+     * @return time taken for game to be played
+     */
+    public Long getTimeElapsed() {
+        return timeElapsed;
+    }
+
+    /**
+     * Getter for start time
+     * @return time game started
+     */
+    public Instant getStart() {
+        return start;
+    }
+
+    /**
+     * Setter for start
+     * @param start
+     */
+    public void setStart(Instant start) {
+        this.start = start;
+    }
+
+    /**
+     * Getter for game version
+     * @return version of game, either abridged or full
      */
     public String getVersion() {
         return version;
     }
+
 }
