@@ -1020,6 +1020,12 @@ public class Main extends Application {
         HBox optionPane = new HBox(5);
         optionPane.setAlignment(Pos.CENTER);
 
+        System.out.println("start");
+        for(int i = 0; i < order.size(); i++){
+            System.out.println(order.size());
+            System.out.println(order.get(i).getName());
+        }
+
         Label title = new Label("Property Tycoon Trading Setup");
         Label tradeMessage = new Label("Select the players you want to trade with " + currentPlayer.getName());
 
@@ -1031,7 +1037,7 @@ public class Main extends Application {
         LinkedList<Player> tempPlayerList = (LinkedList<Player>) order.clone();
         for(int i = 0; i < order.size(); i++){
             // todo remove after test
-            System.out.print(tempPlayerList.get(i).getName() + "\n");
+            //System.out.print(tempPlayerList.get(i).getName() + "\n");
             // Make sure you cant trade with yourself
             if(currentPlayer.getName() != tempPlayerList.get(i).getName()){
                 listOfPlayer.getItems().add(tempPlayerList.get(i).getName());
@@ -1067,6 +1073,11 @@ public class Main extends Application {
             // Close the trading popup scene
             tradeSetupPopUpStage.close();
         });
+
+        for(int i = 0; i < order.size(); i++){
+            System.out.println("end");
+            System.out.println(order.get(i).getName());
+        }
 
         selectPlayerPane.getChildren().addAll(tradeMessage, listOfPlayer);
         optionPane.getChildren().addAll(nextSetup, leaveTrade);
@@ -1153,7 +1164,6 @@ public class Main extends Application {
 
         // Button Functionality
         serveTime.setOnAction(e -> {
-            // TODO ask ayman which functions to call
             jailDecision.set(1);
             // Close the popup effect
             jailPopUpStage.close();
@@ -1286,10 +1296,11 @@ public class Main extends Application {
 
                     if (gameSystem.turnOrder.contains(currentPlayer) && !currentPlayer.isInJail()) {
                         if (!currentPlayer.isAiAgent()) {
-                            currentPlayer.leaveGame();
                             // Changes to the trading setup scene (popup)
                             tradingSetupScene(currentPlayer);
                             //TODO Player property management GUI here
+                            // Show and wait need implemented for leaving game
+                            //currentPlayer.leaveGame();
                         } else {
                             currentPlayer.initiateTrade();
                             if (gameSystem.turns > retirePoint && gameSystem.turnOrder.size() > 4) {
