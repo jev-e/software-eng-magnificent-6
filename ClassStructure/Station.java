@@ -1,5 +1,7 @@
 package ClassStructure;
 
+import javafx.scene.control.Label;
+
 import java.util.LinkedList;
 
 /**
@@ -138,5 +140,13 @@ public class Station extends TileEffect {
 
     public void setOwner(Player owner) {
         this.owner = owner;
+    }
+
+    /**
+     * init the gui elements
+     */
+    @Override
+    public void initGuiElements() {
+        super.tileName = new Label();
     }
 }

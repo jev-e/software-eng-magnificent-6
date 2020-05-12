@@ -29,9 +29,9 @@ public class Property extends BoardTile{
 
     // GUI Assets
     @JsonIgnore
-    Label tilePrice = new Label();
+    Label tilePrice;
     @JsonIgnore
-    private Canvas colourDisplay = new Canvas(100,15); // Displays colour of property group
+    private Canvas colourDisplay; // Displays colour of property group
 
     /**
      * Default constructor for Jackson
@@ -70,6 +70,16 @@ public class Property extends BoardTile{
         this.rentDoubled = false;
         this.housesNo = 0;
         this.hotelNo = 0;
+    }
+
+    /**
+     * init the gui elements
+     */
+    @Override
+    public void initGuiElements() {
+        super.tileName = new Label();
+        tilePrice = new Label();
+        colourDisplay = new Canvas(100,15);
     }
 
     /**
