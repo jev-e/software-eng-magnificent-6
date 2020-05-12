@@ -1,7 +1,6 @@
 package ClassStructure;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.sun.org.apache.bcel.internal.generic.Select;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;

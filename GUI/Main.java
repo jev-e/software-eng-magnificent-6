@@ -1363,7 +1363,7 @@ public class Main extends Application {
         //Load shuffled pack into decks
         pot = new ArrayDeque<>(potLuckPack);
         opp = new ArrayDeque<>(opportunityKnocksPack);
-        gameSystem = new Board(order, board, pot, opp, gameMode);
+        gameSystem = new Board(order, board, pot, opp, gameMode, this);
     }
 
     /***

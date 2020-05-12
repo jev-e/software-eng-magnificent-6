@@ -48,7 +48,6 @@ class GameTest {
      */
     @BeforeEach
     public void setup() {
-
         //player creation
         Player ayman = new Player("Ayman", Token.HATSTAND, null, false);
         Player danny = new Player("Danny", Token.CAT, null, false);

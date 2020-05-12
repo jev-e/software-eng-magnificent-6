@@ -15,6 +15,7 @@ import javafx.scene.control.Label;
         @Type(value = Property.class, name = "property")
 
 })
+
 /**
  * @author Ayman Bensreti, Calvin Boreham
  * Structure for board tile objects
