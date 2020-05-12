@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Label;
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
@@ -76,5 +77,9 @@ public abstract class BoardTile {
     }
 
     public Label getNameLabel() { return this.tileName; }
+
+    public void setColour() { }
+
+    public Canvas getColourDisplay() { return new Canvas();}
 
 }

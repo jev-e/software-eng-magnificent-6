@@ -494,34 +494,40 @@ public class Property extends BoardTile{
 
     // Label getter and setter
     public void setTilePrice() { this.tilePrice.setText(String.valueOf(tilePrice)); }
+
     public Label getTilePrice() { return this.tilePrice; }
 
+    // Canvas Functions
+    @Override
+    public Canvas getColourDisplay() { return this.colourDisplay; }
+
+    @Override
     public void setColour() {
 
         Paint temp;
         switch (this.group.name()) {
-            case "Blue":
+            case "BLUE":
                 temp = Color.BLUE;
                 break;
-            case "Brown":
+            case "BROWN":
                 temp = Color.BROWN;
                 break;
-            case "Deep Blue":
+            case "DEEP_BLUE":
                 temp = Color.DARKBLUE;
                 break;
-            case "Green":
+            case "GREEN":
                 temp = Color.GREEN;
                 break;
-            case "Orange":
+            case "ORANGE":
                 temp = Color.ORANGE;
                 break;
-            case "Purple":
+            case "PURPLE":
                 temp = Color.PURPLE;
                 break;
-            case "Red":
+            case "RED":
                 temp = Color.RED;
                 break;
-            case "Yellow":
+            case "YELLOW":
                 temp = Color.YELLOW;
                 break;
             default:

@@ -3,22 +3,24 @@ package GUI;
 import ClassStructure.*;
 import javafx.application.Application;
 import javafx.application.Platform;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.layout.*;
-
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import sun.security.util.ArrayUtil;
 
-import javax.swing.*;
+import java.lang.Object;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
@@ -34,6 +36,30 @@ public class Main extends Application {
     private FlowPane[] playerCards;
     private int playerNo; // Number of players in the game
     private Player[] players; // Keep permanent order of players for player cards
+
+    // Images - Tiles
+    private Image goTilePNG;
+    private Image goJailPNG;
+    private Image freeParkingPNG;
+    private Image visitingPNG;
+    private Image waterPNG; // Edison Water Utility
+    private Image powerPNG; // Tesla Power Utility
+    private Image oppKnocksPNG;
+    private Image potLuckPNG;
+    private Image stationPNG;
+
+    // Images - Assets
+    private Image hotelPNG;
+    private Image housePNG;
+    private Image jailFreePNG;
+
+    // Images - Tokens
+    private Image bootToken;
+    private Image catToken;
+    private Image gobletToken;
+    private Image hatstandToken;
+    private Image phoneToken;
+    private Image spoonToken;
 
     // Scenes
     private Scene gameScene; // Shows gameBP
@@ -55,6 +81,8 @@ public class Main extends Application {
     // VBoxes
 
     private VBox playersVB; // Player cards, Right side of Screen
+
+    // Danny's Variables
 
     Stage window;
     Scene menuScene, ruleScene, playerSetupScene, gameSetupScene, gameBoardScene, tradingSetupScene, tradingScene;
@@ -94,6 +122,7 @@ public class Main extends Application {
      */
     public void displayGameScene() {
         initGameVariables();  // Initalise Variables and Containers
+        initGameImages();     // Load Game Images
         formatGameScene();    // Formats Game Scene
         retrieveBoardData();  // Provides initial data from board to scene
         addKeyGameButtons();  // Adds Roll, Property Management, Quit and Trading buttons
@@ -105,10 +134,12 @@ public class Main extends Application {
         window.show();
     }
 
+    /**
+     * Retrieves necessary data from the board
+     */
     public void retrieveBoardData() {
         for(int i = 0; i < 40; i++) {
             board.get(i).setTileName();
-
         }
     }
 
@@ -116,7 +147,7 @@ public class Main extends Application {
         // Initialise Buttons
         Button propManageBtn = new Button("Manage Properties");
         Button endTurnBtn = new Button("End Turn");
-        Button quitBtn = new Button("Quit");
+        Button leaveBtn = new Button("Leave");
 
         propManageBtn.setOnAction((ActionEvent event) -> {
 
@@ -126,11 +157,11 @@ public class Main extends Application {
 
         });
 
-        quitBtn.setOnAction((ActionEvent event) -> {
+        leaveBtn.setOnAction((ActionEvent event) -> {
 
         });
         
-        buttonFP.getChildren().addAll(propManageBtn, endTurnBtn, quitBtn);
+        buttonFP.getChildren().addAll(propManageBtn, endTurnBtn, leaveBtn);
 
     }
 
@@ -140,21 +171,32 @@ public class Main extends Application {
     public void displayGameBoard() {
 
         int shortSide = 60, longSide = 100;
+
         for (int i = 0; i < 40; i++) {
-
             Label label = board.get(i).getNameLabel();
+            Canvas canvas = board.get(i).getColourDisplay();
+            GridPane container = new GridPane();
 
-            // Add Tiles to Gridpane
+
+            // Add Tiles to GridPane
             switch (i) {
 
                 // Go Tile
                 case 0:
-                    boardGP.add(label, 2, 2);
+                    container.add(label,0,1);
+                    boardGP.add(container, 2, 2);
                     break;
 
                 // Bottom Row
                 case 1: case 2: case 3: case 4: case 5: case 6: case 7: case 8: case 9:
-                    botRowGP.add(label, (9 - i), 0);
+                    container.add(label, 0,1);
+
+                    if(!(i == 2 || i == 4 || i == 7)) {
+                        board.get(i).setColour();
+                        container.add(canvas,0,0);
+                    }
+
+                    botRowGP.add(container, (9 - i), 0);
                     break;
 
                 // Jail Tile
@@ -164,7 +206,13 @@ public class Main extends Application {
 
                 // Left Column
                 case 11: case 12: case 13: case 14: case 15: case 16: case 17: case 18: case 19:
-                    leftColGP.add(label, 0, (20 - i));
+                    container.add(label, 0, 1);
+
+                    if(!(i == 12 || i == 15 || i == 17)) {
+                        board.get(i).setColour();
+                        container.add(canvas,0,0);
+                    }
+                    leftColGP.add(container, 0, (20 - i));
                     break;
 
                 // Free Parking Tile
@@ -174,7 +222,14 @@ public class Main extends Application {
 
                 // Top Row
                 case 21: case 22: case 23: case 24: case 25: case 26: case 27: case 28: case 29:
-                    topRowGP.add(label, i, 0);
+                    container.add(label, 0, 1);
+
+                    if(!(i == 22 || i == 25 || i == 28)) {
+                        board.get(i).setColour();
+                        container.add(canvas,0,0);
+                    }
+
+                    topRowGP.add(container, (i - 21), 0);
                     break;
 
                 // Go To Jail Tile
@@ -184,7 +239,14 @@ public class Main extends Application {
 
                 // Right Column
                 case 31: case 32: case 33: case 34: case 35: case 36: case 37: case 38: case 39:
-                    rightColGP.add(label, 0, i);
+                    container.add(label, 0, 1);
+
+                    if(!(i == 33 || i == 35 || i == 36 || i == 38)) {
+                        board.get(i).setColour();
+                        container.add(canvas,0,0);
+                    }
+
+                    rightColGP.add(container, 0, (i - 31));
                     break;
 
                 default:
@@ -235,20 +297,21 @@ public class Main extends Application {
         // Initialise Scene
         gameScene = new Scene(gameBP);
 
+        // Initialise formatting
+        Insets insets = new Insets(10);
+        Label label = new Label();
+
         // Add Panes to gameBP
         gameBP.setLeft(boardGP);
         gameBP.setRight(playersVB);
         gameBP.setBottom(buttonFP);
+        gameBP.setPadding(insets);
 
         // Initialise inner containers
         topRowGP = new GridPane();
         leftColGP = new GridPane();
         rightColGP = new GridPane();
         botRowGP = new GridPane();
-
-        // Initialise formatting
-        Insets insets = new Insets(10);
-        Label label = new Label();
 
         // Format GameBP
         gameBP.setCenter(label);
@@ -273,9 +336,40 @@ public class Main extends Application {
         }
     }
 
+    /**
+     * Load Game Images from Lib into Image objects
+     */
     public void initGameImages() {
+        try {
+            // Tiles
+            goTilePNG = new Image(new FileInputStream("Lib/TilesDesign/goWithColour64bit.png"));
+            goJailPNG = new Image(new FileInputStream("Lib/TilesDesign/goJail64bit.png"));
+            freeParkingPNG = new Image(new FileInputStream("Lib/TilesDesign/freeParking64bit.png"));
+            visitingPNG = new Image(new FileInputStream("Lib/TilesDesign/visiting64bit.png"));
+            waterPNG = new Image(new FileInputStream("Lib/TilesDesign/edisonWater64bit.png"));
+            powerPNG = new Image(new FileInputStream("Lib/TilesDesign/teslaPower64bit.png"));
+            oppKnocksPNG = new Image(new FileInputStream("Lib/TilesDesign/opportunityKnocks64bit.png"));
+            potLuckPNG = new Image(new FileInputStream("Lib/TilesDesign/potLuck64bit.png"));
+            stationPNG = new Image(new FileInputStream("Lib/TilesDesign/trainStation64bit.png"));
 
+            // Assets
+            hotelPNG = new Image(new FileInputStream("Lib/Assets/hotel64bit.png"));
+            housePNG = new Image(new FileInputStream("Lib/Assets/house64bit.png"));
+            jailFreePNG = new Image(new FileInputStream("Lib/Assets/jailFree64bit.png"));
+
+            // Tokens
+            bootToken = new Image(new FileInputStream("Lib/Tokens/BootToken.png"));
+            catToken = new Image(new FileInputStream("Lib/Tokens/CatToken.png"));
+            gobletToken = new Image(new FileInputStream("Lib/Tokens/GobletToken.png"));
+            hatstandToken = new Image(new FileInputStream("Lib/Tokens/HatstandToken.png"));
+            phoneToken = new Image(new FileInputStream("Lib/Tokens/SmartphoneToken.png"));
+            spoonToken = new Image(new FileInputStream("Lib/Tokens/BootToken.png"));
+
+        } catch (FileNotFoundException e) {
+
+        }
     }
+    
     /**
      * Provides most formatting for the Game Scene
      */

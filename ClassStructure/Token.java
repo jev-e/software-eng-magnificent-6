@@ -7,12 +7,12 @@ package ClassStructure;
  *	Text symbol for prototype versions
  */
 public enum Token {
-    CAT("Cat","CatToken.png","@"),
-    HATSTAND("Hat Stand","HatstandToken.png","%"),
-    SMARTPHONE("Smartphone","PhoneToken.png","$"),
-    BOOT("Boot","BootToken.png","£"),
-    GOBLET("Goblet","GobletToken.png","&"),
-    SPOON("Spoon","SpoonToken.png","*");
+    CAT("Cat","Lib/Tokens/CatToken.png","@"),
+    HATSTAND("Hat Stand","Lib/Tokens/HatstandToken.png","%"),
+    SMARTPHONE("Smartphone","Lib/Tokens/PhoneToken.png","$"),
+    BOOT("Boot","Lib/Tokens/BootToken.png","£"),
+    GOBLET("Goblet","Lib/Tokens/GobletToken.png","&"),
+    SPOON("Spoon","Lib/Tokens/SpoonToken.png","*");
 
 
     public String getName() {
