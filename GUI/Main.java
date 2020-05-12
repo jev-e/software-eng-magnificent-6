@@ -1407,7 +1407,7 @@ public class Main extends Application {
 
                     if (gameSystem.turnOrder.contains(currentPlayer) && !currentPlayer.isInJail()) {
                         if (!currentPlayer.isAiAgent()) {
-                            currentPlayer.leaveGame();
+                            //currentPlayer.leaveGame();
                             // Changes to the trading setup scene (popup)
                             tradingSetupScene(currentPlayer);
                             //TODO Player property management GUI here

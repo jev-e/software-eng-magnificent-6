@@ -289,8 +289,7 @@ public class Board {
 
 
         assert winner != null;
-        //TODO GUI Results screen here and remove prints
-        System.out.println(winner.getName() + " has won the game with a net worth of " + winner.netWorth());
+        guiMain.winnerSetupScene(winner);
         storeData( winner, winner.netWorth() );
         for( String key: dataStore.keySet() ){
             System.out.println(dataStore.get(key).size() + " " + key + " " + dataStore.get(key).toString());
