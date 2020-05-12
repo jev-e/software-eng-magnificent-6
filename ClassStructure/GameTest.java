@@ -899,22 +899,24 @@ class GameTest {
      */
     @Test
     public void testGoToJail() {
-        BoardTile temp = new Jail(10, "Jail","You are in jail");
-        GoToJail gtj = new GoToJail(3,"You must go to jail",4);
+        BoardTile temp = new Jail(10, "Jail", "You are in jail");
+        GoToJail gtj = new GoToJail(3, "You must go to jail", 4);
 
         tileSet = new HashMap<>();
-        tileSet.put(10,temp);
-        tileSet.put(3,gtj);
+        tileSet.put(10, temp);
+        tileSet.put(3, gtj);
         board = new Board(order, tileSet, pot, opp, "full");
-
-
+        Player currentPlayer = board.turnOrder.getFirst();
+        currentPlayer.setAiAgent(true);//player is AI
+        currentPlayer.getPersonality().setPatient(true);//will serve time
+        currentPlayer.setMoney(10);//insure the player cant pay bail
         gtj.setBoard(board);
         board.turnOrder.getFirst().setAiAgent(true);
         board.turnOrder.getFirst().setMoney(1);
         board.turnOrder.getFirst().assets = new LinkedList<>();
-        gtj.activeEffect(board.turnOrder.getFirst());
-        assertEquals(board.turnOrder.getFirst().getCurrentPos(),10);
-        assertEquals(board.turnOrder.getFirst().isInJail(), true);
+        gtj.activeEffect(currentPlayer);
+        assertEquals(currentPlayer.getCurrentPos(), 10);
+        assertEquals(currentPlayer.isInJail(), true);
 
     }
 
