@@ -1,16 +1,21 @@
 package ClassStructure;
 
 
-import GUI.Main;
+import javafx.util.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Test class for Property Tycoon
+ * @author Ayman Bensreti, Calvin Boreham
+ */
 class GameTest {
 
     private static Board board;
@@ -110,15 +115,14 @@ class GameTest {
      */
     @Test
     public void boardIllegalVersionTest() {
-        Main guiTest = new Main();
         IllegalArgumentException ex = assertThrows(
                 IllegalArgumentException.class,
-                () -> new Board(order, tileSet, pot, opp, "jhvjv",1, guiTest)
+                () -> new Board(order, tileSet, pot, opp, "jhvjv", 1)
         );
 
         IllegalArgumentException ex1 = assertThrows(
                 IllegalArgumentException.class,
-                () -> new Board(order, tileSet, pot, opp, "full", 1, guiTest)
+                () -> new Board(order, tileSet, pot, opp, "full", 1)
         );
 
         IllegalArgumentException ex2 = assertThrows(
@@ -127,6 +131,9 @@ class GameTest {
         );
     }
 
+    /**
+     * Tests dice roll is within feasible range
+     */
     @Test
     public void rollDiceTest() {
         //check return is within given range
@@ -145,7 +152,9 @@ class GameTest {
     @Test
     public void cardDrawTest() {
         opp.add(new MoveBack3());//firstCard
-        opp.add(new PlayerPaysBank("Test1",20));//secondCard
+        PlayerPaysBank ppb = new PlayerPaysBank("Test1", 20);
+        opp.add(ppb);//secondCard
+        assertEquals(ppb.getAmount(),20);
         opp.add(new Birthday());//thirdCard
         GetOutOfJail jailCard = new GetOutOfJail("Eh lad yahrr free t'go");
         jailCard.setDeck("opportunity");
@@ -161,6 +170,7 @@ class GameTest {
         board = new Board(order, tileSet, pot, opp, "full");//create board with current card setup
         CardEffect firstCard = board.drawOpportunityKnocks();
         assertEquals(firstCard,board.opportunityKnocks.peekLast());
+        assertEquals(firstCard.getCardText(),board.opportunityKnocks.peekLast().cardText);
         CardEffect secondCard = board.drawOpportunityKnocks();
         assertEquals(secondCard,board.opportunityKnocks.peekLast());
         CardEffect thirdCard = board.drawOpportunityKnocks();
@@ -233,6 +243,12 @@ class GameTest {
         opp.add(new MoveBack3());
         opp.add(new Birthday());
 
+        MovePlayerNoPassGo test = new MovePlayerNoPassGo("go to pot luck",2);
+        assertEquals(test.getDestination(), 2);
+
+        MovePlayerPassGo test2 = new MovePlayerPassGo("go to income Tax",4);
+        assertEquals(test2.getDestination(), 4);
+
         board = new Board(order, tileSet, pot, opp, "full");
         Player currentPlayer = board.turnOrder.getFirst();
         assertEquals(0,currentPlayer.getCurrentPos());
@@ -254,6 +270,8 @@ class GameTest {
     @Test
     public void taxPaying() {
         tileSet = new HashMap<>();
+        PlayerPaysTax ppt = new PlayerPaysTax("Bob variable tax", 10);
+        assertEquals(ppt.getAmount(), 10);
         pot.add(new PlayerPaysTax("Bob variable tax", 10));
         pot.add(new PlayerPaysTax("Bob variable tax", 10));
         pot.add(new PlayerPaysTax("Bob variable tax", 10));
@@ -427,6 +445,17 @@ class GameTest {
         board.tiles.get(28).activeEffect(a);//activate tile
         assertEquals(1400, a.getMoney());
         assertEquals(1600, d.getMoney());
+
+        //basic utility
+        Player owner = board.turnOrder.getFirst();
+        Utility test = new Utility(1, "Test");
+        owner.addAsset(test);
+        assertEquals(test.sellUtility(),150);
+        assertEquals(test.getCost(), 150);
+        test.setOwner(owner);
+        assertEquals(test.getOwner(),owner);
+
+
     }
 
     /**
@@ -471,6 +500,9 @@ class GameTest {
      */
     @Test
     public void housingRepairsTest() throws IOException {
+        HousingRepairs card = new HousingRepairs("Test", 100, 100);
+        assertEquals(card.getHouseFine(), 100);
+        assertEquals(card.getHotelFine(), 100);
         jsonDataBoard();//read in data
         CardEffect house = null;
         while (!(house instanceof HousingRepairs)) {//get house repair card
@@ -796,19 +828,7 @@ class GameTest {
         currentPlayer.deductAmount(3100);
     }
 
-    /**
-     * Tests that when an abridged game version is selected that a timer is created, runs and triggers the correct
-     * event
-     */
-    @Test
-    public void abridgedTest() throws InterruptedException {
-        Main guiTest = new Main();
-        board = new Board(order, tileSet, pot, opp, "abridged", 1, guiTest);
-        board.startGameTimer();
-        assertNotEquals(board.timer, null);
-        TimeUnit.MINUTES.sleep(2);
-        assertTrue(board.timeUp);
-    }
+
 
     /**
      * Test that action log correctly stores players actions
@@ -829,6 +849,7 @@ class GameTest {
         System.out.println(currentPlayer.getActionLog());//visual test
         assertEquals(currentPlayer.getActionLog(), "");//check that action log is cleared
         Station hove = (Station) board.tiles.get(15);
+        Station test = new Station(4, "Test");
         hove.activeEffect(currentPlayer);//player should buy station
         expectedString = "Landed on Hove Station\n" +
                 "Purchased Hove Station for £200\n";
@@ -848,5 +869,263 @@ class GameTest {
                 "You pay £200 Income tax\n" +
                 "Bankrupt\n";
         assertEquals(expectedString, currentPlayer.getActionLog());
+        BoardTile go = board.tiles.get(0);
+        go.activeEffect(currentPlayer);
+        expectedString = "Go\n";
+        assertEquals(expectedString, currentPlayer.getActionLog());
     }
+
+    /**
+     * Bank pays player test
+     */
+    @Test
+    public void testBankPaysPlayer() {
+        BankPaysPlayer card = new BankPaysPlayer("Test", 100);
+        assertEquals(card.getAmount(),100);
+    }
+
+    /**
+     * Board tile test
+     */
+    @Test
+    public void testBoardTile() {
+        BoardTile crapper = tileSet.get(1);//brown tile
+        assertEquals(crapper.getiD(),1);
+        crapper.setCanPurchase(false);
+        assertEquals(false, crapper.isCanPurchase());
+    }
+
+    /**
+     * Go to jail test, testing correct creation and activation
+     */
+    @Test
+    public void testGoToJail() {
+        BoardTile temp = new Jail(10, "Jail","You are in jail");
+        GoToJail gtj = new GoToJail(3,"You must go to jail",4);
+
+        tileSet = new HashMap<>();
+        tileSet.put(10,temp);
+        tileSet.put(3,gtj);
+        board = new Board(order, tileSet, pot, opp, "full");
+
+
+        gtj.setBoard(board);
+
+        gtj.activeEffect(board.turnOrder.getFirst());
+        assertEquals(board.turnOrder.getFirst().getCurrentPos(),10);
+        assertEquals(board.turnOrder.getFirst().isInJail(), true);
+
+    }
+
+    /**
+     * Go to jail card test , testing correct creation and activation
+     */
+    @Test
+    public void testGoToJailCard() {
+        GoToJailCard card = new GoToJailCard("Go to jail");
+        BoardTile temp = new Jail(10, "Jail","You are in jail");
+        tileSet = new HashMap<>();
+        tileSet.put(10,temp);
+        opp.add(new Birthday());
+        board = new Board(order, tileSet, pot, opp, "full");
+
+
+        card.setBoard(board);
+
+        card.effect(board.turnOrder.getFirst());
+        assertEquals(board.turnOrder.getFirst().getCurrentPos(),10);
+        assertEquals(board.turnOrder.getFirst().isInJail(), true);
+
+    }
+
+    /**
+     * Test Opportunity Knocks correct creation and activation
+     */
+    @Test
+    public void testOpportunityKnocks() {
+        OpportunityKnocks temp = new OpportunityKnocks(3);
+        opp.add(new PlayerPaysBank("Test1",20));
+
+        tileSet = new HashMap<>();
+        tileSet.put(3,temp);
+        board = new Board(order, tileSet, pot, opp, "full");
+        int currentAmount = board.turnOrder.getFirst().getMoney();
+        temp.activeEffect(board.turnOrder.getFirst());
+        int newAmount = board.turnOrder.getFirst().getMoney();
+        assertEquals(currentAmount-20, newAmount);
+        assertEquals("", temp.getCurrentCardText());
+    }
+
+    /**
+     * Test Opportunity Knocks correct creation and activation
+     */
+    @Test
+    public void testPotLuck() {
+        PotLuck temp = new PotLuck(3);
+        pot.add(new PlayerPaysBank("Test1",20));
+
+        tileSet = new HashMap<>();
+        tileSet.put(3,temp);
+        board = new Board(order, tileSet, pot, opp, "full");
+        int currentAmount = board.turnOrder.getFirst().getMoney();
+        temp.activeEffect(board.turnOrder.getFirst());
+        int newAmount = board.turnOrder.getFirst().getMoney();
+        assertEquals(currentAmount-20, newAmount);
+        assertEquals("", temp.getCurrentCardText());
+    }
+
+    /**
+     * Test pay bank tax correct creation and activation
+     */
+    @Test
+    public void testPayBankTax() {
+        PayBankTax pbt = new PayBankTax(2, "Test", "Test Text", 10);
+        assertEquals(pbt.getAmount(), 10);
+        tileSet = new HashMap<>();
+        tileSet.put(2,pbt);
+        board = new Board(order, tileSet, pot, opp, "full");
+        int currentAmount = board.turnOrder.getFirst().getMoney();
+        pbt.activeEffect(board.turnOrder.getFirst());
+        int newAmount = board.turnOrder.getFirst().getMoney();
+        assertEquals(currentAmount-10, newAmount);
+
+    }
+
+    /**
+     * Test pay bank tax correct creation and activation
+     */
+    @Test
+    public void testPayBankTaxOrDrawCreation() {
+        PayTaxOrDrawOpportunity ptdo = new PayTaxOrDrawOpportunity("Test", 100);
+        assertEquals(ptdo.getAmount(), 100);
+    }
+
+    /**
+     * Tests that when an abridged game version is selected that a timer is created, runs and triggers the correct
+     * event
+     */
+    @Test
+    public void abridgedTest() throws InterruptedException {
+        board = new Board(order, tileSet, pot, opp, "abridged", 1);
+        board.startGameTimer();
+        assertNotEquals(board.timer, null);
+        TimeUnit.SECONDS.sleep(90);
+        assertTrue(board.timeUp);
+    }
+
+
+    /**
+     * Tests that the game throws an illegal game ending exception when appropriate and measures
+     * duration of game correctly
+     * @throws Exception
+     */
+    @Test
+    public void testGameOver() throws Exception {
+        board = new Board(order, tileSet, pot, opp, "abridged", 1);
+        board.startGameTimer();
+        //test
+        assertNotEquals(board.getStart(), null);
+        Exception ex = assertThrows(
+                Exception.class,
+                () -> board.gameOver()
+        );
+        assertEquals("illegal end game state" , ex.getMessage());
+
+        assertNotEquals(board.getFinished(), null);
+        assertEquals(Duration.between(board.getStart(), board.getFinished()).toMillis(), board.getTimeElapsed());
+
+    }
+
+    /**
+     * Tests the correct storing of data
+     */
+    @Test
+    public void testStoreData() {
+        for( Player p: board.turnOrder ){
+            board.dataStore.put(p.getName(), new ArrayList<>());
+        }
+        Pair test = new Pair(5,100);
+        board.turns = 5;
+        board.storeData( board.turnOrder.getFirst(), 100);
+        board.dataStore.get(board.turnOrder.getFirst().getName()).contains(test);
+    }
+
+    /**
+     * Player basic functionality, tests correct creation additionally
+     */
+    @Test
+    public void testBasicPlayer() {
+        Player basic = new Player("Calvin", Token.SPOON, board, false);
+        Player basicAI = new Player("Fred", Token.BOOT, board, true);
+        assertNotEquals(basicAI.getPersonality(), null);
+        //positions testing
+        basic.setPreviousPos(10);
+        assertEquals(basic.getPreviousPos(), 10);
+        //name testing
+        basic.setName("Bob");
+        assertEquals(basic.getName(), "Bob");
+        //token testing
+        basic.setToken(Token.SMARTPHONE);
+        assertEquals(basic.getToken(),Token.SMARTPHONE);
+        //board getting
+        assertEquals(basic.getBoard(), board);
+        //asset selling can be called
+        basic.assetSelling(10);
+        //improvable properties should be empty
+        assertEquals(basic.improvableProperties().size(), 0);
+    }
+
+    /**
+     * Basic property tests
+     */
+    @Test
+    public void testBasicProperty() {
+        int[] buildingRents = {10,10,20,30};
+        Player basic = new Player("Calvin", Token.SPOON, board, false);
+        Property test = new Property(1, "Test", Group.DEEP_BLUE, 100, 10, buildingRents, 50, basic);
+        test.setCost(150);
+        assertEquals(test.getCost(), 150);
+        assertFalse(test.isDeveloped());
+        test.setRent(20);
+        assertEquals(test.getRent(), 20);
+        assertEquals(test.getBuildingRents(), buildingRents);
+        assertEquals(test.getHotelRent(), 50);
+        test.setMortgaged(true);
+        assertTrue(test.isMortgaged());
+        test.setRentDoubled(true);
+        assertTrue(test.isRentDoubled());
+        test.setDeveloped(true);
+        assertTrue(test.isDeveloped());
+        test.setCompletedSet(true);
+        assertTrue(test.isCompletedSet());
+        test.setHotelRent(30);
+        assertEquals(test.getHotelRent(),30);
+
+    }
+
+    /**
+     * Basic Tile Effect Tests
+     */
+    @Test
+    public void testBasicTileEffect() {
+        TileEffect te = new GoToJail(1, "Test", 10);
+        assertEquals(te.getText(),"Test");
+        te.setBoard(board);
+        assertEquals(te.getBoard(),board);
+    }
+
+    /**
+     * Basic token tests
+     */
+    @Test
+    public void testToken() {
+        Token token = Token.SMARTPHONE;
+        token.setName("Test");
+        assertEquals(token.getName(), "Test");
+        token.setImgPath("test.png");
+        assertEquals(token.getImgPath(),"test.png");
+        assertEquals(token.getSymbol(),"$");
+        token.toString();
+    }
+
 }

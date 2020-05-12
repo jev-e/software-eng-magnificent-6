@@ -147,6 +147,46 @@ public class Board {
     }
 
     /**
+     * Board constructor with specified version
+     * @param turnOrder linked list of players in their turn order
+     * @param tiles board representation as a hash map
+     * @param potLuck deque of pot luck cards
+     * @param opportunityKnocks deque of opportunity knocks cards
+     * @param version one of "full" or "abridged"
+     * @param timeLimit time limit
+     */
+    public Board(LinkedList<Player> turnOrder, HashMap<Integer,BoardTile> tiles, Deque<CardEffect> potLuck, Deque<CardEffect> opportunityKnocks, String version, int timeLimit) {
+
+        if( version.equals("abridged") ){
+            this.version = version;
+        } else {
+            System.out.println("Error in version");
+            throw new IllegalArgumentException();
+        }
+
+        this.timeLimit = timeLimit;
+        this.potLuck = potLuck;
+        this.opportunityKnocks = opportunityKnocks;
+        this.turnOrder = turnOrder;
+        this.tiles = tiles;
+        turns = 0;
+        taxPot = 0;
+        repeat =  false;
+        dataStore = new HashMap<>();
+        this.guiMain = guiMain;
+        //Set board references for activation methods in tiles and cards
+        for (CardEffect c : potLuck) {
+            c.setBoard(this);
+        }
+        for (CardEffect c : opportunityKnocks) {
+            c.setBoard(this);
+        }
+        for (BoardTile b : tiles.values()) {
+            b.setBoard(this);
+        }
+    }
+
+    /**
      * Starts the game timer for an abridged game
      */
     public void startGameTimer(){
@@ -301,4 +341,9 @@ public class Board {
     public String getVersion() {
         return version;
     }
+
+    public Instant getFinished() {
+        return finished;
+    }
+
 }
