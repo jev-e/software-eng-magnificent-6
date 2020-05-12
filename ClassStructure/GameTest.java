@@ -1,6 +1,7 @@
 package ClassStructure;
 
 
+import GUI.Main;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -109,14 +110,15 @@ class GameTest {
      */
     @Test
     public void boardIllegalVersionTest() {
+        Main guiTest = new Main();
         IllegalArgumentException ex = assertThrows(
                 IllegalArgumentException.class,
-                () -> new Board(order, tileSet, pot, opp, "jhvjv", 1)
+                () -> new Board(order, tileSet, pot, opp, "jhvjv",1, guiTest)
         );
 
         IllegalArgumentException ex1 = assertThrows(
                 IllegalArgumentException.class,
-                () -> new Board(order, tileSet, pot, opp, "full", 1)
+                () -> new Board(order, tileSet, pot, opp, "full", 1, guiTest)
         );
 
         IllegalArgumentException ex2 = assertThrows(
@@ -800,7 +802,8 @@ class GameTest {
      */
     @Test
     public void abridgedTest() throws InterruptedException {
-        board = new Board(order, tileSet, pot, opp, "abridged", 1);
+        Main guiTest = new Main();
+        board = new Board(order, tileSet, pot, opp, "abridged", 1, guiTest);
         board.startGameTimer();
         assertNotEquals(board.timer, null);
         TimeUnit.MINUTES.sleep(2);

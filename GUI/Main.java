@@ -12,6 +12,7 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -24,6 +25,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * GUI Main Executable, Handles all GUI Displaying
@@ -85,7 +87,7 @@ public class Main extends Application {
     // Danny's Variables
 
     Stage window;
-    Scene menuScene, ruleScene, playerSetupScene, gameSetupScene, gameBoardScene, tradingSetupScene, tradingScene;
+    Scene menuScene, ruleScene, playerSetupScene, gameSetupScene, gameBoardScene, tradingSetupScene, tradingScene, auctionScene, jailSetupScene;
     Scene test123;
 
     // Holds the players name
@@ -101,6 +103,7 @@ public class Main extends Application {
     private static List<CardEffect> opportunityKnocksPack;
     private static List<CardEffect> potLuckPack;
     private Board gameSystem;
+    private Player playerTwo;
 
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -369,7 +372,7 @@ public class Main extends Application {
 
         }
     }
-    
+
     /**
      * Provides most formatting for the Game Scene
      */
@@ -704,6 +707,7 @@ public class Main extends Application {
             );
             // Setting the default value for all spinners for all the players to be boot
             SpinnerValueFactory<String> tokenChoice = new SpinnerValueFactory.ListSpinnerValueFactory<>(tokenName);
+            tokenChoice.setWrapAround(true);
             tokenChoice.setValue("Boot");
             token.setValueFactory(tokenChoice);
             playerTokenSpin.add(token);
@@ -737,6 +741,7 @@ public class Main extends Application {
             );
             // Setting the default value for all spinners for all the AIs to be boot
             SpinnerValueFactory<String> tokenChoice = new SpinnerValueFactory.ListSpinnerValueFactory<>(tokenName);
+            tokenChoice.setWrapAround(true);
             tokenChoice.setValue("Boot");
             token.setValueFactory(tokenChoice);
             aiTokenSpin.add(token);
@@ -893,7 +898,7 @@ public class Main extends Application {
         ButtonType roll = new ButtonType("Roll Dice");
 
         diceMessage.setTitle("Property Tycoon Roll Dice");
-        diceMessage.setContentText("Click Roll Dice down below to roll your dices");
+        diceMessage.setContentText("Click Roll Dice down below to roll your dices " + currentPlayer.getName());
         diceMessage.getButtonTypes().add(roll);
 
         Optional<ButtonType> option = diceMessage.showAndWait();
@@ -901,9 +906,11 @@ public class Main extends Application {
         if(option.get() == roll){
             diceRoll(currentPlayer, diceCount);
         }
-        // TODO double check showAndWait is not needed
-        //diceMessage.show();
+        // TODO change
+        diceMessage.show();
+        diceMessage.close();
         //diceMessage.showAndWait();
+        //diceMessage.show();
     }
 
     /***
@@ -923,7 +930,10 @@ public class Main extends Application {
         diceMessage.setTitle("Property Tycoon Dice Generated");
         diceMessage.setHeaderText(currentPlayer.getName() + " rolled " + (dice1 + dice2));
         diceMessage.setContentText("Die one rolled " + dice1 + "\nDie two rolled " + dice2);
+        // TODO change
+        //diceMessage.showAndWait();
         diceMessage.showAndWait();
+        diceMessage.close();
     }
 
     /***
@@ -946,13 +956,18 @@ public class Main extends Application {
         // Holds only the selected player assets that is trade-able
         VBox playerTwoPane = new VBox();
         playerTwoPane.setAlignment(Pos.CENTER);
-        // Holds three button (select another player, trade and cancel the trade)
+        // Holds four button (select another player, trade, help and cancel the trade)
         HBox optionPane = new HBox(5);
         optionPane.setAlignment(Pos.CENTER);
 
         Label title = new Label("Property Tycoon Trading");
         Label playerOneName = new Label(currentPlayer.getName() + " Assets");
         Label playerTwoName = new Label(tradePlayer + " Assets");
+
+        // Store a link list of what playerTwo will give to current player
+        LinkedList<Object> give = new LinkedList<>();
+        // Store a link list of what playerTwo will receive from current player
+        LinkedList<Object> receive = new LinkedList<>();
 
         // TODO remove after finish testing
         Property temp;
@@ -971,10 +986,11 @@ public class Main extends Application {
         playerOneAsset.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         ListView playerTwoAsset = new ListView();
         playerTwoAsset.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+
         // Find the player object with the given player name
         while(i < order.size()){
             if(tradePlayer == order.get(i).getName()){
-                Player playerTwo = order.get(i);
+                playerTwo = order.get(i);
                 playerTwo.addAsset(temp3);
                 // Add selected player assets to their listView
                 playerTwoAsset = addAssetToViewList(playerTwo, playerTwoAsset);
@@ -987,6 +1003,17 @@ public class Main extends Application {
         Button help = new Button("Help");
         Button back = new Button("Select Another Player");
         Button cancelTrade = new Button("Cancel Trade");
+
+        // CSS
+        title.setStyle(
+                "-fx-label-padding: 20 0 10 0;" + "-fx-font-size: 14;" + "-fx-font-weight: bold;"
+        );
+        playerOneName.setStyle(
+                "-fx-font-size: 12;" + "-fx-font-weight: bold;"
+        );
+        playerTwoName.setStyle(
+                "-fx-font-size: 12;" + "-fx-font-weight: bold;"
+        );
 
         // Button Functionality
         back.setOnAction(e -> {
@@ -1008,7 +1035,6 @@ public class Main extends Application {
             tradeMessage.setTitle("Property Tycoon Trading Offer" );
             ButtonType acceptTrade = new ButtonType("Accept Trade");
             ButtonType declineTrade = new ButtonType("Decline Trade");
-            tradeMessage.getButtonTypes().addAll(acceptTrade, declineTrade);
             String msgOffering = "";
             String msgFor = "";
 
@@ -1016,22 +1042,44 @@ public class Main extends Application {
             ObservableList listOfPlayerOneAsset = finalPlayerOneAsset.getSelectionModel().getSelectedItems();
             for(Object item: listOfPlayerOneAsset){
                 msgOffering += String.format("%s%n", (String) item);
+                // Add the properties playerTwo will receive from current player
+                receive.add(item);
             }
             tradeMessage.setHeaderText(currentPlayer.getName() + " Offering\n" + msgOffering);
             // Fetch the information of all the assets that they wish for from the other player and display it into context
             ObservableList listOfPlayerTwoAsset = finalPlayerTwoAsset.getSelectionModel().getSelectedItems();
             for(Object item: listOfPlayerTwoAsset){
                 msgFor += String.format("%s%n", (String) item);
+                // Add the properties playerTwo will give to current player
+                give.add(item);
             }
             tradeMessage.setContentText("For your\n"  + msgFor);
 
-            // TODO implement ai trade
-            Optional<ButtonType> option = tradeMessage.showAndWait();
-            // After clicking the "Roll Dice" button from the popup
-            if(option.get() == acceptTrade){
-                System.out.println("bye");
-            }else if(option.get() == declineTrade){
-                System.out.println("hi");
+            // If playerTwo is not a AI
+            if(playerTwo.isAiAgent() == false){
+                tradeMessage.getButtonTypes().addAll(acceptTrade, declineTrade);
+                Optional<ButtonType> option = tradeMessage.showAndWait();
+                if(option.get() == acceptTrade){
+                    tradeMessage.setContentText(playerTwo.getName() + "accepted your offer");
+                    // TODO ask how to change owners name for properties
+                }else if(option.get() == declineTrade){
+                    tradeMessage.setContentText(playerTwo.getName() + "declined your offer");
+                    window.setScene(gameBoardScene);
+                }
+            }else{
+                tradeMessage = new Alert(Alert.AlertType.INFORMATION);
+                tradeMessage.setTitle("Property Tycoon AI Trading Decision" );
+                // AI decide if they want to trade or not
+                boolean tradeDecision = playerTwo.decide(give, receive);
+                // tradeDecision (true = accept, false = decline trade)
+                if(tradeDecision == true){
+                    tradeMessage.setHeaderText(playerTwo.getName() + " accepted your offer");
+                    // TODO ask how to change owners name for properties
+                    tradeMessage.showAndWait();
+                }else{
+                    tradeMessage.setHeaderText(playerTwo.getName() + " declined your offer");
+                    tradeMessage.showAndWait();
+                }
             }
         });
         cancelTrade.setOnAction(e -> {
@@ -1085,6 +1133,12 @@ public class Main extends Application {
         HBox optionPane = new HBox(5);
         optionPane.setAlignment(Pos.CENTER);
 
+        System.out.println("start");
+        for(int i = 0; i < order.size(); i++){
+            System.out.println(order.size());
+            System.out.println(order.get(i).getName());
+        }
+
         Label title = new Label("Property Tycoon Trading Setup");
         Label tradeMessage = new Label("Select the players you want to trade with " + currentPlayer.getName());
 
@@ -1095,14 +1149,17 @@ public class Main extends Application {
         // Copying all of the players - current player (choices for current player to trade with)
         LinkedList<Player> tempPlayerList = (LinkedList<Player>) order.clone();
         for(int i = 0; i < order.size(); i++){
+            // todo remove after test
+            //System.out.print(tempPlayerList.get(i).getName() + "\n");
             // Make sure you cant trade with yourself
             if(currentPlayer.getName() != tempPlayerList.get(i).getName()){
                 listOfPlayer.getItems().add(tempPlayerList.get(i).getName());
                 // Default value set to the first player that is not itself
-                listOfPlayer.setValue(tempPlayerList.get(0).getName());
+                //listOfPlayer.setValue(tempPlayerList.get(0).getName());
             }
         }
 
+        // CSS
         title.setStyle(
                 "-fx-label-padding: 20 0 10 0;" + "-fx-font-size: 14;" + "-fx-font-weight: bold;"
         );
@@ -1130,6 +1187,11 @@ public class Main extends Application {
             tradeSetupPopUpStage.close();
         });
 
+        for(int i = 0; i < order.size(); i++){
+            System.out.println("end");
+            System.out.println(order.get(i).getName());
+        }
+
         selectPlayerPane.getChildren().addAll(tradeMessage, listOfPlayer);
         optionPane.getChildren().addAll(nextSetup, leaveTrade);
         tradingSetupPane.getChildren().addAll(title, selectPlayerPane, optionPane);
@@ -1137,7 +1199,140 @@ public class Main extends Application {
         // Creating the popup effect
         tradeSetupPopUpStage.setScene(tradingSetupScene);
         tradeSetupPopUpStage.initModality(Modality.APPLICATION_MODAL);
-        tradeSetupPopUpStage.show();
+        // TODO change
+        tradeSetupPopUpStage.showAndWait();
+        tradeSetupPopUpStage.close();
+    }
+
+    public void auctionSetupScene(BoardTile asset){
+        VBox auctionSetupPane = new VBox(10);
+        auctionSetupPane.setAlignment(Pos.CENTER);
+        auctionSetupPane.setPadding(new Insets(0, 20, 10, 20));
+        HBox optionPane = new HBox(10);
+        optionPane.setAlignment(Pos.CENTER);
+
+        Label title = new Label("Property Tycoon Auctioning");
+        Label propName = new Label("Testing 123");
+        Label bidTitle= new Label("Enter in your Bid");
+
+        ImageView propImg = new ImageView();
+
+        TextField bidTxt = new TextField();
+
+        Button bid = new Button("Bid");
+        Button withdraw = new Button("Withdraw");
+        Button help = new Button("Help");
+
+        if(asset instanceof Property){
+            propImg.setImage(new Image("/Lib/TilesDesign/edisonWater64bit.png"));
+            //propName.setText(property.getTitle());
+            propName.setText("Testing one two three");
+        }else if(asset instanceof Utility){
+            String utilName = "Edison Water";
+            if(asset.getTitle() == utilName){
+                propImg.setImage(new Image("/Lib/TilesDesign/edisonWater64bit.png"));
+                // TODO fetch utility name
+            }else{
+                propImg.setImage(new Image("/Lib/TilesDesign/teslaPower64bit.png"));
+            }
+        }else if(asset instanceof Station){
+            propImg.setImage(new Image("/Lib/TilesDesign/trainStation64bit.png"));
+            propName.setText(asset.getTitle());
+        }
+
+        // CSS
+        title.setStyle(
+                "-fx-label-padding: 20 0 10 0;" + "-fx-font-size: 14;" + "-fx-font-weight: bold;"
+        );
+        propName.setStyle("-fx-font-size: 15;");
+
+        // Button functionality
+
+
+        optionPane.getChildren().addAll(bid, withdraw, help);
+        auctionSetupPane.getChildren().addAll(title, propImg, propName, bidTitle, bidTxt, optionPane);
+        auctionScene = new Scene(auctionSetupPane);
+    }
+
+    public void sentToJailSetupScene(Player currentPlayer, GetOutOfJail jailCard){
+        Stage jailPopUpStage = new Stage();
+        AtomicInteger jailDecision = new AtomicInteger();
+        VBox sentToJailSetupPane = new VBox(10);
+        sentToJailSetupPane.setPadding(new Insets(0, 20, 10, 20));
+        sentToJailSetupPane.setAlignment(Pos.CENTER);
+        HBox optionPane = new HBox(10);
+
+        Label title = new Label("Property Tycoon Jail Decision " + currentPlayer.getName());
+        ImageView jailImg = new ImageView("/Lib/TilesDesign/goJail64bit.png");
+
+        Button serveTime = new Button("Serve Time");
+        Button bail = new Button("Bail");
+        Button getOutCard = new Button("Use Get Out of Jail Card");
+        Button help = new Button("Help");
+
+        // CSS
+        title.setStyle(
+                "-fx-label-padding: 20 0 10 0;" + "-fx-font-size: 14;" + "-fx-font-weight: bold;"
+        );
+
+        // Button Functionality
+        serveTime.setOnAction(e -> {
+            jailDecision.set(1);
+            // Close the popup effect
+            jailPopUpStage.close();
+        });
+        bail.setOnAction(e -> {
+            // TODO ask ayman?
+            jailDecision.set(2);
+            currentPlayer.deductAmount(50);
+            currentPlayer.addAction("pay bail");
+            currentPlayer.leaveJail();
+            jailPopUpStage.close();
+        });
+        getOutCard.setOnAction(e -> {
+            jailDecision.set(3);
+            // Player activated the get out of jail card
+            jailCard.playCard();
+            currentPlayer.addAction("Used a Get Out of Jail card");
+            jailPopUpStage.close();
+        });
+        help.setOnAction(e -> {
+            Alert jailHelpMessage = new Alert(Alert.AlertType.INFORMATION);
+            jailHelpMessage.setTitle("Property Tycoon Jail Reminder");
+            jailHelpMessage.setHeaderText("Remember once you make a decision you cannot reverse it");
+            jailHelpMessage.setContentText("So choose wisely " + currentPlayer.getName());
+            jailHelpMessage.show();
+        });
+
+        // If current player has a get out of jail card, show the options if not dont show the options
+        if(jailCard == null){
+            optionPane.getChildren().addAll(serveTime, bail, help);
+        }else{
+            optionPane.getChildren().addAll(serveTime, bail, getOutCard, help);
+        }
+
+        sentToJailSetupPane.getChildren().addAll(title, jailImg, optionPane);
+        jailSetupScene = new Scene(sentToJailSetupPane);
+        // Creating the popup effect
+        jailPopUpStage.setScene(jailSetupScene);
+        jailPopUpStage.initModality(Modality.APPLICATION_MODAL);
+        jailPopUpStage.show();
+    }
+
+    /***
+     * Create a alert message which congratulate the winner
+     * @param winner Last remaining player in order
+     */
+    public void winnerSetupScene(Player winner){
+        Alert winningMessage = new Alert(Alert.AlertType.INFORMATION);
+        winningMessage.setTitle("Property Tycoon Winner!");
+        winningMessage.setHeaderText(winner.getName() + " has won the game with a net worth of " + winner.netWorth());
+        gameSystem.storeData(winner, winner.netWorth());
+        for( String key: gameSystem.dataStore.keySet() ){
+            System.out.println(gameSystem.dataStore.get(key).size() + " " + key + " " + gameSystem.dataStore.get(key).toString());
+            winningMessage.setContentText(gameSystem.dataStore.get(key).size() + " " + key + " " + gameSystem.dataStore.get(key).toString());
+        }
+        winningMessage.showAndWait();
     }
 
     /***

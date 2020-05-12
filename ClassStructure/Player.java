@@ -274,6 +274,7 @@ public class Player {
         //Player choice here
         if (!isAiAgent()) {//if human player
             //TODO GUI Jail decision
+            board.callJailSetupScene(this, getOutOfJail);
         } else {
             if (getOutOfJail != null) {
                 addAction("Use Get Out of Jail card");

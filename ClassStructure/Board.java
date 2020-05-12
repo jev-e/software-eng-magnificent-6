@@ -1,5 +1,6 @@
 package ClassStructure;
 
+import GUI.Main;
 import javafx.util.Pair;
 
 import java.time.Duration;
@@ -35,6 +36,7 @@ public class Board {
     private Instant start;
     private Instant finished;
     public long timeElapsed;
+    private Main guiMain;
 
     /**
      * Board constructor with specified version
@@ -44,6 +46,37 @@ public class Board {
      * @param opportunityKnocks deque of opportunity knocks cards
      * @param version one of "full" or "abridged"
      */
+    public Board(LinkedList<Player> turnOrder, HashMap<Integer,BoardTile> tiles, Deque<CardEffect> potLuck, Deque<CardEffect> opportunityKnocks, String version, Main guiMain) {
+
+        if( version.equals("full") ){
+            this.version = version;
+        } else {
+            System.out.println("Error in version");
+            throw new IllegalArgumentException();
+        }
+
+        this.potLuck = potLuck;
+        this.opportunityKnocks = opportunityKnocks;
+        this.turnOrder = turnOrder;
+        this.tiles = tiles;
+        turns = 0;
+        taxPot = 0;
+        repeat =  false;
+        dataStore = new HashMap<>();
+        this.guiMain = guiMain;
+        //Set board references for activation methods in tiles and cards
+        for (CardEffect c : potLuck) {
+            c.setBoard(this);
+        }
+        for (CardEffect c : opportunityKnocks) {
+            c.setBoard(this);
+        }
+        for (BoardTile b : tiles.values()) {
+            b.setBoard(this);
+        }
+
+    }
+
     public Board(LinkedList<Player> turnOrder, HashMap<Integer,BoardTile> tiles, Deque<CardEffect> potLuck, Deque<CardEffect> opportunityKnocks, String version) {
 
         if( version.equals("full") ){
@@ -71,7 +104,6 @@ public class Board {
         for (BoardTile b : tiles.values()) {
             b.setBoard(this);
         }
-
     }
 
     /**
@@ -81,8 +113,9 @@ public class Board {
      * @param potLuck deque of pot luck cards
      * @param opportunityKnocks deque of opportunity knocks cards
      * @param version one of "full" or "abridged"
+     * @param guiMain instance of the GUI
      */
-    public Board(LinkedList<Player> turnOrder, HashMap<Integer,BoardTile> tiles, Deque<CardEffect> potLuck, Deque<CardEffect> opportunityKnocks, String version, int timeLimit) {
+    public Board(LinkedList<Player> turnOrder, HashMap<Integer,BoardTile> tiles, Deque<CardEffect> potLuck, Deque<CardEffect> opportunityKnocks, String version, int timeLimit, Main guiMain) {
 
         if( version.equals("abridged") ){
             this.version = version;
@@ -100,6 +133,7 @@ public class Board {
         taxPot = 0;
         repeat =  false;
         dataStore = new HashMap<>();
+        this.guiMain = guiMain;
         //Set board references for activation methods in tiles and cards
         for (CardEffect c : potLuck) {
             c.setBoard(this);
@@ -124,6 +158,15 @@ public class Board {
             }
         };
         timer.schedule(endGame, (timeLimit * 60) * 1000);
+    }
+
+    /***
+     * Call the front-end function to create the Scene for jail decision
+     * @param currentPlayer The current player
+     * @param jailCard A parameter to see if they have a get out of jail card they can activate
+     */
+    public void callJailSetupScene(Player currentPlayer, GetOutOfJail jailCard){
+        guiMain.sentToJailSetupScene(currentPlayer, jailCard);
     }
 
     /**
