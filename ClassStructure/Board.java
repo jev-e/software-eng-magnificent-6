@@ -1,6 +1,5 @@
 package ClassStructure;
 
-import GUI.Controller;
 import javafx.util.Pair;
 
 import java.time.Duration;
