@@ -16,6 +16,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Pair;
 
 
 import java.lang.Object;
@@ -113,6 +114,13 @@ public class Main extends Application {
     private static List<CardEffect> potLuckPack;
     private Board gameSystem;
     private Player playerTwo;
+    LinkedList<Player> auctionPlayerList;
+    private Pair<String, Integer> highestBidder = new Pair<String, Integer>("", 0);
+    private Pair<String, Integer> secondHighestBidder = new Pair<String, Integer>("", 0);
+    // The player that activated the auction scene (player could not afford the asset or didnt want to buy it)
+    Player auctioneer;
+    // TODO double check if this is needed
+    Player highestPlayerBidder;
 
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -1287,40 +1295,86 @@ public class Main extends Application {
         tradeSetupPopUpStage.close();
     }
 
-    public void auctionSetupScene(BoardTile asset){
+    /***
+     * Create a list of all of the players in turn order minus current player (potential bidders)
+     * @param currentPlayer The current Player that cannot afford the asset or wishes to auction it
+     */
+    public void auctionPlayerSetup(Player currentPlayer){
+        // Copying all of the players - current player (current player could not afford the boardTile or does not wish to buy it)
+        auctionPlayerList = (LinkedList<Player>) order.clone();
+        for(int i = 0; i < order.size(); i++){
+            // Constraint check to ensure current player cant bid in the auction
+            if(currentPlayer.getName() == auctionPlayerList.get(i).getName()){
+                auctioneer = auctionPlayerList.get(i);
+                auctionPlayerList.remove(i);
+            }
+        }
+    }
+
+    /***
+     * Create a popup scene where the auctioning would happen if the current player does not want/ afford a unowned property
+     * @param player The player from the turn order (not current player) that wishes to bid
+     * @param asset A boardTile that could either be station, utility or property that can be auctioned
+     */
+    public void auctionSetupScene(Player player, BoardTile asset){
+        Stage auctionPopUpStage = new Stage();
+        // TODO copy over in merge cal
         VBox auctionSetupPane = new VBox(10);
         auctionSetupPane.setAlignment(Pos.CENTER);
         auctionSetupPane.setPadding(new Insets(0, 20, 10, 20));
         HBox optionPane = new HBox(10);
         optionPane.setAlignment(Pos.CENTER);
 
+        // Holds the player index from auctionPlayerList
+        int playerIndex = 0;
         Label title = new Label("Property Tycoon Auctioning");
-        Label propName = new Label("Testing 123");
-        Label bidTitle= new Label("Enter in your Bid");
+        Label propName = new Label();
+        Label bidTitle = new Label("Enter in your bid down below " + player.getName());
+        Label highestBid = new Label();
+
+        // If its not the first person to bid
+        if(highestBidder.getValue() != 0){
+            String highestBidPlayerName = highestBidder.getKey();
+            int currentBid = highestBidder.getValue();
+            highestBid.setText("Highest bid currently " + currentBid + " by " + highestBidPlayerName);
+        }else{
+            highestBid.setText("No bid currently for this item");
+        }
 
         ImageView propImg = new ImageView();
 
         TextField bidTxt = new TextField();
+        bidTxt.setMaxWidth(63);
 
         Button bid = new Button("Bid");
         Button withdraw = new Button("Withdraw");
         Button help = new Button("Help");
 
         if(asset instanceof Property){
-            propImg.setImage(new Image("/Lib/TilesDesign/edisonWater64bit.png"));
-            //propName.setText(property.getTitle());
-            propName.setText("Testing one two three");
+            propImg.setImage(new Image("/Lib/TilesDesign/property64bit.png"));
+            // Fetch the name of the property
+            propName.setText(asset.getTitle());
         }else if(asset instanceof Utility){
             String utilName = "Edison Water";
+            // Check which utility it is (electricity or water)
             if(asset.getTitle() == utilName){
                 propImg.setImage(new Image("/Lib/TilesDesign/edisonWater64bit.png"));
-                // TODO fetch utility name
             }else{
                 propImg.setImage(new Image("/Lib/TilesDesign/teslaPower64bit.png"));
             }
+            // Fetch the utility name (either electricity or water)
+            propName.setText(asset.getTitle());
         }else if(asset instanceof Station){
             propImg.setImage(new Image("/Lib/TilesDesign/trainStation64bit.png"));
+            // Fetch the train station name
             propName.setText(asset.getTitle());
+        }
+
+        // Finding the player index
+        for(int i = 0; i < auctionPlayerList.size(); i++){
+            if(player.getName() == auctionPlayerList.get(i).getName()){
+                playerIndex = i;
+            }
         }
 
         // CSS
@@ -1328,18 +1382,86 @@ public class Main extends Application {
                 "-fx-label-padding: 20 0 10 0;" + "-fx-font-size: 14;" + "-fx-font-weight: bold;"
         );
         propName.setStyle("-fx-font-size: 15;");
+        bidTitle.setStyle("-fx-font-size: 14;");
 
         // Button functionality
-
+        bid.setOnAction(e -> {
+            try{
+                // TODO check if they have enough money to buy this asset with the bid they entered
+                // Check to see if the bid is a number and doesnt contain any text
+                player.getMoney();
+                int numConstraint = Integer.parseInt(bidTxt.getText());
+                auctionLogic(player, numConstraint, asset);
+            }catch(Exception except){
+                // Remove invalid bid from text field
+                bidTxt.clear();
+                Alert errorMessage = new Alert(Alert.AlertType.ERROR);
+                errorMessage.setTitle("Property Tycoon Auction");
+                errorMessage.setHeaderText("Property Tycoon Bid Error");
+                errorMessage.setContentText("Please enter in a valid bid (numbers only!)");
+                errorMessage.showAndWait();
+            }
+        });
+        int finalPlayerIndex = playerIndex;
+        withdraw.setOnAction(e -> {
+            auctionPlayerList.remove(finalPlayerIndex);
+        });
+        help.setOnAction(e -> {
+            Alert helpMessage = new Alert(Alert.AlertType.INFORMATION);
+            helpMessage.setTitle("Property Tycoon Auction");
+            helpMessage.setHeaderText("Property Tycoon Help Message");
+            helpMessage.setContentText("Remember you can only bid once for a property, so bid wisely!");
+            helpMessage.showAndWait();
+        });
 
         optionPane.getChildren().addAll(bid, withdraw, help);
-        auctionSetupPane.getChildren().addAll(title, propImg, propName, bidTitle, bidTxt, optionPane);
-        auctionScene = new Scene(auctionSetupPane);
+        auctionSetupPane.getChildren().addAll(title, propImg, propName, highestBid, bidTitle, bidTxt, optionPane);
+        auctionScene = new Scene(auctionSetupPane,400,400);
+        // Creating the popup effect
+        auctionPopUpStage.setScene(auctionScene);
+        auctionPopUpStage.initModality(Modality.APPLICATION_MODAL);
+        auctionPopUpStage.showAndWait();
+        auctionPopUpStage.close();
     }
 
+    public void auctionLogic(Player player, int bid, BoardTile asset){
+        // TODO include in merge cal
+        // If current bid is higher than the highest bidder, replace with the newest bid
+        if(bid > highestBidder.getValue()){
+            // Replace highestBidder with the new highest bidder (name and their bid)
+            highestBidder = new Pair<>(player.getName(), bid);
+        }else if(bid > secondHighestBidder.getValue()){
+            // Stores the second highest bid for the current auction (use for constraint check)
+            secondHighestBidder = new Pair<>(player.getName(), bid);
+        }
+
+        if(auctionPlayerList.size() == 1){
+            // Fetch the highest bidder player object with the given string
+            for(int i = 0; i < auctionPlayerList.size(); i++){
+                if(highestBidder.getKey() == auctionPlayerList.get(i).getName()){
+                    highestPlayerBidder = auctionPlayerList.get(i);
+                }
+            }
+        }
+
+        // to do
+        if(auctionPlayerList.size() == 1 && highestBidder.getValue() > secondHighestBidder.getValue()){
+            // have player deduct the price
+        }else if(auctionPlayerList.size() == 1 && highestBidder.getValue() == secondHighestBidder.getValue()){
+            // Restart auction if highest bid == second highest bid
+            auctionPlayerSetup(auctioneer);
+            auctionSetupScene(player, asset);
+        }
+
+    }
+
+    /***
+     * Create a popup scene where jail decision happens (serve time, bail or use get out of jail card)
+     * @param currentPlayer The current player
+     * @param jailCard Tell us if the current own a get out of jail card or not
+     */
     public void sentToJailSetupScene(Player currentPlayer, GetOutOfJail jailCard){
         Stage jailPopUpStage = new Stage();
-        AtomicInteger jailDecision = new AtomicInteger();
         VBox sentToJailSetupPane = new VBox(10);
         sentToJailSetupPane.setPadding(new Insets(0, 20, 10, 20));
         sentToJailSetupPane.setAlignment(Pos.CENTER);
@@ -1360,23 +1482,17 @@ public class Main extends Application {
 
         // Button Functionality
         serveTime.setOnAction(e -> {
-            jailDecision.set(1);
             // Close the popup effect
             jailPopUpStage.close();
         });
         bail.setOnAction(e -> {
-            // TODO ask ayman?
-            jailDecision.set(2);
             currentPlayer.deductAmount(50);
-            currentPlayer.addAction("pay bail");
             currentPlayer.leaveJail();
             jailPopUpStage.close();
         });
         getOutCard.setOnAction(e -> {
-            jailDecision.set(3);
             // Player activated the get out of jail card
             jailCard.playCard();
-            currentPlayer.addAction("Used a Get Out of Jail card");
             jailPopUpStage.close();
         });
         help.setOnAction(e -> {
@@ -1399,7 +1515,8 @@ public class Main extends Application {
         // Creating the popup effect
         jailPopUpStage.setScene(jailSetupScene);
         jailPopUpStage.initModality(Modality.APPLICATION_MODAL);
-        jailPopUpStage.show();
+        jailPopUpStage.showAndWait();
+        jailPopUpStage.close();
     }
 
     /***
