@@ -11,6 +11,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
@@ -98,7 +99,7 @@ public class Main extends Application {
 
     Stage window;
     Scene menuScene, ruleScene, playerSetupScene, gameSetupScene, gameBoardScene, tradingSetupScene, tradingScene, auctionScene, jailSetupScene;
-    Scene test123;
+    Scene assetManagementScene, assetSellingScene, assetSellingHouse;
 
     // Holds the players name
     public ArrayList<TextField> playerNameTextField = new ArrayList<>();
@@ -128,10 +129,17 @@ public class Main extends Application {
         window = primaryStage;
         window.setTitle("Property Tycoon");
 
-        createMainMenuScene();
-        window.setScene(menuScene);
-        window.show();
+//        createMainMenuScene();
+//        window.setScene(menuScene);
+//        window.show();
 //        displayGameScene();
+        int[] buildingRents = {10,10,20,30};
+        Player basic = new Player("Calvin", Token.SPOON, gameSystem, false);
+        Property test = new Property(1, "Test", Group.DEEP_BLUE, 100, 10, buildingRents, 50, basic);
+        basic.addAsset(test);
+        test.setHousesNo(3);
+        test.setDeveloped(true);
+        assetSellingSetupScene(basic,500);
     }
 
     public static void main(String[] args) {
@@ -1469,8 +1477,14 @@ public class Main extends Application {
         auctionPopUpStage.close();
     }
 
+    /***
+     * Perform the auction logic (setting the highest and second highest bidder and bid, trigger won auction)
+     * @param bidder The current player that wishes to bid for the asset
+     * @param bid The current player entered in bid for the property (amount they wish to pay for)
+     * @param asset The asset that is up for auction
+     * @param bidderLeft How many players are left to auction
+     */
     public void auctionLogic(Player bidder, int bid, BoardTile asset, AtomicInteger bidderLeft){
-        System.out.println(bidderLeft + "Before");
         // If current bid is higher than the highest bidder, replace with the newest bid
         if(bid > highestBidder.getValue()){
             // Replace highestBidder with the new highest bidder (name and their bid)
@@ -1486,7 +1500,6 @@ public class Main extends Application {
             // Basically bidderLeft--
             bidderLeft.getAndDecrement();
         }
-        System.out.println(bidderLeft + "After");
 
         if(bidderLeft.intValue() == 0){
             // Fetch the highest bidder player object with the given string
@@ -1511,6 +1524,106 @@ public class Main extends Application {
             // Restart auction if highest bid == second highest bid
             auctionPlayerSetup(auctioneer, asset);
         }
+    }
+
+    public void assetSellingSetupScene(Player currentPlayer, int fundNeededToRise){
+        Stage assetManagementPopUpStage = new Stage();
+        VBox assetManagementSetupPane = new VBox(10);
+        assetManagementSetupPane.setAlignment(Pos.CENTER);
+        HBox optionPane = new HBox(5);
+        optionPane.setAlignment(Pos.CENTER);
+
+        Label title = new Label("Property Tycoon Asset Management");
+        //Label fundNeed = new Label("£" + fundNeededToRise + " fund is required " + currentPlayer.getName());
+        Label fundNeed = new Label("£" + fundNeededToRise + " fund is required ");
+
+        Button sellBuilding = new Button("Sell Houses and Hotels");
+        Button mortgageProp = new Button("Mortgage Properties");
+        Button sellAsset = new Button("Sell Properties");
+
+        // CSS
+        title.setStyle(
+                "-fx-label-padding: 20 0 10 0;" + "-fx-font-size: 14;" + "-fx-font-weight: bold;"
+        );
+        fundNeed.setStyle("-fx-font-size: 14;");
+
+        // Button functionality
+        sellBuilding.setOnAction(e -> {
+            sellHouseHotel(currentPlayer, fundNeededToRise);
+        });
+        mortgageProp.setOnAction(e -> {
+
+        });
+        sellAsset.setOnAction(e -> {
+
+        });
+
+        optionPane.getChildren().addAll(sellBuilding, mortgageProp, sellAsset);
+        assetManagementSetupPane.getChildren().addAll(title, fundNeed, optionPane);
+        assetSellingScene = new Scene(assetManagementSetupPane, 400,400);
+        // Creating the popup effect
+        assetManagementPopUpStage.setScene(assetSellingScene);
+        assetManagementPopUpStage.initModality(Modality.APPLICATION_MODAL);
+        assetManagementPopUpStage.showAndWait();
+        assetManagementPopUpStage.close();
+    }
+
+    public void sellHouseHotel(Player currentPlayer, int fundNeededToRise){
+        // TODO change !!!!
+        VBox sellHouseHotelPane = new VBox(10);
+        sellHouseHotelPane.setAlignment(Pos.CENTER);
+        HBox optionPane = new HBox(5);
+        optionPane.setAlignment(Pos.CENTER);
+
+        HashMap<Integer, Integer> houseSaleIds = new HashMap<>();
+        HashMap<Integer, Integer> hotelSaleIds = new HashMap<>();
+
+        LinkedList<Object> playerAsset = currentPlayer.getAssets();
+
+        Button sellHouse = new Button("Selling a House");
+        Button sellHotel = new Button("Selling a Hotel");
+
+        TableView assetInformation = new TableView();
+        TableColumn<String, Object> column1 = new TableColumn<>("Property Name");
+        column1.setCellValueFactory(new PropertyValueFactory<>("title"));
+        column1.setMinWidth(100);
+
+        TableColumn<String, Integer> column2 = new TableColumn<>("House number");
+        column2.setCellValueFactory(new PropertyValueFactory<>("housesNo"));
+        column2.setMinWidth(100);
+
+        TableColumn<String, Integer> column3 = new TableColumn<>("Hotel Number");
+        column3.setCellValueFactory(new PropertyValueFactory<>("hotelNo"));
+        column3.setMinWidth(100);
+
+        assetInformation.getColumns().addAll(column1, column2, column3);
+
+        for(Object asset: playerAsset){
+            // Making sure asset is a property
+            if(asset instanceof Property){
+                // Checking if the property contains houses or hotel
+                if(((Property) asset).isDeveloped()){
+                    System.out.println(asset);
+                    assetInformation.getItems().add(asset);
+                }
+            }
+        }
+
+        sellHouse.setOnAction(e -> {
+
+        });
+        sellHotel.setOnAction(e -> {
+
+        });
+
+        optionPane.getChildren().addAll(sellHouse, sellHotel);
+        sellHouseHotelPane.getChildren().addAll(assetInformation, optionPane);
+        assetSellingHouse = new Scene(sellHouseHotelPane, 500,500);
+        window.setScene(assetSellingHouse);
+        window.show();
+    }
+
+    public void assetImprovement(Player currentPlayer){
 
     }
 

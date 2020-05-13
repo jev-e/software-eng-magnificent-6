@@ -430,7 +430,8 @@ public class Player {
      */
     public void assetSelling(int amount) {
         if (!isAiAgent()) {//if human player to insure player is not AI
-            //TODO User asset selling GUI
+            //TODO User asset selling GUI double check
+            board.callAssetSellingScene(this, amount);
         }
     }
 

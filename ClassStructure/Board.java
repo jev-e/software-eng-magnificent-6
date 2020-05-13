@@ -196,6 +196,10 @@ public class Board {
         guiMain.auctionPlayerSetup(currentPlayer, asset);
     }
 
+    public void callAssetSellingScene(Player currentPlayer, int fundNeeded){
+        guiMain.assetSellingSetupScene(currentPlayer, fundNeeded);
+    }
+
     /**
      * Starts the game timer, must be called before starting main game loop
      */
