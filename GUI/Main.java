@@ -56,12 +56,21 @@ public class Main extends Application {
     private Image jailFreePNG;
 
     // Images - Tokens
-    private Image bootToken;
-    private Image catToken;
-    private Image gobletToken;
-    private Image hatstandToken;
-    private Image phoneToken;
-    private Image spoonToken;
+    private Image bootTokenPNG;
+    private Image catTokenPNG;
+    private Image gobletTokenPNG;
+    private Image hatstandTokenPNG;
+    private Image phoneTokenPNG;
+    private Image spoonTokenPNG;
+
+    // ImageViews - Tiles
+    private ImageView goTile, goJail, freeParking, visitingJail, edisonWater, teslaPower, oppKnocks, potLuck, station;
+
+    // ImageViews - Assets
+    private ImageView hotel, house, jailFreeCard;
+
+    // ImageViews - Tokens
+    private ImageView bootToken, catToken, gobletToken, hatstandToken, phoneToken, spoonToken;
 
     // Scenes
     private Scene gameScene; // Shows gameBP
@@ -124,11 +133,12 @@ public class Main extends Application {
      * Calls Key Functions to display the game, sets gameScene active
      */
     public void displayGameScene() {
-        initGameVariables();  // Initalise Variables and Containers
+        initGameVariables();  // Initialise Variables and Containers
         initGameImages();     // Load Game Images
+        initGameImageViews(); // Loads Game Images into their respective ImageViews
         formatGameScene();    // Formats Game Scene
         retrieveBoardData();  // Provides initial data from board to scene
-        addKeyGameButtons();  // Adds Roll, Property Management, Quit and Trading buttons
+        addKeyGameButtons();  // Adds any buttons needed on the main game scene
         displayPlayerCards(); // Displays player cards to the gameBP
         displayGameBoard();   // Displays main game board
 
@@ -142,6 +152,7 @@ public class Main extends Application {
      */
     public void retrieveBoardData() {
         for(int i = 0; i < 40; i++) {
+            board.get(i).initGuiElements();
             board.get(i).setTileName();
         }
     }
@@ -186,7 +197,8 @@ public class Main extends Application {
 
                 // Go Tile
                 case 0:
-                    container.add(label,0,1);
+                    //container.add(label,0,0);
+                    container.add(goTile,0,1);
                     boardGP.add(container, 2, 2);
                     break;
 
@@ -194,9 +206,20 @@ public class Main extends Application {
                 case 1: case 2: case 3: case 4: case 5: case 6: case 7: case 8: case 9:
                     container.add(label, 0,1);
 
+                    // Properties
                     if(!(i == 2 || i == 4 || i == 7)) {
                         board.get(i).setColour();
                         container.add(canvas,0,0);
+                    }
+
+                    // Pot Luck
+                    if(i == 2) {
+                        container.add(potLuck,0,2);
+                    }
+
+                    // Opportunity Knocks
+                    if(i == 7) {
+                        container.add(oppKnocks, 0, 2);
                     }
 
                     botRowGP.add(container, (9 - i), 0);
@@ -204,32 +227,57 @@ public class Main extends Application {
 
                 // Jail Tile
                 case 10:
-                    boardGP.add(label, 0,2);
+                    container.add(visitingJail, 0, 0);
+                    boardGP.add(container, 0,2);
                     break;
 
                 // Left Column
                 case 11: case 12: case 13: case 14: case 15: case 16: case 17: case 18: case 19:
                     container.add(label, 0, 1);
 
+                    // Properties
                     if(!(i == 12 || i == 15 || i == 17)) {
                         board.get(i).setColour();
                         container.add(canvas,0,0);
                     }
+
+                    // Tesla Power
+                    if(i == 12) {
+                        container.add(teslaPower,0,2);
+                    }
+
+                    // Pot Luck
+                    if(i == 17) {
+                        container.add(potLuck, 0, 2);
+                    }
+
                     leftColGP.add(container, 0, (20 - i));
                     break;
 
                 // Free Parking Tile
                 case 20:
-                    boardGP.add(label, 0, 0);
+                    container.add(freeParking, 0,0);
+                    boardGP.add(container, 0, 0);
                     break;
 
                 // Top Row
                 case 21: case 22: case 23: case 24: case 25: case 26: case 27: case 28: case 29:
                     container.add(label, 0, 1);
 
+                    // Properties
                     if(!(i == 22 || i == 25 || i == 28)) {
                         board.get(i).setColour();
                         container.add(canvas,0,0);
+                    }
+
+                    // Opportunity Knocks
+                    if(i == 22) {
+                        container.add(oppKnocks,0,2);
+                    }
+
+                    // Edison Water
+                    if(i == 28) {
+                        container.add(edisonWater, 0, 2);
                     }
 
                     topRowGP.add(container, (i - 21), 0);
@@ -237,16 +285,28 @@ public class Main extends Application {
 
                 // Go To Jail Tile
                 case 30:
-                    boardGP.add(label, 2,0);
+                    container.add(goJail, 0,0);
+                    boardGP.add(container, 2,0);
                     break;
 
                 // Right Column
                 case 31: case 32: case 33: case 34: case 35: case 36: case 37: case 38: case 39:
                     container.add(label, 0, 1);
 
+                    // Properties
                     if(!(i == 33 || i == 35 || i == 36 || i == 38)) {
                         board.get(i).setColour();
                         container.add(canvas,0,0);
+                    }
+
+                    // Pot Luck
+                    if(i == 33) {
+                        container.add(potLuck, 0, 2);
+                    }
+
+                    // Opportunity Knocks
+                    if(i == 36) {
+                        container.add(oppKnocks, 0, 2);
                     }
 
                     rightColGP.add(container, 0, (i - 31));
@@ -351,7 +411,7 @@ public class Main extends Application {
             visitingPNG = new Image(new FileInputStream("Lib/TilesDesign/visiting64bit.png"));
             waterPNG = new Image(new FileInputStream("Lib/TilesDesign/edisonWater64bit.png"));
             powerPNG = new Image(new FileInputStream("Lib/TilesDesign/teslaPower64bit.png"));
-            oppKnocksPNG = new Image(new FileInputStream("Lib/TilesDesign/opportunityKnocks64bit.png"));
+            oppKnocksPNG = new Image(new FileInputStream("Lib/TilesDesign/opportunityKnock64bit.png"));
             potLuckPNG = new Image(new FileInputStream("Lib/TilesDesign/potLuck64bit.png"));
             stationPNG = new Image(new FileInputStream("Lib/TilesDesign/trainStation64bit.png"));
 
@@ -361,16 +421,42 @@ public class Main extends Application {
             jailFreePNG = new Image(new FileInputStream("Lib/Assets/jailFree64bit.png"));
 
             // Tokens
-            bootToken = new Image(new FileInputStream("Lib/Tokens/BootToken.png"));
-            catToken = new Image(new FileInputStream("Lib/Tokens/CatToken.png"));
-            gobletToken = new Image(new FileInputStream("Lib/Tokens/GobletToken.png"));
-            hatstandToken = new Image(new FileInputStream("Lib/Tokens/HatstandToken.png"));
-            phoneToken = new Image(new FileInputStream("Lib/Tokens/SmartphoneToken.png"));
-            spoonToken = new Image(new FileInputStream("Lib/Tokens/BootToken.png"));
+            bootTokenPNG = new Image(new FileInputStream("Lib/Tokens/BootToken.png"));
+            catTokenPNG = new Image(new FileInputStream("Lib/Tokens/CatToken.png"));
+            gobletTokenPNG = new Image(new FileInputStream("Lib/Tokens/GobletToken.png"));
+            hatstandTokenPNG = new Image(new FileInputStream("Lib/Tokens/HatstandToken.png"));
+            phoneTokenPNG = new Image(new FileInputStream("Lib/Tokens/SmartphoneToken.png"));
+            spoonTokenPNG = new Image(new FileInputStream("Lib/Tokens/BootToken.png"));
 
         } catch (FileNotFoundException e) {
-
+            System.out.println(e);
         }
+    }
+
+    /**
+     * Loads Game Images into ImageViews
+     */
+    public void initGameImageViews() {
+        goTile = new ImageView(goTilePNG);
+        goJail = new ImageView(goJailPNG);
+        freeParking = new ImageView(freeParkingPNG);
+        visitingJail = new ImageView(visitingPNG);
+        edisonWater = new ImageView(waterPNG);
+        teslaPower = new ImageView(powerPNG);
+        oppKnocks = new ImageView(oppKnocksPNG);
+        potLuck = new ImageView(potLuckPNG);
+        station = new ImageView(stationPNG);
+
+        hotel = new ImageView(hotelPNG);
+        house = new ImageView(housePNG);
+        jailFreeCard = new ImageView(jailFreePNG);
+
+        bootToken = new ImageView(bootTokenPNG);
+        catToken = new ImageView(catTokenPNG);
+        gobletToken = new ImageView(gobletTokenPNG);
+        hatstandToken = new ImageView(hatstandTokenPNG);
+        phoneToken = new ImageView(phoneTokenPNG);
+        spoonToken = new ImageView(spoonTokenPNG);
     }
 
     /**
@@ -906,11 +992,8 @@ public class Main extends Application {
         if(option.get() == roll){
             diceRoll(currentPlayer, diceCount);
         }
-        // TODO change
         diceMessage.show();
         diceMessage.close();
-        //diceMessage.showAndWait();
-        //diceMessage.show();
     }
 
     /***
@@ -930,8 +1013,7 @@ public class Main extends Application {
         diceMessage.setTitle("Property Tycoon Dice Generated");
         diceMessage.setHeaderText(currentPlayer.getName() + " rolled " + (dice1 + dice2));
         diceMessage.setContentText("Die one rolled " + dice1 + "\nDie two rolled " + dice2);
-        // TODO change
-        //diceMessage.showAndWait();
+
         diceMessage.showAndWait();
         diceMessage.close();
     }
@@ -1099,7 +1181,8 @@ public class Main extends Application {
         // Creating the popup effect
         tradePopUpStage.setScene(tradingScene);
         tradePopUpStage.initModality(Modality.APPLICATION_MODAL);
-        tradePopUpStage.show();
+        tradePopUpStage.showAndWait();
+        tradePopUpStage.close();
     }
 
     /***
