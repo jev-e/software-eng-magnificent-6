@@ -205,12 +205,12 @@ public class Property extends BoardTile{
      *
      * @param currentPlayer the player currently on property tile
      */
-    private void purchase( Player currentPlayer) {
+    private void purchase(Player currentPlayer) {
 
-        boolean wishToPurchase = false; //flag for purchase choice
+        boolean wishToPurchase; //flag for purchase choice
 
         if (!currentPlayer.isAiAgent()) {
-            wishToPurchase = false;//TODO Change this to get player choice from GUI
+            wishToPurchase = super.board.getPurchase(title, Integer.toString(cost));
         } else {
             wishToPurchase = currentPlayer.decide(this);
         }
@@ -230,7 +230,6 @@ public class Property extends BoardTile{
             //trigger auction
             //TODO GUI auction activated here
         }
-
     }
 
     /**

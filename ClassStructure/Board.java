@@ -334,7 +334,6 @@ public class Board {
         dataStore.get(p.getName()).add(pair);
     }
 
-
     /**
      * Getter for finish time
      * return time game finished
@@ -373,6 +372,10 @@ public class Board {
      */
     public String getVersion() {
         return version;
+    }
+
+    public boolean getPurchase(String title, String cost) {
+        return (guiMain.assetBuyingScene(title,cost));
     }
 
 }

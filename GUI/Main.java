@@ -1566,6 +1566,24 @@ public class Main extends Application {
         gameSystem = new Board(order, board, pot, opp, gameMode, this);
     }
 
+    /**
+     * Creates the required popup to allow a player to buy an asset or to send it to auction instead
+     */
+    public boolean assetBuyingScene(String title, String cost){
+        boolean decision = false;
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Property Tycoon");
+        alert.setHeaderText("You've landed on " + title + ".");
+        alert.setContentText("Do you want to buy this for £" + cost);
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == ButtonType.OK){
+            decision = true;
+        } else {
+            decision = false;
+        }
+        return(decision);
+    }
+
     /***
      * How the game is run
      */
