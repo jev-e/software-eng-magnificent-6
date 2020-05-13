@@ -118,18 +118,18 @@ public class Main extends Application {
         window = primaryStage;
         window.setTitle("Property Tycoon");
 
-//        createMainMenuScene();
-//        window.setScene(menuScene);
-//        window.show();
+        createMainMenuScene();
+        window.setScene(menuScene);
+        window.show();
         //displayGameScene();
 
         // TODO remove after testing
 //        BoardTile test = new Property();
         //BoardTile test = new Station();
-        BoardTile test = new Utility();
-        Player testPlayer = new Player("test",Token.valueOf("BOOT"), gameSystem, false);
-        auctionPlayerSetup(testPlayer);
-        auctionSetupScene(testPlayer, test);
+//        BoardTile test = new Utility();
+//        Player testPlayer = new Player("test",Token.valueOf("BOOT"), gameSystem, false);
+//        auctionPlayerSetup(testPlayer);
+//        auctionSetupScene(testPlayer, test);
     }
 
     public static void main(String[] args) {
@@ -923,7 +923,7 @@ public class Main extends Application {
         }
         // TODO copy over in merge cal
         diceMessage.show();
-        diceMessage.show();
+        diceMessage.close();
     }
 
     /***
@@ -954,6 +954,7 @@ public class Main extends Application {
      * @param tradePlayer The selected player that they wish to trade with
      */
     public void tradingScene(Player currentPlayer, String tradePlayer){
+        // TODO merge cal
         Stage tradePopUpStage = new Stage();
         int i = 0;
         VBox tradingPane = new VBox(10);
@@ -1043,6 +1044,8 @@ public class Main extends Application {
         ListView finalPlayerOneAsset = playerOneAsset;
         ListView finalPlayerTwoAsset = playerTwoAsset;
         trade.setOnAction(e -> {
+            // Close trading setup
+            tradePopUpStage.close();
             Alert tradeMessage = new Alert(Alert.AlertType.NONE);
             tradeMessage.setTitle("Property Tycoon Trading Offer" );
             ButtonType acceptTrade = new ButtonType("Accept Trade");
@@ -1074,11 +1077,15 @@ public class Main extends Application {
                 if(option.get() == acceptTrade){
                     tradeMessage.setContentText(playerTwo.getName() + "accepted your offer");
                     tradingChangeOwner(currentPlayer, playerTwo, give, receive);
+                    tradeMessage.show();
+                    tradeMessage.close();
                 }else if(option.get() == declineTrade){
                     tradeMessage.setContentText(playerTwo.getName() + "declined your offer");
+                    tradeMessage.show();
+                    tradeMessage.close();
                     window.setScene(gameBoardScene);
                 }
-            }else{
+            }else{ // playerTwo is a AI
                 tradeMessage = new Alert(Alert.AlertType.INFORMATION);
                 tradeMessage.setTitle("Property Tycoon AI Trading Decision" );
                 // AI decide if they want to trade or not
@@ -1087,10 +1094,12 @@ public class Main extends Application {
                 if(tradeDecision == true){
                     tradeMessage.setHeaderText(playerTwo.getName() + " accepted your offer");
                     tradingChangeOwner(currentPlayer, playerTwo, give, receive);
-                    tradeMessage.showAndWait();
+                    tradeMessage.show();
+                    tradeMessage.close();
                 }else{
                     tradeMessage.setHeaderText(playerTwo.getName() + " declined your offer");
                     tradeMessage.showAndWait();
+                    tradeMessage.close();
                 }
             }
         });
@@ -1181,7 +1190,7 @@ public class Main extends Application {
             if(currentPlayer.getName() != tempPlayerList.get(i).getName()){
                 listOfPlayer.getItems().add(tempPlayerList.get(i).getName());
                 // Default value set to the first player that is not itself
-                listOfPlayer.setValue(tempPlayerList.get(0).getName());
+                listOfPlayer.setValue(tempPlayerList.get(i).getName());
             }
         }
 
@@ -1391,11 +1400,13 @@ public class Main extends Application {
      * @param jailCard Tell us if the current own a get out of jail card or not
      */
     public void sentToJailSetupScene(Player currentPlayer, GetOutOfJail jailCard){
+        // TODO merge
         Stage jailPopUpStage = new Stage();
         VBox sentToJailSetupPane = new VBox(10);
         sentToJailSetupPane.setPadding(new Insets(0, 20, 10, 20));
         sentToJailSetupPane.setAlignment(Pos.CENTER);
         HBox optionPane = new HBox(10);
+        optionPane.setAlignment(Pos.CENTER);
 
         Label title = new Label("Property Tycoon Jail Decision " + currentPlayer.getName());
         ImageView jailImg = new ImageView("/Lib/TilesDesign/goJail64bit.png");
