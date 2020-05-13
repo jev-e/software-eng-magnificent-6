@@ -273,7 +273,7 @@ public class Player {
         }
         //Player choice here
         if (!isAiAgent()) {//if human player
-            //TODO GUI Jail decision
+            //TODO GUI Jail decision (done but double check)
             board.callJailSetupScene(this, getOutOfJail);
         } else {
             if (getOutOfJail != null) {

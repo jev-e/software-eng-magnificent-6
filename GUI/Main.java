@@ -16,6 +16,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Pair;
 
 
 import java.lang.Object;
@@ -88,7 +89,6 @@ public class Main extends Application {
 
     Stage window;
     Scene menuScene, ruleScene, playerSetupScene, gameSetupScene, gameBoardScene, tradingSetupScene, tradingScene, auctionScene, jailSetupScene;
-    Scene test123;
 
     // Holds the players name
     public ArrayList<TextField> playerNameTextField = new ArrayList<>();
@@ -104,16 +104,32 @@ public class Main extends Application {
     private static List<CardEffect> potLuckPack;
     private Board gameSystem;
     private Player playerTwo;
+    // TODO Cal include in merge
+    LinkedList<Player> auctionPlayerList;
+    private Pair<String, Integer> highestBidder = new Pair<String, Integer>("", 0);
+    private Pair<String, Integer> secondHighestBidder = new Pair<String, Integer>("", 0);
+    // The player that activated the auction scene (player could not afford the asset or didnt want to buy it)
+    Player auctioneer;
+    // TODO double check if this is needed
+    Player highestPlayerBidder;
 
     @Override
     public void start(Stage primaryStage) throws Exception{
         window = primaryStage;
         window.setTitle("Property Tycoon");
 
-        createMainMenuScene();
-        window.setScene(menuScene);
-        window.show();
+//        createMainMenuScene();
+//        window.setScene(menuScene);
+//        window.show();
         //displayGameScene();
+
+        // TODO remove after testing
+//        BoardTile test = new Property();
+        //BoardTile test = new Station();
+        BoardTile test = new Utility();
+        Player testPlayer = new Player("test",Token.valueOf("BOOT"), gameSystem, false);
+        auctionPlayerSetup(testPlayer);
+        auctionSetupScene(testPlayer, test);
     }
 
     public static void main(String[] args) {
@@ -878,7 +894,6 @@ public class Main extends Application {
      */
     public void assignPlayerToTurnOrder(){
         // Add player to the turn order if playerSize >= 1
-
         for(int i = 0; i < playerNameTextField.size(); i++){
             // Creating a new player and assigning it to turn order
             Player player = new Player(playerNameTextField.get(i).getText(), Token.valueOf(playerTokenSpin.get(i).getValue().toString().toUpperCase()), gameSystem,false);
@@ -906,11 +921,9 @@ public class Main extends Application {
         if(option.get() == roll){
             diceRoll(currentPlayer, diceCount);
         }
-        // TODO change
+        // TODO copy over in merge cal
         diceMessage.show();
-        diceMessage.close();
-        //diceMessage.showAndWait();
-        //diceMessage.show();
+        diceMessage.show();
     }
 
     /***
@@ -930,8 +943,7 @@ public class Main extends Application {
         diceMessage.setTitle("Property Tycoon Dice Generated");
         diceMessage.setHeaderText(currentPlayer.getName() + " rolled " + (dice1 + dice2));
         diceMessage.setContentText("Die one rolled " + dice1 + "\nDie two rolled " + dice2);
-        // TODO change
-        //diceMessage.showAndWait();
+        // TODO merge cal
         diceMessage.showAndWait();
         diceMessage.close();
     }
@@ -1089,7 +1101,6 @@ public class Main extends Application {
             // Close the trading popup scene
             tradePopUpStage.close();
         });
-
         playerOnePane.getChildren().addAll(playerOneName, playerOneAsset);
         playerTwoPane.getChildren().addAll(playerTwoName, playerTwoAsset);
         allPlayerPane.getChildren().addAll(playerOnePane, playerTwoPane);
@@ -1099,8 +1110,21 @@ public class Main extends Application {
         // Creating the popup effect
         tradePopUpStage.setScene(tradingScene);
         tradePopUpStage.initModality(Modality.APPLICATION_MODAL);
-        tradePopUpStage.show();
+        tradePopUpStage.showAndWait();
+        tradePopUpStage.close();
     }
+
+    public void tradingChangeOwner(Player currentPlayer, Player tradePlayer, LinkedList<Object> give, LinkedList<Object> receive){
+        for(int i = 0; i <= give.size(); i++){
+            // Removing the selected asset
+            tradePlayer.removeAsset(give.get(i));
+        }
+
+        for(int j = 0; j <= receive.size(); j++){
+
+        }
+    }
+
 
     /***
      * Add all of the trade-able assets to the given list view with the given player
@@ -1133,12 +1157,6 @@ public class Main extends Application {
         HBox optionPane = new HBox(5);
         optionPane.setAlignment(Pos.CENTER);
 
-        System.out.println("start");
-        for(int i = 0; i < order.size(); i++){
-            System.out.println(order.size());
-            System.out.println(order.get(i).getName());
-        }
-
         Label title = new Label("Property Tycoon Trading Setup");
         Label tradeMessage = new Label("Select the players you want to trade with " + currentPlayer.getName());
 
@@ -1150,12 +1168,11 @@ public class Main extends Application {
         LinkedList<Player> tempPlayerList = (LinkedList<Player>) order.clone();
         for(int i = 0; i < order.size(); i++){
             // todo remove after test
-            //System.out.print(tempPlayerList.get(i).getName() + "\n");
             // Make sure you cant trade with yourself
             if(currentPlayer.getName() != tempPlayerList.get(i).getName()){
                 listOfPlayer.getItems().add(tempPlayerList.get(i).getName());
                 // Default value set to the first player that is not itself
-                //listOfPlayer.setValue(tempPlayerList.get(0).getName());
+                listOfPlayer.setValue(tempPlayerList.get(0).getName());
             }
         }
 
@@ -1187,11 +1204,6 @@ public class Main extends Application {
             tradeSetupPopUpStage.close();
         });
 
-        for(int i = 0; i < order.size(); i++){
-            System.out.println("end");
-            System.out.println(order.get(i).getName());
-        }
-
         selectPlayerPane.getChildren().addAll(tradeMessage, listOfPlayer);
         optionPane.getChildren().addAll(nextSetup, leaveTrade);
         tradingSetupPane.getChildren().addAll(title, selectPlayerPane, optionPane);
@@ -1204,20 +1216,56 @@ public class Main extends Application {
         tradeSetupPopUpStage.close();
     }
 
-    public void auctionSetupScene(BoardTile asset){
+    /***
+     * Create a list of all of the players in turn order minus current player (potential bidders)
+     * @param currentPlayer The current Player that cannot afford the asset or wishes to auction it
+     */
+    public void auctionPlayerSetup(Player currentPlayer){
+        // Copying all of the players - current player (current player could not afford the boardTile or does not wish to buy it)
+        auctionPlayerList = (LinkedList<Player>) order.clone();
+        for(int i = 0; i < order.size(); i++){
+            // Constraint check to ensure current player cant bid in the auction
+            if(currentPlayer.getName() == auctionPlayerList.get(i).getName()){
+                auctioneer = auctionPlayerList.get(i);
+                auctionPlayerList.remove(i);
+            }
+        }
+    }
+
+    /***
+     * Create a popup scene where the auctioning would happen if the current player does not want/ afford a unowned property
+     * @param player The player from the turn order (not current player) that wishes to bid
+     * @param asset A boardTile that could either be station, utility or property that can be auctioned
+     */
+    public void auctionSetupScene(Player player, BoardTile asset){
+        Stage auctionPopUpStage = new Stage();
+        // TODO copy over in merge cal
         VBox auctionSetupPane = new VBox(10);
         auctionSetupPane.setAlignment(Pos.CENTER);
         auctionSetupPane.setPadding(new Insets(0, 20, 10, 20));
         HBox optionPane = new HBox(10);
         optionPane.setAlignment(Pos.CENTER);
 
+        // Holds the player index from auctionPlayerList
+        int playerIndex = 0;
         Label title = new Label("Property Tycoon Auctioning");
         Label propName = new Label();
-        Label bidTitle= new Label("Enter in your Bid");
+        Label bidTitle = new Label("Enter in your bid down below " + player.getName());
+        Label highestBid = new Label();
+
+        // If its not the first person to bid
+        if(highestBidder.getValue() != 0){
+            String highestBidPlayerName = highestBidder.getKey();
+            int currentBid = highestBidder.getValue();
+            highestBid.setText("Highest bid currently " + currentBid + " by " + highestBidPlayerName);
+        }else{
+            highestBid.setText("No bid currently for this item");
+        }
 
         ImageView propImg = new ImageView();
 
         TextField bidTxt = new TextField();
+        bidTxt.setMaxWidth(63);
 
         Button bid = new Button("Bid");
         Button withdraw = new Button("Withdraw");
@@ -1243,23 +1291,98 @@ public class Main extends Application {
             propName.setText(asset.getTitle());
         }
 
+        // Finding the player index
+        for(int i = 0; i < auctionPlayerList.size(); i++){
+            if(player.getName() == auctionPlayerList.get(i).getName()){
+                playerIndex = i;
+            }
+        }
+
         // CSS
         title.setStyle(
                 "-fx-label-padding: 20 0 10 0;" + "-fx-font-size: 14;" + "-fx-font-weight: bold;"
         );
         propName.setStyle("-fx-font-size: 15;");
+        bidTitle.setStyle("-fx-font-size: 14;");
 
         // Button functionality
-
+        bid.setOnAction(e -> {
+            try{
+                // TODO check if they have enough money to buy this asset with the bid they entered
+                // Check to see if the bid is a number and doesnt contain any text
+                player.getMoney();
+                int numConstraint = Integer.parseInt(bidTxt.getText());
+                auctionLogic(player, numConstraint, asset);
+            }catch(Exception except){
+                // Remove invalid bid from text field
+                bidTxt.clear();
+                Alert errorMessage = new Alert(Alert.AlertType.ERROR);
+                errorMessage.setTitle("Property Tycoon Auction");
+                errorMessage.setHeaderText("Property Tycoon Bid Error");
+                errorMessage.setContentText("Please enter in a valid bid (numbers only!)");
+                errorMessage.showAndWait();
+            }
+        });
+        int finalPlayerIndex = playerIndex;
+        withdraw.setOnAction(e -> {
+            auctionPlayerList.remove(finalPlayerIndex);
+        });
+        help.setOnAction(e -> {
+            Alert helpMessage = new Alert(Alert.AlertType.INFORMATION);
+            helpMessage.setTitle("Property Tycoon Auction");
+            helpMessage.setHeaderText("Property Tycoon Help Message");
+            helpMessage.setContentText("Remember you can only bid once for a property, so bid wisely!");
+            helpMessage.showAndWait();
+        });
 
         optionPane.getChildren().addAll(bid, withdraw, help);
-        auctionSetupPane.getChildren().addAll(title, propImg, propName, bidTitle, bidTxt, optionPane);
-        auctionScene = new Scene(auctionSetupPane);
+        auctionSetupPane.getChildren().addAll(title, propImg, propName, highestBid, bidTitle, bidTxt, optionPane);
+        auctionScene = new Scene(auctionSetupPane,400,400);
+        // Creating the popup effect
+        auctionPopUpStage.setScene(auctionScene);
+        auctionPopUpStage.initModality(Modality.APPLICATION_MODAL);
+        auctionPopUpStage.showAndWait();
+        auctionPopUpStage.close();
     }
 
+    public void auctionLogic(Player player, int bid, BoardTile asset){
+        // TODO include in merge cal
+        // If current bid is higher than the highest bidder, replace with the newest bid
+        if(bid > highestBidder.getValue()){
+            // Replace highestBidder with the new highest bidder (name and their bid)
+            highestBidder = new Pair<>(player.getName(), bid);
+        }else if(bid > secondHighestBidder.getValue()){
+            // Stores the second highest bid for the current auction (use for constraint check)
+            secondHighestBidder = new Pair<>(player.getName(), bid);
+        }
+
+        if(auctionPlayerList.size() == 1){
+            // Fetch the highest bidder player object with the given string
+            for(int i = 0; i < auctionPlayerList.size(); i++){
+                if(highestBidder.getKey() == auctionPlayerList.get(i).getName()){
+                    highestPlayerBidder = auctionPlayerList.get(i);
+                }
+            }
+        }
+
+        // to do
+        if(auctionPlayerList.size() == 1 && highestBidder.getValue() > secondHighestBidder.getValue()){
+            // have player deduct the price
+        }else if(auctionPlayerList.size() == 1 && highestBidder.getValue() == secondHighestBidder.getValue()){
+            // Restart auction if highest bid == second highest bid
+            auctionPlayerSetup(auctioneer);
+            auctionSetupScene(player, asset);
+        }
+
+    }
+
+    /***
+     * Create a popup scene where jail decision happens (serve time, bail or use get out of jail card)
+     * @param currentPlayer The current player
+     * @param jailCard Tell us if the current own a get out of jail card or not
+     */
     public void sentToJailSetupScene(Player currentPlayer, GetOutOfJail jailCard){
         Stage jailPopUpStage = new Stage();
-        AtomicInteger jailDecision = new AtomicInteger();
         VBox sentToJailSetupPane = new VBox(10);
         sentToJailSetupPane.setPadding(new Insets(0, 20, 10, 20));
         sentToJailSetupPane.setAlignment(Pos.CENTER);
@@ -1280,23 +1403,17 @@ public class Main extends Application {
 
         // Button Functionality
         serveTime.setOnAction(e -> {
-            jailDecision.set(1);
             // Close the popup effect
             jailPopUpStage.close();
         });
         bail.setOnAction(e -> {
-            // TODO ask ayman?
-            jailDecision.set(2);
             currentPlayer.deductAmount(50);
-            currentPlayer.addAction("pay bail");
             currentPlayer.leaveJail();
             jailPopUpStage.close();
         });
         getOutCard.setOnAction(e -> {
-            jailDecision.set(3);
             // Player activated the get out of jail card
             jailCard.playCard();
-            currentPlayer.addAction("Used a Get Out of Jail card");
             jailPopUpStage.close();
         });
         help.setOnAction(e -> {
@@ -1314,12 +1431,14 @@ public class Main extends Application {
             optionPane.getChildren().addAll(serveTime, bail, getOutCard, help);
         }
 
+        // TODO copy in merge
         sentToJailSetupPane.getChildren().addAll(title, jailImg, optionPane);
         jailSetupScene = new Scene(sentToJailSetupPane);
         // Creating the popup effect
         jailPopUpStage.setScene(jailSetupScene);
         jailPopUpStage.initModality(Modality.APPLICATION_MODAL);
-        jailPopUpStage.show();
+        jailPopUpStage.showAndWait();
+        jailPopUpStage.close();
     }
 
     /***
@@ -1404,17 +1523,17 @@ public class Main extends Application {
                         // Player click roll dice from alert
                         diceRollMessage(currentPlayer, count);
                     }
-                    //currentPlayer.setLastRoll(gameSystem.roll(currentPlayer, count));//keep track of player roll
                     currentPlayer.passGo();
                     gameSystem.tiles.get(currentPlayer.getCurrentPos()).activeEffect(currentPlayer);
 
                     if (gameSystem.turnOrder.contains(currentPlayer) && !currentPlayer.isInJail()) {
                         if (!currentPlayer.isAiAgent()) {
-                            currentPlayer.leaveGame();
                             // Changes to the trading setup scene (popup)
                             tradingSetupScene(currentPlayer);
                             //TODO Player property management GUI here
                             //TODO Ask player if they want to trade/ GUI trade here
+                            //TODO create scene to ask if player would want to leave?
+                            //currentPlayer.leaveGame();
                         } else {
                             currentPlayer.initiateTrade();
                             if (gameSystem.turns > retirePoint && gameSystem.turnOrder.size() > 4) {
