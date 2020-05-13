@@ -1073,7 +1073,7 @@ public class Main extends Application {
                 Optional<ButtonType> option = tradeMessage.showAndWait();
                 if(option.get() == acceptTrade){
                     tradeMessage.setContentText(playerTwo.getName() + "accepted your offer");
-                    // TODO ask how to change owners name for properties
+                    tradingChangeOwner(currentPlayer, playerTwo, give, receive);
                 }else if(option.get() == declineTrade){
                     tradeMessage.setContentText(playerTwo.getName() + "declined your offer");
                     window.setScene(gameBoardScene);
@@ -1086,7 +1086,7 @@ public class Main extends Application {
                 // tradeDecision (true = accept, false = decline trade)
                 if(tradeDecision == true){
                     tradeMessage.setHeaderText(playerTwo.getName() + " accepted your offer");
-                    // TODO ask how to change owners name for properties
+                    tradingChangeOwner(currentPlayer, playerTwo, give, receive);
                     tradeMessage.showAndWait();
                 }else{
                     tradeMessage.setHeaderText(playerTwo.getName() + " declined your offer");
@@ -1114,17 +1114,26 @@ public class Main extends Application {
         tradePopUpStage.close();
     }
 
+    /***
+     * A function which will change the ownership of the asset if they agreed on the trade
+     * @param currentPlayer Current Player
+     * @param tradePlayer The selected player that the current player wishes to trade with
+     * @param give A link-list which contains all the asset that tradePlayer will need to give to current player
+     * @param receive A link-list which contains all the asset that current player will need to give to tradePlayer
+     */
     public void tradingChangeOwner(Player currentPlayer, Player tradePlayer, LinkedList<Object> give, LinkedList<Object> receive){
-        for(int i = 0; i <= give.size(); i++){
-            // Removing the selected asset
-            tradePlayer.removeAsset(give.get(i));
+        // Go through the 'give' link list on what tradePlayer (player two) will give to current player and change ownership of asset
+        for(Object asset: give){
+            tradePlayer.removeAsset(asset);
+            currentPlayer.addAsset(asset);
         }
-
-        for(int j = 0; j <= receive.size(); j++){
-
+        // TODO merge will cal
+        // Go through the 'receive' link list on what current player will give to the selected player and change ownership of asset
+        for(Object asset: receive){
+            currentPlayer.removeAsset(asset);
+            tradePlayer.addAsset(asset);
         }
     }
-
 
     /***
      * Add all of the trade-able assets to the given list view with the given player
