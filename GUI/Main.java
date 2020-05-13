@@ -1121,6 +1121,8 @@ public class Main extends Application {
         ListView finalPlayerOneAsset = playerOneAsset;
         ListView finalPlayerTwoAsset = playerTwoAsset;
         trade.setOnAction(e -> {
+            // Close trading setup
+            tradePopUpStage.close();
             Alert tradeMessage = new Alert(Alert.AlertType.NONE);
             tradeMessage.setTitle("Property Tycoon Trading Offer" );
             ButtonType acceptTrade = new ButtonType("Accept Trade");
@@ -1151,12 +1153,16 @@ public class Main extends Application {
                 Optional<ButtonType> option = tradeMessage.showAndWait();
                 if(option.get() == acceptTrade){
                     tradeMessage.setContentText(playerTwo.getName() + "accepted your offer");
-                    // TODO ask how to change owners name for properties
+                    tradingChangeOwner(currentPlayer, playerTwo, give, receive);
+                    tradeMessage.show();
+                    tradeMessage.close();
                 }else if(option.get() == declineTrade){
                     tradeMessage.setContentText(playerTwo.getName() + "declined your offer");
+                    tradeMessage.show();
+                    tradeMessage.close();
                     window.setScene(gameBoardScene);
                 }
-            }else{
+            }else{ // playerTwo is a AI
                 tradeMessage = new Alert(Alert.AlertType.INFORMATION);
                 tradeMessage.setTitle("Property Tycoon AI Trading Decision" );
                 // AI decide if they want to trade or not
@@ -1164,11 +1170,13 @@ public class Main extends Application {
                 // tradeDecision (true = accept, false = decline trade)
                 if(tradeDecision == true){
                     tradeMessage.setHeaderText(playerTwo.getName() + " accepted your offer");
-                    // TODO ask how to change owners name for properties
-                    tradeMessage.showAndWait();
+                    tradingChangeOwner(currentPlayer, playerTwo, give, receive);
+                    tradeMessage.show();
+                    tradeMessage.close();
                 }else{
                     tradeMessage.setHeaderText(playerTwo.getName() + " declined your offer");
                     tradeMessage.showAndWait();
+                    tradeMessage.close();
                 }
             }
         });
@@ -1179,7 +1187,6 @@ public class Main extends Application {
             // Close the trading popup scene
             tradePopUpStage.close();
         });
-
         playerOnePane.getChildren().addAll(playerOneName, playerOneAsset);
         playerTwoPane.getChildren().addAll(playerTwoName, playerTwoAsset);
         allPlayerPane.getChildren().addAll(playerOnePane, playerTwoPane);
@@ -1191,6 +1198,27 @@ public class Main extends Application {
         tradePopUpStage.initModality(Modality.APPLICATION_MODAL);
         tradePopUpStage.showAndWait();
         tradePopUpStage.close();
+    }
+
+    /***
+     * A function which will change the ownership of the asset if they agreed on the trade
+     * @param currentPlayer Current Player
+     * @param tradePlayer The selected player that the current player wishes to trade with
+     * @param give A link-list which contains all the asset that tradePlayer will need to give to current player
+     * @param receive A link-list which contains all the asset that current player will need to give to tradePlayer
+     */
+    public void tradingChangeOwner(Player currentPlayer, Player tradePlayer, LinkedList<Object> give, LinkedList<Object> receive){
+        // Go through the 'give' link list on what tradePlayer (player two) will give to current player and change ownership of asset
+        for(Object asset: give){
+            tradePlayer.removeAsset(asset);
+            currentPlayer.addAsset(asset);
+        }
+        // TODO merge will cal
+        // Go through the 'receive' link list on what current player will give to the selected player and change ownership of asset
+        for(Object asset: receive){
+            currentPlayer.removeAsset(asset);
+            tradePlayer.addAsset(asset);
+        }
     }
 
     /***
@@ -1224,12 +1252,6 @@ public class Main extends Application {
         HBox optionPane = new HBox(5);
         optionPane.setAlignment(Pos.CENTER);
 
-        System.out.println("start");
-        for(int i = 0; i < order.size(); i++){
-            System.out.println(order.size());
-            System.out.println(order.get(i).getName());
-        }
-
         Label title = new Label("Property Tycoon Trading Setup");
         Label tradeMessage = new Label("Select the players you want to trade with " + currentPlayer.getName());
 
@@ -1241,12 +1263,11 @@ public class Main extends Application {
         LinkedList<Player> tempPlayerList = (LinkedList<Player>) order.clone();
         for(int i = 0; i < order.size(); i++){
             // todo remove after test
-            //System.out.print(tempPlayerList.get(i).getName() + "\n");
             // Make sure you cant trade with yourself
             if(currentPlayer.getName() != tempPlayerList.get(i).getName()){
                 listOfPlayer.getItems().add(tempPlayerList.get(i).getName());
                 // Default value set to the first player that is not itself
-                //listOfPlayer.setValue(tempPlayerList.get(0).getName());
+                listOfPlayer.setValue(tempPlayerList.get(i).getName());
             }
         }
 
@@ -1277,11 +1298,6 @@ public class Main extends Application {
             // Close the trading popup scene
             tradeSetupPopUpStage.close();
         });
-
-        for(int i = 0; i < order.size(); i++){
-            System.out.println("end");
-            System.out.println(order.get(i).getName());
-        }
 
         selectPlayerPane.getChildren().addAll(tradeMessage, listOfPlayer);
         optionPane.getChildren().addAll(nextSetup, leaveTrade);
@@ -1425,7 +1441,6 @@ public class Main extends Application {
     }
 
     public void auctionLogic(Player player, int bid, BoardTile asset){
-        // TODO include in merge cal
         // If current bid is higher than the highest bidder, replace with the newest bid
         if(bid > highestBidder.getValue()){
             // Replace highestBidder with the new highest bidder (name and their bid)
@@ -1461,11 +1476,13 @@ public class Main extends Application {
      * @param jailCard Tell us if the current own a get out of jail card or not
      */
     public void sentToJailSetupScene(Player currentPlayer, GetOutOfJail jailCard){
+        // TODO merge
         Stage jailPopUpStage = new Stage();
         VBox sentToJailSetupPane = new VBox(10);
         sentToJailSetupPane.setPadding(new Insets(0, 20, 10, 20));
         sentToJailSetupPane.setAlignment(Pos.CENTER);
         HBox optionPane = new HBox(10);
+        optionPane.setAlignment(Pos.CENTER);
 
         Label title = new Label("Property Tycoon Jail Decision " + currentPlayer.getName());
         ImageView jailImg = new ImageView("/Lib/TilesDesign/goJail64bit.png");
@@ -1510,6 +1527,7 @@ public class Main extends Application {
             optionPane.getChildren().addAll(serveTime, bail, getOutCard, help);
         }
 
+        // TODO copy in merge
         sentToJailSetupPane.getChildren().addAll(title, jailImg, optionPane);
         jailSetupScene = new Scene(sentToJailSetupPane);
         // Creating the popup effect
