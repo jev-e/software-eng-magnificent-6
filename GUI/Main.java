@@ -57,12 +57,21 @@ public class Main extends Application {
     private Image jailFreePNG;
 
     // Images - Tokens
-    private Image bootToken;
-    private Image catToken;
-    private Image gobletToken;
-    private Image hatstandToken;
-    private Image phoneToken;
-    private Image spoonToken;
+    private Image bootTokenPNG;
+    private Image catTokenPNG;
+    private Image gobletTokenPNG;
+    private Image hatstandTokenPNG;
+    private Image phoneTokenPNG;
+    private Image spoonTokenPNG;
+
+    // ImageViews - Tiles
+    private ImageView goTile, goJail, freeParking, visitingJail, edisonWater, teslaPower, oppKnocks, potLuck, station;
+
+    // ImageViews - Assets
+    private ImageView hotel, house, jailFreeCard;
+
+    // ImageViews - Tokens
+    private ImageView bootToken, catToken, gobletToken, hatstandToken, phoneToken, spoonToken;
 
     // Scenes
     private Scene gameScene; // Shows gameBP
@@ -89,6 +98,7 @@ public class Main extends Application {
 
     Stage window;
     Scene menuScene, ruleScene, playerSetupScene, gameSetupScene, gameBoardScene, tradingSetupScene, tradingScene, auctionScene, jailSetupScene;
+    Scene test123;
 
     // Holds the players name
     public ArrayList<TextField> playerNameTextField = new ArrayList<>();
@@ -104,7 +114,6 @@ public class Main extends Application {
     private static List<CardEffect> potLuckPack;
     private Board gameSystem;
     private Player playerTwo;
-    // TODO Cal include in merge
     LinkedList<Player> auctionPlayerList;
     private Pair<String, Integer> highestBidder = new Pair<String, Integer>("", 0);
     private Pair<String, Integer> secondHighestBidder = new Pair<String, Integer>("", 0);
@@ -121,8 +130,7 @@ public class Main extends Application {
         createMainMenuScene();
         window.setScene(menuScene);
         window.show();
-        //displayGameScene();
-
+//        displayGameScene();
         // TODO remove after testing
 //        BoardTile test = new Property();
         //BoardTile test = new Station();
@@ -140,11 +148,12 @@ public class Main extends Application {
      * Calls Key Functions to display the game, sets gameScene active
      */
     public void displayGameScene() {
-        initGameVariables();  // Initalise Variables and Containers
+        initGameVariables();  // Initialise Variables and Containers
         initGameImages();     // Load Game Images
+        initGameImageViews(); // Loads Game Images into their respective ImageViews
         formatGameScene();    // Formats Game Scene
         retrieveBoardData();  // Provides initial data from board to scene
-        addKeyGameButtons();  // Adds Roll, Property Management, Quit and Trading buttons
+        addKeyGameButtons();  // Adds any buttons needed on the main game scene
         displayPlayerCards(); // Displays player cards to the gameBP
         displayGameBoard();   // Displays main game board
 
@@ -158,6 +167,7 @@ public class Main extends Application {
      */
     public void retrieveBoardData() {
         for(int i = 0; i < 40; i++) {
+            board.get(i).initGuiElements();
             board.get(i).setTileName();
         }
     }
@@ -202,7 +212,8 @@ public class Main extends Application {
 
                 // Go Tile
                 case 0:
-                    container.add(label,0,1);
+                    //container.add(label,0,0);
+                    container.add(goTile,0,1);
                     boardGP.add(container, 2, 2);
                     break;
 
@@ -210,9 +221,20 @@ public class Main extends Application {
                 case 1: case 2: case 3: case 4: case 5: case 6: case 7: case 8: case 9:
                     container.add(label, 0,1);
 
+                    // Properties
                     if(!(i == 2 || i == 4 || i == 7)) {
                         board.get(i).setColour();
                         container.add(canvas,0,0);
+                    }
+
+                    // Pot Luck
+                    if(i == 2) {
+                        container.add(potLuck,0,2);
+                    }
+
+                    // Opportunity Knocks
+                    if(i == 7) {
+                        container.add(oppKnocks, 0, 2);
                     }
 
                     botRowGP.add(container, (9 - i), 0);
@@ -220,32 +242,57 @@ public class Main extends Application {
 
                 // Jail Tile
                 case 10:
-                    boardGP.add(label, 0,2);
+                    container.add(visitingJail, 0, 0);
+                    boardGP.add(container, 0,2);
                     break;
 
                 // Left Column
                 case 11: case 12: case 13: case 14: case 15: case 16: case 17: case 18: case 19:
                     container.add(label, 0, 1);
 
+                    // Properties
                     if(!(i == 12 || i == 15 || i == 17)) {
                         board.get(i).setColour();
                         container.add(canvas,0,0);
                     }
+
+                    // Tesla Power
+                    if(i == 12) {
+                        container.add(teslaPower,0,2);
+                    }
+
+                    // Pot Luck
+                    if(i == 17) {
+                        container.add(potLuck, 0, 2);
+                    }
+
                     leftColGP.add(container, 0, (20 - i));
                     break;
 
                 // Free Parking Tile
                 case 20:
-                    boardGP.add(label, 0, 0);
+                    container.add(freeParking, 0,0);
+                    boardGP.add(container, 0, 0);
                     break;
 
                 // Top Row
                 case 21: case 22: case 23: case 24: case 25: case 26: case 27: case 28: case 29:
                     container.add(label, 0, 1);
 
+                    // Properties
                     if(!(i == 22 || i == 25 || i == 28)) {
                         board.get(i).setColour();
                         container.add(canvas,0,0);
+                    }
+
+                    // Opportunity Knocks
+                    if(i == 22) {
+                        container.add(oppKnocks,0,2);
+                    }
+
+                    // Edison Water
+                    if(i == 28) {
+                        container.add(edisonWater, 0, 2);
                     }
 
                     topRowGP.add(container, (i - 21), 0);
@@ -253,16 +300,28 @@ public class Main extends Application {
 
                 // Go To Jail Tile
                 case 30:
-                    boardGP.add(label, 2,0);
+                    container.add(goJail, 0,0);
+                    boardGP.add(container, 2,0);
                     break;
 
                 // Right Column
                 case 31: case 32: case 33: case 34: case 35: case 36: case 37: case 38: case 39:
                     container.add(label, 0, 1);
 
+                    // Properties
                     if(!(i == 33 || i == 35 || i == 36 || i == 38)) {
                         board.get(i).setColour();
                         container.add(canvas,0,0);
+                    }
+
+                    // Pot Luck
+                    if(i == 33) {
+                        container.add(potLuck, 0, 2);
+                    }
+
+                    // Opportunity Knocks
+                    if(i == 36) {
+                        container.add(oppKnocks, 0, 2);
                     }
 
                     rightColGP.add(container, 0, (i - 31));
@@ -367,7 +426,7 @@ public class Main extends Application {
             visitingPNG = new Image(new FileInputStream("Lib/TilesDesign/visiting64bit.png"));
             waterPNG = new Image(new FileInputStream("Lib/TilesDesign/edisonWater64bit.png"));
             powerPNG = new Image(new FileInputStream("Lib/TilesDesign/teslaPower64bit.png"));
-            oppKnocksPNG = new Image(new FileInputStream("Lib/TilesDesign/opportunityKnocks64bit.png"));
+            oppKnocksPNG = new Image(new FileInputStream("Lib/TilesDesign/opportunityKnock64bit.png"));
             potLuckPNG = new Image(new FileInputStream("Lib/TilesDesign/potLuck64bit.png"));
             stationPNG = new Image(new FileInputStream("Lib/TilesDesign/trainStation64bit.png"));
 
@@ -377,16 +436,42 @@ public class Main extends Application {
             jailFreePNG = new Image(new FileInputStream("Lib/Assets/jailFree64bit.png"));
 
             // Tokens
-            bootToken = new Image(new FileInputStream("Lib/Tokens/BootToken.png"));
-            catToken = new Image(new FileInputStream("Lib/Tokens/CatToken.png"));
-            gobletToken = new Image(new FileInputStream("Lib/Tokens/GobletToken.png"));
-            hatstandToken = new Image(new FileInputStream("Lib/Tokens/HatstandToken.png"));
-            phoneToken = new Image(new FileInputStream("Lib/Tokens/SmartphoneToken.png"));
-            spoonToken = new Image(new FileInputStream("Lib/Tokens/BootToken.png"));
+            bootTokenPNG = new Image(new FileInputStream("Lib/Tokens/BootToken.png"));
+            catTokenPNG = new Image(new FileInputStream("Lib/Tokens/CatToken.png"));
+            gobletTokenPNG = new Image(new FileInputStream("Lib/Tokens/GobletToken.png"));
+            hatstandTokenPNG = new Image(new FileInputStream("Lib/Tokens/HatstandToken.png"));
+            phoneTokenPNG = new Image(new FileInputStream("Lib/Tokens/SmartphoneToken.png"));
+            spoonTokenPNG = new Image(new FileInputStream("Lib/Tokens/BootToken.png"));
 
         } catch (FileNotFoundException e) {
-
+            System.out.println(e);
         }
+    }
+
+    /**
+     * Loads Game Images into ImageViews
+     */
+    public void initGameImageViews() {
+        goTile = new ImageView(goTilePNG);
+        goJail = new ImageView(goJailPNG);
+        freeParking = new ImageView(freeParkingPNG);
+        visitingJail = new ImageView(visitingPNG);
+        edisonWater = new ImageView(waterPNG);
+        teslaPower = new ImageView(powerPNG);
+        oppKnocks = new ImageView(oppKnocksPNG);
+        potLuck = new ImageView(potLuckPNG);
+        station = new ImageView(stationPNG);
+
+        hotel = new ImageView(hotelPNG);
+        house = new ImageView(housePNG);
+        jailFreeCard = new ImageView(jailFreePNG);
+
+        bootToken = new ImageView(bootTokenPNG);
+        catToken = new ImageView(catTokenPNG);
+        gobletToken = new ImageView(gobletTokenPNG);
+        hatstandToken = new ImageView(hatstandTokenPNG);
+        phoneToken = new ImageView(phoneTokenPNG);
+        spoonToken = new ImageView(spoonTokenPNG);
     }
 
     /**
@@ -894,6 +979,7 @@ public class Main extends Application {
      */
     public void assignPlayerToTurnOrder(){
         // Add player to the turn order if playerSize >= 1
+
         for(int i = 0; i < playerNameTextField.size(); i++){
             // Creating a new player and assigning it to turn order
             Player player = new Player(playerNameTextField.get(i).getText(), Token.valueOf(playerTokenSpin.get(i).getValue().toString().toUpperCase()), gameSystem,false);
@@ -921,7 +1007,6 @@ public class Main extends Application {
         if(option.get() == roll){
             diceRoll(currentPlayer, diceCount);
         }
-        // TODO copy over in merge cal
         diceMessage.show();
         diceMessage.close();
     }
@@ -943,7 +1028,7 @@ public class Main extends Application {
         diceMessage.setTitle("Property Tycoon Dice Generated");
         diceMessage.setHeaderText(currentPlayer.getName() + " rolled " + (dice1 + dice2));
         diceMessage.setContentText("Die one rolled " + dice1 + "\nDie two rolled " + dice2);
-        // TODO merge cal
+
         diceMessage.showAndWait();
         diceMessage.close();
     }
@@ -954,7 +1039,6 @@ public class Main extends Application {
      * @param tradePlayer The selected player that they wish to trade with
      */
     public void tradingScene(Player currentPlayer, String tradePlayer){
-        // TODO merge cal
         Stage tradePopUpStage = new Stage();
         int i = 0;
         VBox tradingPane = new VBox(10);
@@ -977,20 +1061,10 @@ public class Main extends Application {
         Label playerOneName = new Label(currentPlayer.getName() + " Assets");
         Label playerTwoName = new Label(tradePlayer + " Assets");
 
-        // Store a link list of what playerTwo will give to current player
-        LinkedList<Object> give = new LinkedList<>();
-        // Store a link list of what playerTwo will receive from current player
-        LinkedList<Object> receive = new LinkedList<>();
-
-        // TODO remove after finish testing
-        Property temp;
-        Property temp2;
-        Property temp3;
-        temp = new Property(1, "Example Street", Group.GREEN, 10, 10, null, 10, null);
-        temp2 = new Property(2, "Example Street1", Group.GREEN, 10, 10, null, 10, null);
-        temp3 = new Property(3, "test", Group.YELLOW, 10, 10, null, 10, null);
-        currentPlayer.addAsset(temp);
-        currentPlayer.addAsset(temp2);
+        // Store a link list of what playerTwo will give to current player in a datatype String
+        LinkedList<Object> giveString = new LinkedList<>();
+        // Store a link list of what playerTwo will receive from current player in a datatype String
+        LinkedList<Object> receiveString = new LinkedList<>();
 
         ListView playerOneAsset = new ListView();
         // Add current player assets to it their listView
@@ -1004,7 +1078,8 @@ public class Main extends Application {
         while(i < order.size()){
             if(tradePlayer == order.get(i).getName()){
                 playerTwo = order.get(i);
-                playerTwo.addAsset(temp3);
+                // TODO remove after testing
+                //playerTwo.addAsset(temp3);
                 // Add selected player assets to their listView
                 playerTwoAsset = addAssetToViewList(playerTwo, playerTwoAsset);
                 break;
@@ -1043,57 +1118,74 @@ public class Main extends Application {
         });
         ListView finalPlayerOneAsset = playerOneAsset;
         ListView finalPlayerTwoAsset = playerTwoAsset;
+
         trade.setOnAction(e -> {
             // Close trading setup
             tradePopUpStage.close();
             Alert tradeMessage = new Alert(Alert.AlertType.NONE);
             tradeMessage.setTitle("Property Tycoon Trading Offer" );
+            Alert decisionMessage = new Alert(Alert.AlertType.INFORMATION);
+            decisionMessage.setTitle("Property Tycoon Trading Decision" );
             ButtonType acceptTrade = new ButtonType("Accept Trade");
             ButtonType declineTrade = new ButtonType("Decline Trade");
             String msgOffering = "";
             String msgFor = "";
 
+            // Store a link list of objects on what playerTwo will give to current player
+            LinkedList<Object> giveObject = new LinkedList<>();
+            // Store a link list of objects on what playerTwo will receive from current player
+            LinkedList<Object> receiveObject = new LinkedList<>();
+
             // Fetch the information that has been selected for the current player and display it into alert header
             ObservableList listOfPlayerOneAsset = finalPlayerOneAsset.getSelectionModel().getSelectedItems();
             for(Object item: listOfPlayerOneAsset){
-                msgOffering += String.format("%s%n", (String) item);
+                msgOffering += String.format("%s%n", item);
                 // Add the properties playerTwo will receive from current player
-                receive.add(item);
+                receiveString.add(item);
             }
-            tradeMessage.setHeaderText(currentPlayer.getName() + " Offering\n" + msgOffering);
+            // Converting the String asset into a object asset that playerTwo will receive from current player
+            receiveObject = (LinkedList<Object>) getAsset(currentPlayer, receiveString);
+
+            tradeMessage.setHeaderText(currentPlayer.getName() + " offering\n" + msgOffering);
             // Fetch the information of all the assets that they wish for from the other player and display it into context
             ObservableList listOfPlayerTwoAsset = finalPlayerTwoAsset.getSelectionModel().getSelectedItems();
             for(Object item: listOfPlayerTwoAsset){
-                msgFor += String.format("%s%n", (String) item);
+                msgFor += String.format("%s%n", item);
                 // Add the properties playerTwo will give to current player
-                give.add(item);
+                giveString.add(item);
             }
-            tradeMessage.setContentText("For your\n"  + msgFor);
+            // Converting the String asset into a object asset that playerTwo will give to current player
+            giveObject = (LinkedList<Object>) getAsset(playerTwo, giveString);
+
+            tradeMessage.setContentText("For these assets " + playerTwo.getName() + "\n" + msgFor);
 
             // If playerTwo is not a AI
             if(playerTwo.isAiAgent() == false){
                 tradeMessage.getButtonTypes().addAll(acceptTrade, declineTrade);
                 Optional<ButtonType> option = tradeMessage.showAndWait();
                 if(option.get() == acceptTrade){
-                    tradeMessage.setContentText(playerTwo.getName() + "accepted your offer");
-                    tradingChangeOwner(currentPlayer, playerTwo, give, receive);
-                    tradeMessage.show();
-                    tradeMessage.close();
+                    decisionMessage.setHeaderText(playerTwo.getName() + " accepted your offer");
+                    tradingChangeOwner(currentPlayer, playerTwo, giveObject, receiveObject);
+                    // Check for complete set
+                    currentPlayer.completeSetProperties();
+                    playerTwo.completeSetProperties();
+                    decisionMessage.showAndWait();
+                    decisionMessage.close();
                 }else if(option.get() == declineTrade){
-                    tradeMessage.setContentText(playerTwo.getName() + "declined your offer");
-                    tradeMessage.show();
-                    tradeMessage.close();
+                    decisionMessage.setHeaderText(playerTwo.getName() + " declined your offer");
+                    decisionMessage.showAndWait();
+                    decisionMessage.close();
                     window.setScene(gameBoardScene);
                 }
             }else{ // playerTwo is a AI
                 tradeMessage = new Alert(Alert.AlertType.INFORMATION);
                 tradeMessage.setTitle("Property Tycoon AI Trading Decision" );
                 // AI decide if they want to trade or not
-                boolean tradeDecision = playerTwo.decide(give, receive);
+                boolean tradeDecision = playerTwo.decide( giveObject, receiveObject);
                 // tradeDecision (true = accept, false = decline trade)
                 if(tradeDecision == true){
                     tradeMessage.setHeaderText(playerTwo.getName() + " accepted your offer");
-                    tradingChangeOwner(currentPlayer, playerTwo, give, receive);
+                    tradingChangeOwner(currentPlayer, playerTwo, giveObject, receiveObject);
                     tradeMessage.show();
                     tradeMessage.close();
                 }else{
@@ -1136,6 +1228,7 @@ public class Main extends Application {
             tradePlayer.removeAsset(asset);
             currentPlayer.addAsset(asset);
         }
+
         // TODO merge will cal
         // Go through the 'receive' link list on what current player will give to the selected player and change ownership of asset
         for(Object asset: receive){
@@ -1148,7 +1241,7 @@ public class Main extends Application {
      * Add all of the trade-able assets to the given list view with the given player
      * @param player The current player you wish to find their assets
      * @param asset A empty list view which will show all of the trade-able assets
-     * @return A filled list view of all of the trade-able assets
+     * @return A filled list view of all of the trade-able assets in the datatype String
      */
     public ListView addAssetToViewList(Player player, ListView asset){
         LinkedList<Object> tradeableAsset = player.tradeableAssets(player);
@@ -1159,6 +1252,24 @@ public class Main extends Application {
             asset.getItems().add(propertyTile.getTitle());
         }
         return asset;
+    }
+
+    /***
+     * A function used to fetch the asset object with the given name in the linked-list
+     * @param assetName A list of all the names of the asset in the datatype of String
+     * @return A list of objects of the given assetName
+     */
+    public Object getAsset(Player player, LinkedList<Object> assetName){
+        LinkedList<Object> assetObject = new LinkedList<>();
+        for(Object asset: assetName){
+            for(int i = 0; i < player.getAssets().size(); i++){
+                BoardTile assetTile = (BoardTile) player.getAssets().get(i);
+                if(asset == assetTile.getTitle()){
+                    assetObject.add(player.getAssets().get(i));
+                }
+            }
+        }
+        return assetObject;
     }
 
     /***
@@ -1182,15 +1293,14 @@ public class Main extends Application {
         Button leaveTrade = new Button("Leave Trade");
 
         ComboBox listOfPlayer = new ComboBox();
-        // Copying all of the players - current player (choices for current player to trade with)
-        LinkedList<Player> tempPlayerList = (LinkedList<Player>) order.clone();
+
+        // Adding the players name that current player could trade with (cannot be self)
         for(int i = 0; i < order.size(); i++){
-            // todo remove after test
             // Make sure you cant trade with yourself
-            if(currentPlayer.getName() != tempPlayerList.get(i).getName()){
-                listOfPlayer.getItems().add(tempPlayerList.get(i).getName());
+            if(currentPlayer.getName() != order.get(i).getName()){
+                listOfPlayer.getItems().add(order.get(i).getName());
                 // Default value set to the first player that is not itself
-                listOfPlayer.setValue(tempPlayerList.get(i).getName());
+                listOfPlayer.setValue(order.get(i).getName());
             }
         }
 
@@ -1364,7 +1474,6 @@ public class Main extends Application {
     }
 
     public void auctionLogic(Player player, int bid, BoardTile asset){
-        // TODO include in merge cal
         // If current bid is higher than the highest bidder, replace with the newest bid
         if(bid > highestBidder.getValue()){
             // Replace highestBidder with the new highest bidder (name and their bid)
@@ -1508,6 +1617,24 @@ public class Main extends Application {
         gameSystem = new Board(order, board, pot, opp, gameMode, this);
     }
 
+    /**
+     * Creates the required popup to allow a player to buy an asset or to send it to auction instead
+     */
+    public boolean assetBuyingScene(String title, String cost){
+        boolean decision = false;
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Property Tycoon");
+        alert.setHeaderText("You've landed on " + title + ".");
+        alert.setContentText("Do you want to buy this for £" + cost);
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == ButtonType.OK){
+            decision = true;
+        } else {
+            decision = false;
+        }
+        return(decision);
+    }
+
     /***
      * How the game is run
      */
@@ -1543,17 +1670,16 @@ public class Main extends Application {
                         // Player click roll dice from alert
                         diceRollMessage(currentPlayer, count);
                     }
+                    //currentPlayer.setLastRoll(gameSystem.roll(currentPlayer, count));//keep track of player roll
                     currentPlayer.passGo();
                     gameSystem.tiles.get(currentPlayer.getCurrentPos()).activeEffect(currentPlayer);
 
                     if (gameSystem.turnOrder.contains(currentPlayer) && !currentPlayer.isInJail()) {
                         if (!currentPlayer.isAiAgent()) {
+                            //currentPlayer.leaveGame();
                             // Changes to the trading setup scene (popup)
                             tradingSetupScene(currentPlayer);
                             //TODO Player property management GUI here
-                            //TODO Ask player if they want to trade/ GUI trade here
-                            //TODO create scene to ask if player would want to leave?
-                            //currentPlayer.leaveGame();
                         } else {
                             currentPlayer.initiateTrade();
                             if (gameSystem.turns > retirePoint && gameSystem.turnOrder.size() > 4) {

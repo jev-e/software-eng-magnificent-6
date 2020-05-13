@@ -289,13 +289,11 @@ public class Board {
 
 
         assert winner != null;
-        //TODO GUI Results screen here and remove prints (done but double check)
         guiMain.winnerSetupScene(winner);
-//        System.out.println(winner.getName() + " has won the game with a net worth of " + winner.netWorth());
-//        storeData( winner, winner.netWorth() );
-//        for( String key: dataStore.keySet() ){
-//            System.out.println(dataStore.get(key).size() + " " + key + " " + dataStore.get(key).toString());
-//        }
+        storeData( winner, winner.netWorth() );
+        for( String key: dataStore.keySet() ){
+            System.out.println(dataStore.get(key).size() + " " + key + " " + dataStore.get(key).toString());
+        }
 
 
 
@@ -336,7 +334,6 @@ public class Board {
         dataStore.get(p.getName()).add(pair);
     }
 
-
     /**
      * Getter for finish time
      * return time game finished
@@ -375,6 +372,10 @@ public class Board {
      */
     public String getVersion() {
         return version;
+    }
+
+    public boolean getPurchase(String title, String cost) {
+        return (guiMain.assetBuyingScene(title,cost));
     }
 
 }

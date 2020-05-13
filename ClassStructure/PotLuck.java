@@ -1,5 +1,7 @@
 package ClassStructure;
 
+import javafx.scene.control.Label;
+
 /**
  * Pot luck tile
  */
@@ -42,6 +44,14 @@ public class PotLuck extends TileEffect {
      */
     public String getCurrentCardText() {
         return currentCardText;
+    }
+
+    /**
+     * init the gui elements
+     */
+    @Override
+    public void initGuiElements() {
+        super.tileName = new Label();
     }
 }
 

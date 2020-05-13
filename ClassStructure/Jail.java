@@ -1,5 +1,7 @@
 package ClassStructure;
 
+import javafx.scene.control.Label;
+
 /**
  * Jail tile effect player
  */
@@ -46,5 +48,13 @@ public class Jail extends TileEffect{
         }
         currentPlayer.addAction(text);//add text to log
         //Otherwise player is just visiting
+    }
+
+    /**
+     * init the gui elements
+     */
+    @Override
+    public void initGuiElements() {
+        super.tileName = new Label();
     }
 }

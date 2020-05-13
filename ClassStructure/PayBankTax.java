@@ -1,5 +1,7 @@
 package ClassStructure;
 
+import javafx.scene.control.Label;
+
 /**
  * Player pays tax to the bank tile events
  * Super tax
@@ -47,5 +49,13 @@ public class PayBankTax extends TileEffect{
 
     public void setAmount(int amount) {
         this.amount = amount;
+    }
+
+    /**
+     * init the gui elements
+     */
+    @Override
+    public void initGuiElements() {
+        super.tileName = new Label();
     }
 }

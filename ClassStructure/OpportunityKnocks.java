@@ -1,5 +1,7 @@
 package ClassStructure;
 
+import javafx.scene.control.Label;
+
 /**
  * Opportunity Knocks tile event
  */
@@ -42,5 +44,13 @@ public class OpportunityKnocks extends TileEffect{
      */
     public String getCurrentCardText() {
         return currentCardText;
+    }
+
+    /**
+     * init the gui elements
+     */
+    @Override
+    public void initGuiElements() {
+        super.tileName = new Label();
     }
 }

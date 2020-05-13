@@ -1,5 +1,7 @@
 package ClassStructure;
 
+import javafx.scene.control.Label;
+
 /**
  * Free Parking tile functionality
  */
@@ -24,6 +26,13 @@ public class FreeParking extends TileEffect{
         this.text = "You collect the tax pot";//activation text constant
          this.canPurchase = false;
     }
+
+    @Override
+    public void initGuiElements() {
+        super.tileName = new Label();
+    }
+
+
 
     /**
      * On activation the tax bot amount is given to the player who landed on the tile

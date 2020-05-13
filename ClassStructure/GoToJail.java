@@ -1,6 +1,8 @@
 package ClassStructure;
 
 
+import javafx.scene.control.Label;
+
 /**
  * Go to Jail tile event
  */
@@ -25,6 +27,14 @@ public class GoToJail extends TileEffect {
     }
 
     /**
+     * init gui elements
+     */
+    @Override
+    public void initGuiElements() {
+        super.tileName = new Label();
+    }
+
+    /**
      * On land the player is sent to jail without pass go check. The players jailed status is set to true
      * @param currentPlayer player who landed on the tile and target of effect
      */
@@ -34,6 +44,7 @@ public class GoToJail extends TileEffect {
         int jailPosition = currentPlayer.getCurrentPos();
         currentPlayer.addAction(text);//add text to log
         board.tiles.get(jailPosition).activeEffect(currentPlayer);//activate jail as the player has just been moved there
-        }
     }
+}
+
 

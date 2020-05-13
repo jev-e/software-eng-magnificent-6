@@ -29,9 +29,9 @@ public class Property extends BoardTile{
 
     // GUI Assets
     @JsonIgnore
-    Label tilePrice = new Label();
+    Label tilePrice;
     @JsonIgnore
-    private Canvas colourDisplay = new Canvas(100,15); // Displays colour of property group
+    private Canvas colourDisplay; // Displays colour of property group
 
     /**
      * Default constructor for Jackson
@@ -70,6 +70,16 @@ public class Property extends BoardTile{
         this.rentDoubled = false;
         this.housesNo = 0;
         this.hotelNo = 0;
+    }
+
+    /**
+     * init the gui elements
+     */
+    @Override
+    public void initGuiElements() {
+        super.tileName = new Label();
+        tilePrice = new Label();
+        colourDisplay = new Canvas(100,15);
     }
 
     /**
@@ -195,12 +205,12 @@ public class Property extends BoardTile{
      *
      * @param currentPlayer the player currently on property tile
      */
-    private void purchase( Player currentPlayer) {
+    private void purchase(Player currentPlayer) {
 
-        boolean wishToPurchase = false; //flag for purchase choice
+        boolean wishToPurchase; //flag for purchase choice
 
         if (!currentPlayer.isAiAgent()) {
-            wishToPurchase = false;//TODO Change this to get player choice from GUI
+            wishToPurchase = super.board.getPurchase(title, Integer.toString(cost));
         } else {
             wishToPurchase = currentPlayer.decide(this);
         }
@@ -220,7 +230,6 @@ public class Property extends BoardTile{
             //trigger auction
             //TODO GUI auction activated here
         }
-
     }
 
     /**

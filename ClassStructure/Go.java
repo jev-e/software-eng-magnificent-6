@@ -1,5 +1,7 @@
 package ClassStructure;
 
+import javafx.scene.control.Label;
+
 /**
  * Go tile
  */
@@ -22,5 +24,13 @@ public class Go extends TileEffect {
     @Override
     public void activeEffect(Player currentPlayer) {
         currentPlayer.addAction(text);//add text to log
+    }
+
+    /**
+     * init the gui elements
+     */
+    @Override
+    public void initGuiElements() {
+        super.tileName = new Label();
     }
 }

@@ -1,5 +1,7 @@
 package ClassStructure;
 
+import javafx.scene.control.Label;
+
 import java.util.LinkedList;
 
 /**
@@ -88,10 +90,10 @@ public class Station extends TileEffect {
      */
     private void purchase(Player currentPlayer) {
 
-        boolean wishToPurchase = false; //flag for purchase choice
+        boolean wishToPurchase; //flag for purchase choice
 
         if (!currentPlayer.isAiAgent()) {
-            wishToPurchase = false;//TODO Change this to get player choice from GUI
+            wishToPurchase = super.board.getPurchase(title, Integer.toString(cost));
         } else {
             wishToPurchase = currentPlayer.decide(this);
         }
@@ -138,5 +140,13 @@ public class Station extends TileEffect {
 
     public void setOwner(Player owner) {
         this.owner = owner;
+    }
+
+    /**
+     * init the gui elements
+     */
+    @Override
+    public void initGuiElements() {
+        super.tileName = new Label();
     }
 }

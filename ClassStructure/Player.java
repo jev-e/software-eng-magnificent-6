@@ -13,7 +13,7 @@ public class Player {
     private String name; //name of player
     private Token token; //token representation of player on board
     private int money; //money held by player
-    private LinkedList<Object> assets; //assets of player (utilities, station, property, get out of jail card)
+    public LinkedList<Object> assets; //assets of player (utilities, station, property, get out of jail card)
     private boolean canBuy; //flag for if player is eligible for purchasing property
     private boolean inJail; //indicator to differ between players who are jailed or just visiting
     private int jailTime; //counter to indicate how many turns a player has spent in jail
@@ -273,7 +273,7 @@ public class Player {
         }
         //Player choice here
         if (!isAiAgent()) {//if human player
-            //TODO GUI Jail decision (done but double check)
+            //TODO GUI Jail decision
             board.callJailSetupScene(this, getOutOfJail);
         } else {
             if (getOutOfJail != null) {

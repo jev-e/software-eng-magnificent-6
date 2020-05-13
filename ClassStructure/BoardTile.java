@@ -30,8 +30,12 @@ public abstract class BoardTile {
 
     // GUI Assets
     @JsonIgnore
-    Label tileName = new Label();
+    Label tileName;
 
+    /**
+     * abstract method to init all gui elements to prevent javaFX conflicts
+     */
+    public abstract void initGuiElements();
 
     /**
      * Handles the desired effect for card or tiles
