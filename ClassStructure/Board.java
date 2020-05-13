@@ -187,6 +187,15 @@ public class Board {
         guiMain.sentToJailSetupScene(currentPlayer, jailCard);
     }
 
+    /***
+     Call the front-end function to create the Scene for auctioning
+     * @param currentPlayer the current player
+     * @param asset The asset (station, property, utility) that is up for auction
+     */
+    public void callAuctionSetupScene(Player currentPlayer, BoardTile asset){
+        guiMain.auctionPlayerSetup(currentPlayer, asset);
+    }
+
     /**
      * Starts the game timer, must be called before starting main game loop
      */
