@@ -1347,39 +1347,41 @@ public class Main extends Application {
     /***
      * Create a list of all of the players in turn order minus current player (potential bidders)
      * @param currentPlayer The current Player that cannot afford the asset or wishes to auction it
+     * @param asset The asset (station, property, utility) that is up for auction
      */
-    public void auctionPlayerSetup(Player currentPlayer){
-        // Copying all of the players - current player (current player could not afford the boardTile or does not wish to buy it)
-        auctionPlayerList = (LinkedList<Player>) order.clone();
-        for(int i = 0; i < order.size(); i++){
-            // Constraint check to ensure current player cant bid in the auction
-            if(currentPlayer.getName() == auctionPlayerList.get(i).getName()){
-                auctioneer = auctionPlayerList.get(i);
-                auctionPlayerList.remove(i);
+    public void auctionPlayerSetup(Player currentPlayer, BoardTile asset){
+        for(Player bidder: gameSystem.turnOrder){
+            if(bidder == currentPlayer){
+                // Variable is used when auction is restarted (know who initiated the auction)
+                auctioneer = currentPlayer;
+            }else if(bidder != currentPlayer && !bidder.isInJail()){
+                // Check bidder is not the auctioneer and is not in jail (player in jailed cannot participate in auctions)
+                auctionSetupScene(bidder, asset);
             }
         }
     }
 
     /***
      * Create a popup scene where the auctioning would happen if the current player does not want/ afford a unowned property
-     * @param player The player from the turn order (not current player) that wishes to bid
+     * @param bidder The player from the turn order (not current player) that wishes to bid
      * @param asset A boardTile that could either be station, utility or property that can be auctioned
      */
-    public void auctionSetupScene(Player player, BoardTile asset){
-        Stage auctionPopUpStage = new Stage();
+    public void auctionSetupScene(Player bidder, BoardTile asset){
         // TODO copy over in merge cal
+        Stage auctionPopUpStage = new Stage();
         VBox auctionSetupPane = new VBox(10);
         auctionSetupPane.setAlignment(Pos.CENTER);
         auctionSetupPane.setPadding(new Insets(0, 20, 10, 20));
         HBox optionPane = new HBox(10);
         optionPane.setAlignment(Pos.CENTER);
 
-        // Holds the player index from auctionPlayerList
-        int playerIndex = 0;
         Label title = new Label("Property Tycoon Auctioning");
         Label propName = new Label();
-        Label bidTitle = new Label("Enter in your bid down below " + player.getName());
+        Label bidTitle = new Label("Enter in your bid down below " + bidder.getName());
         Label highestBid = new Label();
+
+        // Holds the player index from auctionPlayerList
+//        int playerIndex = 0;
 
         // If its not the first person to bid
         if(highestBidder.getValue() != 0){
@@ -1419,12 +1421,13 @@ public class Main extends Application {
             propName.setText(asset.getTitle());
         }
 
-        // Finding the player index
-        for(int i = 0; i < auctionPlayerList.size(); i++){
-            if(player.getName() == auctionPlayerList.get(i).getName()){
-                playerIndex = i;
-            }
-        }
+        //TODO remove i think
+//        // Finding the player index
+//        for(int i = 0; i < auctionPlayerList.size(); i++){
+//            if(player.getName() == auctionPlayerList.get(i).getName()){
+//                playerIndex = i;
+//            }
+//        }
 
         // CSS
         title.setStyle(
@@ -1433,27 +1436,33 @@ public class Main extends Application {
         propName.setStyle("-fx-font-size: 15;");
         bidTitle.setStyle("-fx-font-size: 14;");
 
+
         // Button functionality
         bid.setOnAction(e -> {
+            Alert errorMessage = new Alert(Alert.AlertType.ERROR);
+            errorMessage.setTitle("Property Tycoon Auction");
             try{
-                // TODO check if they have enough money to buy this asset with the bid they entered
                 // Check to see if the bid is a number and doesnt contain any text
-                player.getMoney();
                 int numConstraint = Integer.parseInt(bidTxt.getText());
-                auctionLogic(player, numConstraint, asset);
+                if(bidder.getMoney() >= numConstraint){
+                    auctionLogic(bidder, numConstraint, asset);
+                }else{
+                    errorMessage.setHeaderText("Property Tycoon Bid Error");
+                    errorMessage.setContentText("Bid exceeded balance " + bidder.getName());
+                    errorMessage.showAndWait();
+                    errorMessage.close();
+                }
             }catch(Exception except){
                 // Remove invalid bid from text field
                 bidTxt.clear();
-                Alert errorMessage = new Alert(Alert.AlertType.ERROR);
-                errorMessage.setTitle("Property Tycoon Auction");
                 errorMessage.setHeaderText("Property Tycoon Bid Error");
                 errorMessage.setContentText("Please enter in a valid bid (numbers only!)");
                 errorMessage.showAndWait();
+                errorMessage.close();
             }
         });
-        int finalPlayerIndex = playerIndex;
         withdraw.setOnAction(e -> {
-            auctionPlayerList.remove(finalPlayerIndex);
+            auctionPopUpStage.close();
         });
         help.setOnAction(e -> {
             Alert helpMessage = new Alert(Alert.AlertType.INFORMATION);
@@ -1462,6 +1471,24 @@ public class Main extends Application {
             helpMessage.setContentText("Remember you can only bid once for a property, so bid wisely!");
             helpMessage.showAndWait();
         });
+
+//        bid.setOnAction(e -> {
+//            try{
+//                // TODO check if they have enough money to buy this asset with the bid they entered
+//                // Check to see if the bid is a number and doesnt contain any text
+//                player.getMoney();
+//                int numConstraint = Integer.parseInt(bidTxt.getText());
+//                auctionLogic(player, numConstraint, asset);
+//            }catch(Exception except){
+//                // Remove invalid bid from text field
+//                bidTxt.clear();
+//                Alert errorMessage = new Alert(Alert.AlertType.ERROR);
+//                errorMessage.setTitle("Property Tycoon Auction");
+//                errorMessage.setHeaderText("Property Tycoon Bid Error");
+//                errorMessage.setContentText("Please enter in a valid bid (numbers only!)");
+//                errorMessage.showAndWait();
+//            }
+//        });
 
         optionPane.getChildren().addAll(bid, withdraw, help);
         auctionSetupPane.getChildren().addAll(title, propImg, propName, highestBid, bidTitle, bidTxt, optionPane);
@@ -1473,32 +1500,31 @@ public class Main extends Application {
         auctionPopUpStage.close();
     }
 
-    public void auctionLogic(Player player, int bid, BoardTile asset){
+    public void auctionLogic(Player bidder, int bid, BoardTile asset){
         // If current bid is higher than the highest bidder, replace with the newest bid
         if(bid > highestBidder.getValue()){
             // Replace highestBidder with the new highest bidder (name and their bid)
-            highestBidder = new Pair<>(player.getName(), bid);
+            highestBidder = new Pair<>(bidder.getName(), bid);
         }else if(bid > secondHighestBidder.getValue()){
             // Stores the second highest bid for the current auction (use for constraint check)
-            secondHighestBidder = new Pair<>(player.getName(), bid);
+            secondHighestBidder = new Pair<>(bidder.getName(), bid);
         }
 
         if(auctionPlayerList.size() == 1){
             // Fetch the highest bidder player object with the given string
-            for(int i = 0; i < auctionPlayerList.size(); i++){
-                if(highestBidder.getKey() == auctionPlayerList.get(i).getName()){
-                    highestPlayerBidder = auctionPlayerList.get(i);
+            for(int i = 0; i < order.size(); i++){
+                if(highestBidder.getKey() == order.get(i).getName()){
+                    highestPlayerBidder = order.get(i);
                 }
             }
         }
 
-        // to do
         if(auctionPlayerList.size() == 1 && highestBidder.getValue() > secondHighestBidder.getValue()){
-            // have player deduct the price
+            highestPlayerBidder.deductAmount(highestBidder.getValue());
+            highestPlayerBidder.addAsset(asset);
         }else if(auctionPlayerList.size() == 1 && highestBidder.getValue() == secondHighestBidder.getValue()){
             // Restart auction if highest bid == second highest bid
-            auctionPlayerSetup(auctioneer);
-            auctionSetupScene(player, asset);
+            auctionPlayerSetup(auctioneer, asset);
         }
 
     }
