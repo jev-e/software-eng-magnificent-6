@@ -402,6 +402,14 @@ public class Board {
         return version;
     }
 
+    /**
+     * Getter for tax pot
+     * @return the total of money in tax pot
+     */
+    public int getTaxPot() {
+        return taxPot;
+    }
+
     // -- "Middle Man" Functions --
 
     /**
@@ -468,9 +476,22 @@ public class Board {
         }
     }
 
+    /**
+     * Updates the houses / hotels shown on the board
+     * @param tile The given tile requiring to be updated
+     */
     public void refreshTileDevelopment(Property tile) {
         if (guiMain != null) {
             guiMain.refreshDevelopment(tile);
+        }
+    }
+
+    /**
+     * Update the Tax Pot Label on the GUI
+     */
+    public void updateTaxPot() {
+        if (guiMain != null) {
+            guiMain.updatePot();
         }
     }
 }

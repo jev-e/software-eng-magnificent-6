@@ -33,6 +33,7 @@ public class PlayerPaysTax extends CardEffect {
         currentPlayer.addAction(cardText);//add text to log
         int payment = currentPlayer.deductAmount(amount);
         this.board.taxPot += payment;//add amount to tax pot
+        this.board.updateTaxPot();
     }
 
     public int getAmount() {

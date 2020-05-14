@@ -39,10 +39,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Main extends Application {
 
     // Variables
+    private int playerNo;               // Number of players in the game
+    private Label potTotal;             // Keeps track of the tax / Free Parking pot total
     private FlowPane[] playerCards;     // Player cards on right hand side of game screen
     private FlowPane[] tokenDisplay;    // FlowPanes showing tokens on tiles
     private FlowPane[] propDevelopment; // Shows houses and hotel on the property
-    private int playerNo;               // Number of players in the game
+
     private Player[] players;           // Keep permanent order of players for player cards
     private Label[] playerMoney;        // Labels to show how much money the player has
     private Label[] playerNames;        // Labels of player names to show in assets
@@ -58,6 +60,7 @@ public class Main extends Application {
     private Image oppKnocksPNG;
     private Image potLuckPNG;
     private Image stationPNG;
+    private Image globalPotPNG;
 
     // Images - Assets
     private Image hotelPNG;
@@ -78,6 +81,7 @@ public class Main extends Application {
     private ImageView oppKnocks7, oppKnocks22, oppKnocks36;      // Opportunity Knocks
     private ImageView potLuck2, potLuck17, potLuck33;            // Pot Lucks
     private ImageView bStation, hStation, fStation, lStation;    // Stations
+    private ImageView globalPot;
 
     // ImageViews - Assets
     private ImageView hotel, house, jailFreeCard;
@@ -87,6 +91,10 @@ public class Main extends Application {
 
     // Scenes
     private Scene gameScene; // Shows gameBP
+
+    // AnchorPanes
+
+
 
     // BorderPanes
     private BorderPane gameBP; // Holds entire game screen
@@ -98,7 +106,7 @@ public class Main extends Application {
     private GridPane leftColGP;  // Left 9 tiles container (Not the Corners)
     private GridPane rightColGP; // Right 9 tiles container (Not the corners)
     private GridPane botRowGP;   // Bottom 9 tiles container (Not the corners)
-
+    private GridPane midGridGP;  // Middle of the board
     // VBoxes
 
     private VBox playersVB; // Player cards, Right side of Screen
@@ -160,6 +168,7 @@ public class Main extends Application {
         displayPlayerCards(); // Displays player cards to the gameBP
         displayGameBoard();   // Displays main game board
         initalTokenDisplay(); // Draw Tokens at GO Tile
+        displayPot();
 
         // Show Game Screen
         window.setScene(gameScene);
@@ -345,7 +354,24 @@ public class Main extends Application {
     }
 
     /**
-     * Displays Board to primaryStage
+     * Displays pot image and label for pot total
+     */
+    public void displayPot() {
+        updatePot();
+
+        midGridGP.add(globalPot, 0, 0);
+        midGridGP.add(potTotal, 1 ,0);
+    }
+
+    /**
+     * Updates the Tax Pot label
+     */
+    public void updatePot() {
+        potTotal.setText("Tax Pot: £" + String.valueOf(gameSystem.getTaxPot()));
+    }
+
+    /**
+     * Displays All Tiles to the boardGP
      */
     public void displayGameBoard() {
 
@@ -612,13 +638,6 @@ public class Main extends Application {
     }
 
     /**
-     * Displays houses and hotels to a given property
-     */
-    public void displayHousesHotels() {
-
-    }
-
-    /**
      * Formats a given player card, called by displayPlayerCards()
      *
      * @param card The player card to be formatted
@@ -654,18 +673,24 @@ public class Main extends Application {
         leftColGP = new GridPane();
         rightColGP = new GridPane();
         botRowGP = new GridPane();
+        midGridGP = new GridPane();
 
         // Format GameBP
         gameBP.setCenter(label);
         gameBP.setMargin(label, insets);
+
+        // Format midGridGP
+        midGridGP.setPadding(insets);
 
         // Add inner containers to boardGP
         boardGP.add(topRowGP, 1, 0);
         boardGP.add(leftColGP, 0, 1);
         boardGP.add(rightColGP, 2,1);
         boardGP.add(botRowGP,1,2);
+        boardGP.add(midGridGP, 1, 1);
 
         // Initialise Variables
+        potTotal = new Label("£ 0");
         tokenDisplay = new FlowPane[40];
         propDevelopment = new FlowPane[40];
 
@@ -699,6 +724,7 @@ public class Main extends Application {
             oppKnocksPNG = new Image(new FileInputStream("Lib/TilesDesign/opportunityKnock64bit.png"));
             potLuckPNG = new Image(new FileInputStream("Lib/TilesDesign/potLuck64bit.png"));
             stationPNG = new Image(new FileInputStream("Lib/TilesDesign/trainStation64bit.png"));
+            globalPotPNG = new Image(new FileInputStream("Lib/TilesDesign/globalPot64bit.png"));
 
             // Assets
             hotelPNG = new Image(new FileInputStream("Lib/Assets/hotel64bit.png"));
@@ -729,6 +755,7 @@ public class Main extends Application {
         visitingJail = new ImageView(visitingPNG);
         edisonWater = new ImageView(waterPNG);
         teslaPower = new ImageView(powerPNG);
+        globalPot = new ImageView(globalPotPNG);
 
         // Tiles - Stations
         bStation = new ImageView(stationPNG);

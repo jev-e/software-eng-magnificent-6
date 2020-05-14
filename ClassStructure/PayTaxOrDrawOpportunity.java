@@ -38,6 +38,7 @@ public class PayTaxOrDrawOpportunity extends CardEffect {
             if (super.board.payTaxOrDrawOpKnock()) {
                 int payment = currentPlayer.deductAmount(amount);
                 this.board.taxPot += payment;//add the amount the player paid to the tax pot
+                this.board.updateTaxPot();
             } else {
                 this.board.drawOpportunityKnocks().effect(currentPlayer);//draw card and activate it's effect
             }
@@ -46,6 +47,7 @@ public class PayTaxOrDrawOpportunity extends CardEffect {
                 currentPlayer.addAction("pay £10");//add text to log
                 int payment = currentPlayer.deductAmount(amount);
                 this.board.taxPot += payment;//add the amount the player paid to the tax pot
+                this.board.updateTaxPot();
             } else {
                 currentPlayer.addAction("draw Opportunity Knocks card");//add text to log
                 this.board.drawOpportunityKnocks().effect(currentPlayer);//draw card and activate it's effect

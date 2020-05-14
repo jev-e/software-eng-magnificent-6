@@ -44,6 +44,6 @@ public class FreeParking extends TileEffect{
         this.board.taxPot = 0;//resets tax pot
         currentPlayer.addAction(text + " £" + amount);//add text to action log
         currentPlayer.payPlayerAmount(amount);
-
+        this.board.updateTaxPot();
     }
 }
