@@ -1561,8 +1561,8 @@ public class Main extends Application {
 
         // Adding the players name that current player could trade with (cannot be self)
         for(int i = 0; i < order.size(); i++){
-            // Make sure you cant trade with yourself and players are not in jail (cannot trade with players that is in jail)
-            if(currentPlayer.getName() != order.get(i).getName() && !order.get(i).isInJail()){
+            // Make sure you cant trade with yourself and players are not in jail (cannot trade with players that is in jail) and also players has shit trade
+            if(currentPlayer.getName() != order.get(i).getName() && !order.get(i).isInJail() && order.get(i).getAssets().size() != 0){
                 listOfPlayer.getItems().add(order.get(i).getName());
                 // Default value set to the first player that is not itself
                 listOfPlayer.setValue(order.get(i).getName());
@@ -1645,6 +1645,12 @@ public class Main extends Application {
         Label propName = new Label();
         Label bidTitle = new Label("Enter in your bid down below " + bidder.getName());
         Label highestBid = new Label();
+
+        // AI auction
+        if(bidder.isAiAgent()){
+            int aiDecision = bidder.auctionDecide(asset, highestBidder.getValue());
+            auctionLogic(bidder, aiDecision, asset, bidderLeft);
+        }
 
         // If its not the first person to bid
         if(highestBidder.getValue() != 0){
@@ -2366,7 +2372,6 @@ public class Main extends Application {
         unMortgagePopUpStage.showAndWait();
         unMortgagePopUpStage.close();
     }
-
 
     /***
      * Create a popup scene where jail decision happens (serve time, bail or use get out of jail card)
