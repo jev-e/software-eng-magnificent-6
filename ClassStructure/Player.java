@@ -1,5 +1,7 @@
 package ClassStructure;
 
+import GUI.Main;
+
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -111,6 +113,7 @@ public class Player {
         } else if (item instanceof Utility) {
             ((Utility) item).setOwner(this);
         }
+        board.updatePlayerAssets(this, item, "add");
     }
 
     /**
@@ -126,6 +129,7 @@ public class Player {
             ((Utility) item).setOwner(null);
         }
         assets.remove(item);
+        board.updatePlayerAssets(this, item, "remove");
     }
 
     /**
@@ -151,6 +155,8 @@ public class Player {
     public void setCurrentPos(int currentPos) {
         this.previousPos = this.currentPos;//maintains previous position before change
         this.currentPos = currentPos;
+        board.movePlayerToken(this);
+
     }
 
     public int getPreviousPos() {

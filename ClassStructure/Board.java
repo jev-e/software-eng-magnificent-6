@@ -378,4 +378,25 @@ public class Board {
         return (guiMain.assetBuyingScene(title,cost));
     }
 
+    // -- "Middle Man" Functions --
+
+    /**
+     * Called by Player in .setCurrentPos() to update the player's token position
+     *
+     * @param currentPlayer current player who's token needs to be moved
+     */
+    public void movePlayerToken(Player currentPlayer) {
+        guiMain.displayTokens(currentPlayer);
+    }
+
+    /**
+     * Called by Player's add and remove assset functions to update on screen assets owned
+     *
+     * @param currentPlayer current player who's assets need to be update
+     * @param item The asset that has been added or removed
+     * @param use The case in which being called, "add" or "remove"
+     */
+    public void updatePlayerAssets(Player currentPlayer, Object item, String use) {
+        guiMain.displayPlayerAssets(currentPlayer, item, use);
+    }
 }

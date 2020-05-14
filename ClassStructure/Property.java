@@ -79,7 +79,7 @@ public class Property extends BoardTile{
     public void initGuiElements() {
         super.tileName = new Label();
         tilePrice = new Label();
-        colourDisplay = new Canvas(100,15);
+        colourDisplay = new Canvas(120,15);
     }
 
     /**
@@ -225,6 +225,7 @@ public class Property extends BoardTile{
                 owner = currentPlayer;
                 currentPlayer.addAsset(this);
                 currentPlayer.addAction("Purchased " + title + " for £" + cost);
+
             }
         } else {
             //trigger auction
@@ -544,6 +545,6 @@ public class Property extends BoardTile{
 
         GraphicsContext gc = this.colourDisplay.getGraphicsContext2D();
         gc.setFill(temp);
-        gc.fillRect(0, 0, 100, 15);
+        gc.fillRect(0, 0, 120, 15);
     }
 }
