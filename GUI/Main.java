@@ -20,6 +20,7 @@ import javafx.stage.Stage;
 import javafx.util.Pair;
 
 
+import javax.xml.stream.events.DTD;
 import java.lang.Object;
 
 import java.io.FileInputStream;
@@ -138,6 +139,18 @@ public class Main extends Application {
         window.setScene(menuScene);
         window.show();
         //displayGameScene();
+
+//        createBoard("full");
+//        int[] buildingRents = {10,10,20,30};
+//        Player basic = new Player("Calvin", Token.SPOON, gameSystem, false);
+//        order.add(basic);
+//        Property test = (Property) gameSystem.tiles.get(1);
+//        System.out.println(test.getTitle());
+//        basic.addAsset(test);
+//        test.setHousesNo(4);
+//        test.setHotelNo(0);
+//        test.setDeveloped(true);
+//        assetSellingManagementSetupScene(basic, 500);
     }
 
     public static void main(String[] args) {
@@ -1182,8 +1195,29 @@ public class Main extends Application {
             createBoard(gameMode);
             // Assign player to the turn order
             assignPlayerToTurnOrder();
-
-            // Change scene
+            // TODO delete after
+            Property test = (Property) gameSystem.tiles.get(1);
+            Property test2 = (Property) gameSystem.tiles.get(3);
+            Property test3 = (Property) gameSystem.tiles.get(39);
+            Property test4 = (Property) gameSystem.tiles.get(14);
+            Property test5 = (Property) gameSystem.tiles.get(19);
+            Station test6 = (Station) gameSystem.tiles.get(5);
+            Station test7 = (Station) gameSystem.tiles.get(15);
+            Utility test8 = (Utility) gameSystem.tiles.get(12);
+            Utility test9 = (Utility) gameSystem.tiles.get(28);
+            test2.setHotelNo(1);
+            test2.setDeveloped(true);
+            test3.setHotelNo(1);
+            test3.setDeveloped(true);
+            gameSystem.turnOrder.getFirst().addAsset(test);
+            gameSystem.turnOrder.getFirst().addAsset(test4);
+            gameSystem.turnOrder.getFirst().addAsset(test2);
+            gameSystem.turnOrder.getFirst().addAsset(test6);
+            gameSystem.turnOrder.getFirst().addAsset(test8);
+            gameSystem.turnOrder.get(1).addAsset(test3);
+            gameSystem.turnOrder.get(1).addAsset(test5);
+            gameSystem.turnOrder.get(1).addAsset(test7);
+            gameSystem.turnOrder.get(1).addAsset(test9);
             displayGameScene();
             window.setScene(gameScene);
             gameLoop();
@@ -1587,7 +1621,6 @@ public class Main extends Application {
      * @param asset A boardTile that could either be station, utility or property that can be auctioned
      */
     public void auctionSetupScene(Player bidder, BoardTile asset){
-        // TODO copy over in merge cal
         Stage auctionPopUpStage = new Stage();
         VBox auctionSetupPane = new VBox(10);
         auctionSetupPane.setAlignment(Pos.CENTER);
@@ -1742,21 +1775,27 @@ public class Main extends Application {
         }
     }
 
+    /***
+     * Create the asset selling management scene (selling building, mortgage and sell properties)
+     * @param currentPlayer The current player
+     * @param fundNeededToRise The fund that current player needed to raise
+     */
     public void assetSellingManagementSetupScene(Player currentPlayer, int fundNeededToRise){
-        Stage assetManagementPopUpStage = new Stage();
+        Stage assetSellingManagePopUp = new Stage();
+
         VBox assetManagementSetupPane = new VBox(10);
         assetManagementSetupPane.setAlignment(Pos.CENTER);
         HBox optionPane = new HBox(5);
         optionPane.setAlignment(Pos.CENTER);
 
         Label title = new Label("Property Tycoon Asset Management");
-        //Label fundNeed = new Label("£" + fundNeededToRise + " fund is required " + currentPlayer.getName());
-        Label fundNeed = new Label("£" + fundNeededToRise + " fund is required ");
+        Label fundNeed = new Label("£" + fundNeededToRise + " fund is required " + currentPlayer.getName());
 
         Button sellBuilding = new Button("Sell Houses and Hotels");
         Button mortgageProp = new Button("Mortgage Properties");
         Button sellAsset = new Button("Sell Properties");
         fundRequired = new AtomicInteger(fundNeededToRise);
+
         // CSS
         title.setStyle(
                 "-fx-label-padding: 20 0 10 0;" + "-fx-font-size: 14;" + "-fx-font-weight: bold;"
@@ -1765,26 +1804,36 @@ public class Main extends Application {
 
         // Button functionality
         sellBuilding.setOnAction(e -> {
-            assetManagementPopUpStage.close();
             sellHouseHotel(currentPlayer);
+            fundNeed.setText("£" + fundRequired.intValue() + " fund is required " + currentPlayer.getName());
+            if(fundRequired.intValue() <= 0){
+                assetSellingManagePopUp.close();
+            }
         });
         mortgageProp.setOnAction(e -> {
-            assetManagementPopUpStage.close();
             mortgageProperties(currentPlayer);
+            fundNeed.setText("£" + fundRequired.intValue() + " fund is required " + currentPlayer.getName());
+            if(fundRequired.intValue() <= 0){
+                assetSellingManagePopUp.close();
+            }
         });
         sellAsset.setOnAction(e -> {
-            assetManagementPopUpStage.close();
             sellProperties(currentPlayer);
+            fundNeed.setText("£" + fundRequired.intValue() + " fund is required " + currentPlayer.getName());
+            if(fundRequired.intValue() <= 0){
+                assetSellingManagePopUp.close();
+            }
         });
 
         optionPane.getChildren().addAll(sellBuilding, mortgageProp, sellAsset);
         assetManagementSetupPane.getChildren().addAll(title, fundNeed, optionPane);
         assetSellingManagementScene = new Scene(assetManagementSetupPane, 400,400);
-        // Creating the popup effect
-        assetManagementPopUpStage.setScene(assetSellingManagementScene);
-        assetManagementPopUpStage.initModality(Modality.APPLICATION_MODAL);
-        assetManagementPopUpStage.showAndWait();
-        assetManagementPopUpStage.close();
+
+        // Pop Up
+        assetSellingManagePopUp.setScene(assetSellingManagementScene);
+        assetSellingManagePopUp.initModality(Modality.APPLICATION_MODAL);
+        assetSellingManagePopUp.showAndWait();
+        assetSellingManagePopUp.close();
     }
 
     /***
@@ -1793,24 +1842,20 @@ public class Main extends Application {
      */
     public void sellHouseHotel(Player currentPlayer){
         Stage sellHouseHotelPopUpStage = new Stage();
-        // TODO change !!!!
         VBox sellHouseHotelPane = new VBox(10);
         sellHouseHotelPane.setAlignment(Pos.CENTER);
         sellHouseHotelPane.setPadding(new Insets(0, 20, 10, 20));
         HBox optionPane = new HBox(5);
         optionPane.setAlignment(Pos.CENTER);
 
-        HashMap<Integer, Integer> houseSaleIds = new HashMap<>();
-        HashMap<Integer, Integer> hotelSaleIds = new HashMap<>();
-
         // Fetch all of the current player asset
         LinkedList<Object> playerAsset = currentPlayer.getAssets();
 
         Label title = new Label("Property Tycoon Property Management (Selling Houses and Hotels)");
         Label playerAssetMessage = new Label(currentPlayer.getName() + " this is all of your properties where you can sell houses and hotels");
+        Label remainingFundLeft = new Label("£" + fundRequired.intValue() + " fund is required " + currentPlayer.getName());
 
-        Button sellHouse = new Button("Selling a House");
-        Button sellHotel = new Button("Selling a Hotel");
+        Button sellBuilding = new Button("Selling Buildings");
         Button back = new Button("Return to Asset Selling Management ");
 
         // Creating a table view with the following columns
@@ -1827,12 +1872,12 @@ public class Main extends Application {
         assetInformation.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         assetInformation.getColumns().addAll(column1, column2, column3);
 
+        // Going through players asset and add it to table-view if its a property and is developed
         for(Object asset: playerAsset){
-            // Making sure asset is a property
             if(asset instanceof Property){
                 // Checking if the property contains houses or hotel
                 if(((Property) asset).isDeveloped()){
-                    assetInformation.getItems().add(asset);
+                    assetInformation.getItems().add(((Property) asset));
                 }
             }
         }
@@ -1848,21 +1893,44 @@ public class Main extends Application {
         playerAssetMessage.setStyle("-fx-font-size: 14;");
 
         // Button Functionality
-        sellHouse.setOnAction(e -> {
+        sellBuilding.setOnAction(e -> {
+            // Fetch the information that has been selected for the current player and display it into alert header
+            ObservableList listOfPlayerAsset = assetInformation.getSelectionModel().getSelectedItems();
+            Property assetObject = (Property) listOfPlayerAsset.get(0);
+            // saleAmount = the money they received from selling a building (return 0 if failed)
+            int saleAmount = assetObject.sellHouseOrHotel();
+            if(saleAmount == 0){
+                Alert sellError = new Alert(Alert.AlertType.ERROR);
+                sellError.setTitle("Property Tycoon Selling Management");
+                sellError.setHeaderText("Selling building violates regulations");
+                sellError.showAndWait();
+                sellError.close();
+            }else{
+                // Give player money from selling houses/hotels
+                currentPlayer.deductAmount(-saleAmount);
+                int fundLeft = fundRequired.intValue() - saleAmount;
+                fundRequired = new AtomicInteger(fundLeft);
+                assetInformation.refresh();
+                remainingFundLeft.setText("£" + fundRequired.intValue() + " fund is required " + currentPlayer.getName());
 
-        });
-        sellHotel.setOnAction(e -> {
+                // If current player has raised enough money fund
+                if(fundRequired.intValue() <= 0){
+                    Alert fundMessage = new Alert(Alert.AlertType.INFORMATION);
+                    fundMessage.setTitle("Property Tycoon Selling Management");
+                    fundMessage.setHeaderText("You have raised enough fund");
+                    fundMessage.showAndWait();
+                    sellHouseHotelPopUpStage.close();
+                    fundMessage.close();
+                }
+            }
 
         });
         back.setOnAction(e -> {
             sellHouseHotelPopUpStage.close();
-            if(fundRequired.intValue() <= 0){
-                window.setScene(assetSellingHouseScene);
-            }
         });
 
-        optionPane.getChildren().addAll(sellHouse, sellHotel, back);
-        sellHouseHotelPane.getChildren().addAll(title, playerAssetMessage, scrollForAssetInformation, optionPane);
+        optionPane.getChildren().addAll(sellBuilding, back);
+        sellHouseHotelPane.getChildren().addAll(title, remainingFundLeft, playerAssetMessage, scrollForAssetInformation, optionPane);
         assetSellingHouseScene = new Scene(sellHouseHotelPane);
         // Creating the popup effect
         sellHouseHotelPopUpStage.setScene(assetSellingHouseScene);
@@ -1885,11 +1953,25 @@ public class Main extends Application {
 
         Label title = new Label("Property Tycoon Property Management (Mortgaging Properties)");
         Label playerAssetMessage = new Label(currentPlayer.getName() + " this is all of your properties where you can mortgage");
+        Label remainingFundLeft = new Label("£" + fundRequired.intValue() + " fund is required " + currentPlayer.getName());
 
-        ListView asset = new ListView();
+        ListView assetList = new ListView();
 
         Button mortgage = new Button("Mortgage Properties");
         Button back = new Button("Return to Asset Selling Management ");
+
+        // Fetch all of the current player asset
+        LinkedList<Object> playerAsset = currentPlayer.getAssets();
+
+        // Going through players assets and add it to list-view (asset = String) if its a property
+        for(Object asset: playerAsset){
+            if(asset instanceof Property){
+                // Checking if the property is able to mortgaged and not is not developed
+                if(!((Property) asset).isMortgaged() && !((Property) asset).isDeveloped()){
+                    assetList.getItems().add(((Property) asset).getTitle());
+                }
+            }
+        }
 
         // CSS
         title.setStyle(
@@ -1899,17 +1981,39 @@ public class Main extends Application {
 
         // Button Functionality
         mortgage.setOnAction(e -> {
+            // Fetch the information that has been selected for the current player
+            ObservableList listOfPlayerAsset = assetList.getSelectionModel().getSelectedItems();
 
+            // Finding the Property object with the selected string from list-view
+            for (Object item: playerAsset){
+                if(item instanceof Property){
+                    if(((Property)item).getTitle().equals(listOfPlayerAsset.get(0))){
+                        int fundRaised = ((Property)item).mortgageProperty();
+                        currentPlayer.deductAmount(- fundRaised);
+                        // Give player money from mortgaging property
+                        int fundLeft = fundRequired.intValue() - fundRaised;
+                        fundRequired = new AtomicInteger(fundLeft);
+                    }
+                }
+            }
+            // Refresh Label
+            remainingFundLeft.setText("£" + fundRequired.intValue() + " fund is required " + currentPlayer.getName());
+            // If you raised enough fund, you are kicked from from this scene
+            if(fundRequired.intValue() <= 0){
+                Alert fundMessage = new Alert(Alert.AlertType.INFORMATION);
+                fundMessage.setTitle("Property Tycoon Selling Management");
+                fundMessage.setHeaderText("You have raised enough fund");
+                fundMessage.showAndWait();
+                mortgagePopUpStage.close();
+                fundMessage.close();
+            }
         });
         back.setOnAction(e -> {
             mortgagePopUpStage.close();
-            if(fundRequired.intValue() <= 0){
-                window.setScene(assetSellingHouseScene);
-            }
         });
 
         optionPane.getChildren().addAll(mortgage, back);
-        mortgagePropertiesPane.getChildren().addAll(title, playerAssetMessage, asset, optionPane);
+        mortgagePropertiesPane.getChildren().addAll(title, remainingFundLeft, playerAssetMessage, assetList, optionPane);
         assetMortgageScene = new Scene(mortgagePropertiesPane);
         // Creating the popup effect
         mortgagePopUpStage.setScene(assetMortgageScene);
@@ -1932,11 +2036,29 @@ public class Main extends Application {
 
         Label title = new Label("Property Tycoon Property Management (Selling Properties)");
         Label playerAssetMessage = new Label(currentPlayer.getName() + " this is all of your properties where you can sell");
+        Label remainingFundLeft = new Label("£" + fundRequired.intValue() + " fund is required " + currentPlayer.getName());
 
-        ListView asset = new ListView();
+        ListView assetList = new ListView();
 
         Button sellProp = new Button("Sell Property");
         Button back = new Button("Return to Asset Selling Management ");
+
+        // Fetch all of the current player asset
+        LinkedList<Object> playerAsset = currentPlayer.getAssets();
+
+        // Going through players assets and add it to list-view (asset = String) if its a property, utility and station
+        for(Object asset: playerAsset){
+            // Making sure asset is a property or station or utility
+            if(!(asset instanceof GetOutOfJail)){
+                if(asset instanceof Property && !((Property) asset).isDeveloped()){
+                    assetList.getItems().add(((Property) asset).getTitle());
+                }else if(asset instanceof Utility){
+                    assetList.getItems().add(((Utility) asset).getTitle());
+                }else if(asset instanceof Station){
+                    assetList.getItems().add(((Station) asset).getTitle());
+                }
+            }
+        }
 
         // CSS
         title.setStyle(
@@ -1946,17 +2068,55 @@ public class Main extends Application {
 
         // Button Functionality
         sellProp.setOnAction(e -> {
+            // Fetch the information that has been selected for the current player
+            ObservableList listOfPlayerAsset = assetList.getSelectionModel().getSelectedItems();
 
+            // Sell accordingly to what is selected
+            for (Object item: playerAsset){
+                if(item instanceof Property){
+                    if(((Property)item).getTitle().equals(listOfPlayerAsset.get(0))){
+                        int fundRaised = ((Property)item).sellProperty();
+                        currentPlayer.deductAmount(- fundRaised);
+                        // Give player money from mortgaging property
+                        int fundLeft = fundRequired.intValue() - fundRaised;
+                        fundRequired = new AtomicInteger(fundLeft);
+                    }
+                }else if(item instanceof  Utility){
+                    if(((Utility)item).getTitle().equals(listOfPlayerAsset.get(0))) {
+                        int fundRaised = ((Utility) item).sellUtility();
+                        currentPlayer.deductAmount(-fundRaised);
+                        // Give player money from mortgaging property
+                        int fundLeft = fundRequired.intValue() - fundRaised;
+                        fundRequired = new AtomicInteger(fundLeft);
+                    }
+                }else if(item instanceof Station){
+                    if(((Station)item).getTitle().equals(listOfPlayerAsset.get(0))) {
+                        int fundRaised = ((Station) item).sellStation();
+                        currentPlayer.deductAmount(-fundRaised);
+                        // Give player money from mortgaging property
+                        int fundLeft = fundRequired.intValue() - fundRaised;
+                        fundRequired = new AtomicInteger(fundLeft);
+                    }
+                }
+            }
+            // Refresh label
+            remainingFundLeft.setText("£" + fundRequired.intValue() + " fund is required " + currentPlayer.getName());
+            // If you raised enough fund, you are kicked from from this scene
+            if(fundRequired.intValue() <= 0){
+                Alert fundMessage = new Alert(Alert.AlertType.INFORMATION);
+                fundMessage.setTitle("Property Tycoon Selling Management");
+                fundMessage.setHeaderText("You have raised enough fund");
+                fundMessage.showAndWait();
+                sellPropPopUpStage.close();
+                fundMessage.close();
+            }
         });
         back.setOnAction(e -> {
             sellPropPopUpStage.close();
-            if(fundRequired.intValue() <= 0){
-                window.setScene(assetSellingHouseScene);
-            }
         });
 
         optionPane.getChildren().addAll(sellProp, back);
-        sellPropertiesPane.getChildren().addAll(title, playerAssetMessage, asset, optionPane);
+        sellPropertiesPane.getChildren().addAll(title, remainingFundLeft, playerAssetMessage, assetList, optionPane);
         assetSellingScene = new Scene(sellPropertiesPane);
         // Creating the popup effect
         sellPropPopUpStage.setScene(assetSellingScene);
@@ -2079,6 +2239,7 @@ public class Main extends Application {
         pot = new ArrayDeque<>(potLuckPack);
         opp = new ArrayDeque<>(opportunityKnocksPack);
         gameSystem = new Board(order, board, pot, opp, gameMode, this);
+
     }
 
     /**
@@ -2148,6 +2309,7 @@ public class Main extends Application {
                     count++;
                     // Dice rolling the same number
                     gameSystem.repeat = false;
+                    currentPlayer.deductAmount(1);
                     // Get dice roll input from player (not AI)
                     if (!currentPlayer.isAiAgent()) {
                         // Player click roll dice from alert
@@ -2155,6 +2317,7 @@ public class Main extends Application {
                     }else{
                         gameSystem.roll(currentPlayer, count);
                     }
+
                     gameSystem.tiles.get(currentPlayer.getCurrentPos()).activeEffect(currentPlayer);
                     //currentPlayer.passGo();
                     if (gameSystem.turnOrder.contains(currentPlayer) && !currentPlayer.isInJail()) {

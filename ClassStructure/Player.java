@@ -38,7 +38,8 @@ public class Player {
         this.token = token;
         currentPos = 0;
         previousPos = 0;
-        money = 1500;//All references to money is in £'s
+        // todo chagne back to 1500
+        money = 0;//All references to money is in £'s
         assets = new LinkedList<>();
         canBuy = false;
         inJail = false;
@@ -113,7 +114,7 @@ public class Player {
         } else if (item instanceof Utility) {
             ((Utility) item).setOwner(this);
         }
-        board.updatePlayerAssets(this, item, "add");
+        //board.updatePlayerAssets(this, item, "add");
     }
 
     /**
