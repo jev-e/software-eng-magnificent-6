@@ -1,6 +1,7 @@
 package ClassStructure;
 
 import GUI.Main;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import javafx.util.Pair;
 
 import java.time.Duration;
@@ -28,6 +29,7 @@ public class Board {
     private Instant start;
     private Instant finished;
     public long timeElapsed;
+    @JsonIgnore
     public Main guiMain;
 
     /**
@@ -192,7 +194,7 @@ public class Board {
     }
 
     /***
-     Call the front-end function to create the Scene for auctioning
+     * Call the front-end function to create the Scene for auctioning
      * @param currentPlayer the current player
      * @param asset The asset (station, property, utility) that is up for auction
      */
@@ -200,8 +202,13 @@ public class Board {
         guiMain.auctionPlayerSetup(currentPlayer, asset);
     }
 
+    /***
+     * Call the front-end function to create the Scene for asset selling Management
+     * @param currentPlayer the current player
+     * @param fundNeeded The amount that the current player has to rise to
+     */
     public void callAssetSellingScene(Player currentPlayer, int fundNeeded){
-        guiMain.assetSellingSetupScene(currentPlayer, fundNeeded);
+        guiMain.assetSellingManagementSetupScene(currentPlayer, fundNeeded);
     }
 
     /**
