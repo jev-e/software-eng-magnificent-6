@@ -1246,7 +1246,7 @@ public class Main extends Application {
             if(currentPlayer.getName() != tempPlayerList.get(i).getName()){
                 listOfPlayer.getItems().add(tempPlayerList.get(i).getName());
                 // Default value set to the first player that is not itself
-                //listOfPlayer.setValue(tempPlayerList.get(0).getName());
+                listOfPlayer.setValue(tempPlayerList.get(0).getName());
             }
         }
 
@@ -1657,5 +1657,22 @@ public class Main extends Application {
             e.printStackTrace();
             System.out.println(e.getMessage());
         }
+    }
+
+
+    public boolean taxOrDrawScreen(){
+        boolean decision = false;
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Property Tycoon");
+        alert.setHeaderText("You've landed on pay tax or Opportunity knocks ");
+        alert.setContentText("Do you want to pay the tax or cancel and draw an Oppotunity Knocks card instead?" );
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == ButtonType.OK){
+            decision = true;
+        } else {
+            decision = false;
+        }
+        return(decision);
+
     }
 }

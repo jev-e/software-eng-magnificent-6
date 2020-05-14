@@ -378,4 +378,8 @@ public class Board {
         return (guiMain.assetBuyingScene(title,cost));
     }
 
+    public boolean payTaxOrDrawOpKnock(){
+        return(guiMain.taxOrDrawScreen());
+    }
+
 }
