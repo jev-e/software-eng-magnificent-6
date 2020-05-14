@@ -29,8 +29,6 @@ public class Property extends BoardTile{
 
     // GUI Assets
     @JsonIgnore
-    Label tilePrice;
-    @JsonIgnore
     private Canvas colourDisplay; // Displays colour of property group
 
     /**
@@ -78,7 +76,7 @@ public class Property extends BoardTile{
     @Override
     public void initGuiElements() {
         super.tileName = new Label();
-        tilePrice = new Label();
+        super.tilePrice = new Label();
         colourDisplay = new Canvas(120,15);
     }
 
@@ -500,9 +498,11 @@ public class Property extends BoardTile{
     // GUI Functions
 
     // Label getter and setter
-    public void setTilePrice() { this.tilePrice.setText(String.valueOf(tilePrice)); }
+    @Override
+    public void setTilePrice() { super.tilePrice.setText("£" + String.valueOf(cost)); }
 
-    public Label getTilePrice() { return this.tilePrice; }
+    @Override
+    public Label getTilePrice() { return super.tilePrice; }
 
     // Canvas Functions
     @Override

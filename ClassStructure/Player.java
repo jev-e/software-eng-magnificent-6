@@ -57,6 +57,7 @@ public class Player {
      */
     public void payPlayerAmount(int amount) {
         money += amount;
+        board.showPlayerMoney(this);
     }
 
     /**
@@ -247,7 +248,6 @@ public class Player {
      * Pass go check and money
      */
     public void passGo() {
-        System.out.println("Pass Go Called");
         if(currentPos < previousPos) {
             payPlayerAmount(200);//collect £200
             addAction("Passed Go, collect £200");//add text to log
@@ -504,6 +504,7 @@ public class Player {
         //remove player from turnorder
         addAction("Bankrupt");
         board.turnOrder.remove(this);
+        board.removePlayerToken(this);
         board.repeat = false;
         //transfer all assets to bank ownership
         for (Object asset : assets) {

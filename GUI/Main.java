@@ -6,8 +6,10 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
@@ -18,7 +20,6 @@ import javafx.scene.layout.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Pair;
-
 
 import java.lang.Object;
 
@@ -41,6 +42,9 @@ public class Main extends Application {
     private FlowPane[] tokenDisplay; // FlowPanes showing tokens on tiles
     private int playerNo;            // Number of players in the game
     private Player[] players;        // Keep permanent order of players for player cards
+    private Label[] playerMoney;     // Labels to show how much money the player has
+    private Label[] playerNames;     // Labels of player names to show in assets
+    private ImageView[] playerIVs;       // Player token ImageViews to show in assets
 
     // Images - Tiles
     private Image goTilePNG;
@@ -84,9 +88,6 @@ public class Main extends Application {
 
     // BorderPanes
     private BorderPane gameBP; // Holds entire game screen
-
-    // FlowPanes
-    private FlowPane buttonFP;   // Bottom FlowPane for game buttons
 
     // GridPanes
     private GridPane boardGP;    // Main Board, Left side of screen
@@ -154,7 +155,6 @@ public class Main extends Application {
         formatGameImageViews(); // Formats Game ImageViews
         formatGameScene();    // Formats Game Scene
         retrieveBoardData();  // Provides initial data from board to scene
-        addKeyGameButtons();  // Adds any buttons needed on the main game scene
         displayPlayerCards(); // Displays player cards to the gameBP
         displayGameBoard();   // Displays main game board
         initalTokenDisplay(); // Draw Tokens at GO Tile
@@ -171,29 +171,8 @@ public class Main extends Application {
         for(int i = 0; i < 40; i++) {
             board.get(i).initGuiElements();
             board.get(i).setTileName();
+            board.get(i).setTilePrice();
         }
-    }
-
-    public void addKeyGameButtons() {
-        // Initialise Buttons
-        Button propManageBtn = new Button("Manage Properties");
-        Button endTurnBtn = new Button("End Turn");
-        Button leaveBtn = new Button("Leave");
-
-        propManageBtn.setOnAction((ActionEvent event) -> {
-
-        });
-
-        endTurnBtn.setOnAction((ActionEvent event) -> {
-
-        });
-
-        leaveBtn.setOnAction((ActionEvent event) -> {
-
-        });
-        
-        buttonFP.getChildren().addAll(propManageBtn, endTurnBtn, leaveBtn);
-
     }
 
     /**
@@ -203,34 +182,79 @@ public class Main extends Application {
         for(int i = 0; i < playerNo; i++) {
             Token token = players[i].getToken();
 
-            switch (token) {
-                case SMARTPHONE:
-
-                    tokenDisplay[0].getChildren().add(phoneToken);
-                    break;
-
-                case BOOT:
-
-                    tokenDisplay[0].getChildren().add(bootToken);
-                    break;
-
-                case SPOON:
-                    tokenDisplay[0].getChildren().add(spoonToken);
-                    break;
-
-                case CAT:
-                    tokenDisplay[0].getChildren().add(catToken);
-                    break;
-
-                case GOBLET:
-                    tokenDisplay[0].getChildren().add(gobletToken);
-                    break;
-
-                case HATSTAND:
-                    tokenDisplay[0].getChildren().add(hatstandToken);
-                    break;
-            }
+            tokenDisplay[0].getChildren().add(getTokenIV(token));
         }
+    }
+
+    /**
+     * Returns the Image Object that represents the token
+      * @param token The token to be represented
+     * @return The Image Object of the token
+     */
+    private Image getTokenImage(Token token) {
+        switch (token) {
+            case SMARTPHONE:
+                return phoneTokenPNG;
+
+            case BOOT:
+                return bootTokenPNG;
+
+            case SPOON:
+                return spoonTokenPNG;
+
+            case CAT:
+                return catTokenPNG;
+
+            case GOBLET:
+                return gobletTokenPNG;
+
+            case HATSTAND:
+                return hatstandTokenPNG;
+
+        }
+        return null;
+    }
+
+    /**
+     * Returns the imageview that represents that token
+     *
+     * @param token The token to be represented
+     * @return The imageview of the token
+     */
+    private ImageView getTokenIV(Token token) {
+        switch (token) {
+            case SMARTPHONE:
+                return phoneToken;
+
+            case BOOT:
+                return bootToken;
+
+            case SPOON:
+                return spoonToken;
+
+            case CAT:
+                return catToken;
+
+            case GOBLET:
+                return gobletToken;
+
+            case HATSTAND:
+                return hatstandToken;
+
+        }
+        return null;
+    }
+
+    /**
+     * Removes Player's token from the board
+     *
+     * @param currentPlayer The player to remove
+     */
+    public void removeToken(Player currentPlayer) {
+        int pos = currentPlayer.getCurrentPos();
+        Token token = currentPlayer.getToken();
+
+        tokenDisplay[pos].getChildren().remove(getTokenIV(token));
     }
 
     /**
@@ -242,79 +266,69 @@ public class Main extends Application {
         int pos = currentPlayer.getCurrentPos();
         Token token = currentPlayer.getToken();
 
-        switch (token) {
-            case SMARTPHONE:
-                if(!tokenDisplay[pos].getChildren().contains(phoneToken)){ // Prevents Duplicate Children
-                    tokenDisplay[pos].getChildren().add(phoneToken);
-                }
-                break;
-            case BOOT:
-                if(!tokenDisplay[pos].getChildren().contains(bootToken)) {
-                    tokenDisplay[pos].getChildren().add(bootToken);
-                }
-                break;
-
-            case SPOON:
-                if(!tokenDisplay[pos].getChildren().contains(spoonToken)) {
-                    tokenDisplay[pos].getChildren().add(spoonToken);
-                }
-                break;
-
-            case CAT:
-                if(!tokenDisplay[pos].getChildren().contains(catToken)) {
-                    tokenDisplay[pos].getChildren().add(catToken);
-                }
-                break;
-            case GOBLET:
-                if(!tokenDisplay[pos].getChildren().contains(gobletToken)) {
-                    tokenDisplay[pos].getChildren().add(gobletToken);
-                }
-                break;
-            case HATSTAND:
-                if(!tokenDisplay[pos].getChildren().contains(hatstandToken)) {
-                    tokenDisplay[pos].getChildren().add(hatstandToken);
-                }
-                break;
+        // Prevents Duplicate Children
+        if(!tokenDisplay[pos].getChildren().contains(getTokenIV(token))){
+            tokenDisplay[pos].getChildren().add(getTokenIV(token));
         }
     }
 
     /**
-     * Updates all players' asset cards on screen
-     * @param currentPlayer The current player who's assets need to be updated on screen
-     * @param item The item which needs to be added or removed
-     * @param use The situation the method being called, "add" or "remove"
+     * Updates every player's money label
      */
-    public void displayPlayerAssets(Player currentPlayer, Object item, String use) {
+    private void updateAllMoneyLabels() {
+        for(int i = 0; i < playerNo; i++) {
+            playerMoney[i].setText("£" + String.valueOf(players[i].getMoney()));
+        }
+    }
 
+    /**
+     * Updates given player's money label on board
+     *
+     * @param currentPlayer player's money label to be updated
+     */
+    public void showPlayerMoney(Player currentPlayer) {
+        int money = currentPlayer.getMoney();
+
+        for(int i = 0; i < playerNo; i++) {
+            if(currentPlayer == players[i]) {
+                playerMoney[i].setText("£" + String.valueOf(money));
+            }
+        }
+    }
+
+    /**
+     * Refresh's the given player's asset card
+     * @param currentPlayer The player's assets to be redrawn
+     */
+    public void refreshPlayerAssets(Player currentPlayer) {
         int i = 0;
 
         for(int j = 0; j < playerNo; j++) {
-            if(currentPlayer == players[j]) {
+            if (currentPlayer == players[j]) {
                 i = j;
             }
         }
 
-        if (use == "add") {
+        playerCards[i].getChildren().clear();
+        playerCards[i].getChildren().addAll(playerIVs[i], playerNames[i], playerMoney[i]);
+
+        for(Object item : currentPlayer.getAssets()){
             Label label = new Label();
 
             if (item instanceof Property) {
                 String name = ((Property) item).getNameLabel().getText();
                 label.setText(name);
+                label.setAccessibleText(name);
             } else if (item instanceof Station) {
                 String name = ((Station) item).getNameLabel().getText();
                 label.setText(name);
+                label.setAccessibleText(name);
             } else if (item instanceof Utility) {
                 String name = ((Utility) item).getNameLabel().getText();
                 label.setText(name);
+                label.setAccessibleText(name);
             }
-
             playerCards[i].getChildren().add(label);
-        }
-        else if (use == "remove") {
-
-        }
-        else {
-            System.out.println("Unknown use case: " + use);
         }
     }
 
@@ -323,13 +337,16 @@ public class Main extends Application {
      */
     public void displayGameBoard() {
 
-        int shortSide = 80, longSide = 120;
+        double shortSide = 80, longSide = 120;
 
         for (int i = 0; i < 40; i++) {
             Label label = board.get(i).getNameLabel();
+            Label priceLabel = board.get(i).getTilePrice();
             Canvas canvas = board.get(i).getColourDisplay();
 
             GridPane container = new GridPane();
+            Insets insets = new Insets(10);
+            container.setMinSize(longSide, shortSide);
 
             StackPane stack = new StackPane();              // Holds Background image and tokens FlowPane
             FlowPane tokens = new FlowPane(5,5); // Holds tokens in each tile
@@ -348,6 +365,10 @@ public class Main extends Application {
                 // Bottom Row
                 case 1: case 2: case 3: case 4: case 5: case 6: case 7: case 8: case 9:
                     container.add(label, 0,1);
+                    container.setHalignment(label, HPos.CENTER);
+                    container.add(priceLabel, 0, 3);
+                    container.setHalignment(priceLabel, HPos.CENTER);
+
 
                     // Properties
                     if(!(i == 2 || i == 4 || i == 5|| i == 7)) {
@@ -390,7 +411,10 @@ public class Main extends Application {
 
                 // Left Column
                 case 11: case 12: case 13: case 14: case 15: case 16: case 17: case 18: case 19:
-                    container.add(label, 0, 1);
+                    container.add(label, 0,1);
+                    container.setHalignment(label, HPos.CENTER);
+                    container.add(priceLabel, 0, 3);
+                    container.setHalignment(priceLabel, HPos.CENTER);
 
                     // Properties
                     if(!(i == 12 || i == 15 || i == 17)) {
@@ -428,7 +452,10 @@ public class Main extends Application {
 
                 // Top Row
                 case 21: case 22: case 23: case 24: case 25: case 26: case 27: case 28: case 29:
-                    container.add(label, 0, 1);
+                    container.add(label, 0,1);
+                    container.setHalignment(label, HPos.CENTER);
+                    container.add(priceLabel, 0, 3);
+                    container.setHalignment(priceLabel, HPos.CENTER);
 
                     // Properties
                     if(!(i == 22 || i == 25 || i == 28)) {
@@ -452,7 +479,7 @@ public class Main extends Application {
                     // Edison Water
                     if(i == 28) {
                         stack.getChildren().addAll(edisonWater, tokens);
-                        container.add(tokens, 0, 2);
+                        container.add(stack, 0, 2);
                     }
 
                     topRowGP.add(container, (i - 21), 0);
@@ -466,7 +493,10 @@ public class Main extends Application {
 
                 // Right Column
                 case 31: case 32: case 33: case 34: case 35: case 36: case 37: case 38: case 39:
-                    container.add(label, 0, 1);
+                    container.add(label, 0,1);
+                    container.setHalignment(label, HPos.CENTER);
+                    container.add(priceLabel, 0, 3);
+                    container.setHalignment(priceLabel, HPos.CENTER);
 
                     // Properties
                     if(!(i == 33 || i == 35 || i == 36 || i == 38)) {
@@ -511,8 +541,17 @@ public class Main extends Application {
     public void displayPlayerCards() {
 
         for(int i = 0; i < playerNo; i++) {
-            FlowPane playerPane = new FlowPane();
+            FlowPane playerPane = new FlowPane(5,5);
+            formatGivenCard(playerPane);
+
+            ImageView token = new ImageView(getTokenImage(players[i].getToken()));
+            token.setPreserveRatio(true);
+            token.setFitWidth(20);
+            token.setFitHeight(20);
+
             Label playerName;
+
+            updateAllMoneyLabels();
 
             if (!players[i].isAiAgent()) {
                 playerName = new Label("Player: " + players[i].getName());
@@ -520,12 +559,22 @@ public class Main extends Application {
                 playerName = new Label("AI: " + players[i].getName());
             }
 
-            playerPane.getChildren().add(playerName);
+            playerPane.getChildren().addAll(token, playerName, playerMoney[i]);
 
+            playerNames[i] = playerName;
+            playerIVs[i] = token;
             playerCards[i] = playerPane;
 
             playersVB.getChildren().add(playerPane);
         }
+    }
+
+    /**
+     * Formats a given player card, called by displayPlayerCards()
+     *
+     * @param card The player card to be formatted
+     */
+    private void formatGivenCard(FlowPane card) {
     }
 
     /**
@@ -537,8 +586,7 @@ public class Main extends Application {
         // Initialise main Game containers
         gameBP = new BorderPane();
         boardGP = new GridPane();
-        buttonFP = new FlowPane();
-        playersVB = new VBox();
+        playersVB = new VBox(25);
 
         // Initialise Scene
         gameScene = new Scene(gameBP);
@@ -550,7 +598,6 @@ public class Main extends Application {
         // Add Panes to gameBP
         gameBP.setLeft(boardGP);
         gameBP.setRight(playersVB);
-        gameBP.setBottom(buttonFP);
         gameBP.setPadding(insets);
 
         // Initialise inner containers
@@ -562,10 +609,6 @@ public class Main extends Application {
         // Format GameBP
         gameBP.setCenter(label);
         gameBP.setMargin(label, insets);
-        gameBP.setMargin(buttonFP, insets);
-
-        // Format buttonGP
-        buttonFP.setHgap(10);
 
         // Add inner containers to boardGP
         boardGP.add(topRowGP, 1, 0);
@@ -577,10 +620,17 @@ public class Main extends Application {
         tokenDisplay = new FlowPane[40];
 
         playerNo = gameSystem.turnOrder.size();
+
         players = new Player[playerNo];
         playerCards = new FlowPane[playerNo];
+        playerMoney = new Label[playerNo];
+        playerNames = new Label[playerNo];
+        playerIVs   = new ImageView[playerNo];
+
         for(int i = 0; i < playerNo; i++) {
+            Label moneyLabel = new Label();
             players[i] = gameSystem.turnOrder.get(i);
+            playerMoney[i] = moneyLabel;
         }
     }
 

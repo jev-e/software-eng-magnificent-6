@@ -31,6 +31,8 @@ public abstract class BoardTile {
     // GUI Assets
     @JsonIgnore
     Label tileName;
+    @JsonIgnore
+    Label tilePrice;
 
     /**
      * abstract method to init all gui elements to prevent javaFX conflicts
@@ -76,11 +78,13 @@ public abstract class BoardTile {
     }
 
     // GUI Functions
-    public void setTileName() {
-        this.tileName.setText(title);
-    }
+    public void setTileName() { this.tileName.setText(title); }
 
     public Label getNameLabel() { return this.tileName; }
+
+    public void setTilePrice() { }
+
+    public Label getTilePrice() { return new Label(); }
 
     public void setColour() { }
 

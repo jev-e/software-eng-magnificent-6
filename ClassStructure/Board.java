@@ -186,7 +186,9 @@ public class Board {
      * @param jailCard A parameter to see if they have a get out of jail card they can activate
      */
     public void callJailSetupScene(Player currentPlayer, GetOutOfJail jailCard){
-        guiMain.sentToJailSetupScene(currentPlayer, jailCard);
+        if(guiMain != null) {
+            guiMain.sentToJailSetupScene(currentPlayer, jailCard);
+        }
     }
 
     /***
@@ -195,7 +197,9 @@ public class Board {
      * @param asset The asset (station, property, utility) that is up for auction
      */
     public void callAuctionSetupScene(Player currentPlayer, BoardTile asset){
-        guiMain.auctionPlayerSetup(currentPlayer, asset);
+        if(guiMain != null) {
+            guiMain.auctionPlayerSetup(currentPlayer, asset);
+        }
     }
 
     /***
@@ -204,7 +208,9 @@ public class Board {
      * @param fundNeeded The amount that the current player has to rise to
      */
     public void callAssetSellingScene(Player currentPlayer, int fundNeeded){
-        guiMain.assetSellingManagementSetupScene(currentPlayer, fundNeeded);
+        if(guiMain != null) {
+            guiMain.assetSellingManagementSetupScene(currentPlayer, fundNeeded);
+        }
     }
 
     /**
@@ -253,7 +259,6 @@ public class Board {
      * die 1 and 2 result stored in player
      */
     public void roll(Player currentPlayer, int count) {
-        System.out.println("Roll Function Called " + currentPlayer.getName());
         int result;
         Random rand = new Random();
         int die1 = rand.nextInt(6) + 1;
@@ -423,7 +428,31 @@ public class Board {
      * @param currentPlayer current player who's token needs to be moved
      */
     public void movePlayerToken(Player currentPlayer) {
-        guiMain.displayTokens(currentPlayer);
+        if(guiMain != null) {
+            guiMain.displayTokens(currentPlayer);
+        }
+    }
+
+    /**
+     * Called by Player in .bankrupt() to remove the player's token from the board
+     *
+     * @param currentPlayer The player who's token to remove
+     */
+    public void removePlayerToken(Player currentPlayer) {
+        if(guiMain != null) {
+            guiMain.removeToken(currentPlayer);
+        }
+    }
+
+    /**
+     * Called by Player in .payPlayerAmount() to update the player's money label
+     *
+     * @param currentPlayer The player who's money needs to be updated on screen
+     */
+    public void showPlayerMoney(Player currentPlayer) {
+        if(guiMain != null) {
+            guiMain.showPlayerMoney(currentPlayer);
+        }
     }
 
     /**
@@ -434,6 +463,8 @@ public class Board {
      * @param use The case in which being called, "add" or "remove"
      */
     public void updatePlayerAssets(Player currentPlayer, Object item, String use) {
-        guiMain.displayPlayerAssets(currentPlayer, item, use);
+        if (guiMain != null) {
+            guiMain.refreshPlayerAssets(currentPlayer);
+        }
     }
 }

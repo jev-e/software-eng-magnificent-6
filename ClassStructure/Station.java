@@ -148,6 +148,14 @@ public class Station extends TileEffect {
      */
     @Override
     public void initGuiElements() {
+
         super.tileName = new Label();
+        super.tilePrice = new Label();
     }
+
+    @Override
+    public void setTilePrice() { super.tilePrice.setText("£" + String.valueOf(cost)); }
+
+    @Override
+    public Label getTilePrice() { return super.tilePrice; }
 }
