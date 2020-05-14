@@ -2423,13 +2423,16 @@ public class Main extends Application {
         });
 
         // If current player has a get out of jail card, show the options if not dont show the options
-        if(jailCard == null){
+        if(jailCard == null && currentPlayer.getMoney() >= 50){
             optionPane.getChildren().addAll(serveTime, bail, help);
-        }else{
+        }else if(jailCard != null && currentPlayer.getMoney() >= 50){
             optionPane.getChildren().addAll(serveTime, bail, getOutCard, help);
+        }else if(jailCard != null && currentPlayer.getMoney() < 50){
+            optionPane.getChildren().addAll(serveTime, getOutCard, help);
+        }else if(jailCard == null && currentPlayer.getMoney() < 50){
+            optionPane.getChildren().addAll(serveTime, help);
         }
 
-        // TODO copy in merge
         sentToJailSetupPane.getChildren().addAll(title, jailImg, optionPane);
         jailSetupScene = new Scene(sentToJailSetupPane);
         // Creating the popup effect
