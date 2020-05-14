@@ -129,17 +129,17 @@ public class Main extends Application {
         window = primaryStage;
         window.setTitle("Property Tycoon");
 
-//        createMainMenuScene();
-//        window.setScene(menuScene);
-//        window.show();
+        createMainMenuScene();
+        window.setScene(menuScene);
+        window.show();
 //        displayGameScene();
-        int[] buildingRents = {10,10,20,30};
-        Player basic = new Player("Calvin", Token.SPOON, gameSystem, false);
-        Property test = new Property(1, "Test", Group.DEEP_BLUE, 100, 10, buildingRents, 50, basic);
-        basic.addAsset(test);
-        test.setHousesNo(3);
-        test.setDeveloped(true);
-        assetSellingSetupScene(basic,500);
+//        int[] buildingRents = {10,10,20,30};
+//        Player basic = new Player("Calvin", Token.SPOON, gameSystem, false);
+//        Property test = new Property(1, "Test", Group.DEEP_BLUE, 100, 10, buildingRents, 50, basic);
+//        basic.addAsset(test);
+//        test.setHousesNo(3);
+//        test.setDeveloped(true);
+//        assetSellingSetupScene(basic,500);
     }
 
     public static void main(String[] args) {
