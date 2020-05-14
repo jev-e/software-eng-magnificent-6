@@ -74,7 +74,9 @@ public class Station extends TileEffect {
 
         } else {
             if (owner == null) {
-                purchase(currentPlayer);
+                if (currentPlayer.CanBuy()) {
+                    purchase(currentPlayer);
+                }
             } else if (owner.isInJail()) {
                 currentPlayer.addAction("Owner is in jail");//add text to log
             }

@@ -253,6 +253,7 @@ public class Board {
      * die 1 and 2 result stored in player
      */
     public void roll(Player currentPlayer, int count) {
+        System.out.println("Roll Function Called " + currentPlayer.getName());
         int result;
         Random rand = new Random();
         int die1 = rand.nextInt(6) + 1;
@@ -262,6 +263,7 @@ public class Board {
         if (currentPlayer.isAiAgent()) {//if AI record roll in action log
             currentPlayer.addAction("Rolled |" + die1 + "||" + die2 + "|");
         }
+        currentPlayer.passGo();
         if (die1 == die2) {
             repeat = true;//tracks double rolled for player to go again
             if (count >= 3) {
@@ -269,6 +271,7 @@ public class Board {
                 currentPlayer.jailPlayer();//sets players status to jailed
             }
         }
+
         if (count < 3) {
             result = die1 + die2;
             int position = (currentPlayer.getCurrentPos() + result) % tiles.size();

@@ -247,12 +247,13 @@ public class Player {
      * Pass go check and money
      */
     public void passGo() {
+        System.out.println("Pass Go Called");
         if(currentPos < previousPos) {
             payPlayerAmount(200);//collect £200
             addAction("Passed Go, collect £200");//add text to log
-        }
-        if(!canBuy) {//Checks if the player can buy and set it to true if false
-            canBuy = true;
+            if(!canBuy) {//Checks if the player can buy and set it to true if false
+                canBuy = true;
+            }
         }
     }
 
@@ -436,7 +437,7 @@ public class Player {
      */
     public void assetSelling(int amount) {
         if (!isAiAgent()) {//if human player to insure player is not AI
-            //TODO User asset selling GUI
+            board.callAssetSellingScene(this, amount);
         }
     }
 

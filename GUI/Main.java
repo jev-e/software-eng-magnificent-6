@@ -2155,10 +2155,8 @@ public class Main extends Application {
                     }else{
                         gameSystem.roll(currentPlayer, count);
                     }
-                    //displayTokens(currentPlayer); TODO Remove
-                    currentPlayer.passGo();
                     gameSystem.tiles.get(currentPlayer.getCurrentPos()).activeEffect(currentPlayer);
-
+                    //currentPlayer.passGo();
                     if (gameSystem.turnOrder.contains(currentPlayer) && !currentPlayer.isInJail()) {
                         if (!currentPlayer.isAiAgent()) {
                             //currentPlayer.leaveGame();
