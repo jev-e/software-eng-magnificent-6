@@ -1,6 +1,7 @@
 package ClassStructure;
 
 import GUI.Main;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import javafx.util.Pair;
 
 import java.time.Duration;
@@ -28,6 +29,7 @@ public class Board {
     private Instant start;
     private Instant finished;
     public long timeElapsed;
+    @JsonIgnore
     public Main guiMain;
 
     /**
