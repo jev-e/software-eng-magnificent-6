@@ -99,7 +99,7 @@ public class Main extends Application {
 
     Stage window;
     Scene menuScene, ruleScene, playerSetupScene, gameSetupScene, gameBoardScene, tradingSetupScene, tradingScene, auctionScene, jailSetupScene;
-    Scene assetManagementScene, assetSellingScene, assetSellingHouse;
+    Scene assetSellingManagementScene, assetSellingHouseScene, assetMortgageScene,  assetSellingScene;
 
     // Holds the players name
     public ArrayList<TextField> playerNameTextField = new ArrayList<>();
@@ -1388,7 +1388,7 @@ public class Main extends Application {
         if(highestBidder.getValue() != 0){
             String highestBidPlayerName = highestBidder.getKey();
             int currentBid = highestBidder.getValue();
-            highestBid.setText("Highest bid currently " + currentBid + " by " + highestBidPlayerName);
+            highestBid.setText("Highest bid currently £" + currentBid + " by " + highestBidPlayerName);
         }else{
             highestBid.setText("No bid currently for this item");
         }
@@ -1515,7 +1515,7 @@ public class Main extends Application {
             Alert auctionWinnerMessage = new Alert(Alert.AlertType.INFORMATION);
             auctionWinnerMessage.setTitle("Property Tycoon Auction");
             auctionWinnerMessage.setHeaderText("Congratulation " + highestPlayerBidder.getName());
-            auctionWinnerMessage.setContentText("You have won the auction and acquired "+ asset.getTitle() + " for " + highestBidder.getValue());
+            auctionWinnerMessage.setContentText("You have won the auction and acquired "+ asset.getTitle() + " for £" + highestBidder.getValue());
             auctionWinnerMessage.showAndWait();
             auctionWinnerMessage.close();
             highestPlayerBidder.deductAmount(highestBidder.getValue());
@@ -1549,53 +1549,69 @@ public class Main extends Application {
 
         // Button functionality
         sellBuilding.setOnAction(e -> {
+            assetManagementPopUpStage.close();
             sellHouseHotel(currentPlayer, fundNeededToRise);
         });
         mortgageProp.setOnAction(e -> {
-
+            assetManagementPopUpStage.close();
+            mortgageProperties(currentPlayer, fundNeededToRise);
         });
         sellAsset.setOnAction(e -> {
-
+            assetManagementPopUpStage.close();
+            sellProperties(currentPlayer, fundNeededToRise);
         });
 
         optionPane.getChildren().addAll(sellBuilding, mortgageProp, sellAsset);
         assetManagementSetupPane.getChildren().addAll(title, fundNeed, optionPane);
-        assetSellingScene = new Scene(assetManagementSetupPane, 400,400);
+        assetSellingManagementScene = new Scene(assetManagementSetupPane, 400,400);
         // Creating the popup effect
-        assetManagementPopUpStage.setScene(assetSellingScene);
+        assetManagementPopUpStage.setScene(assetSellingManagementScene);
         assetManagementPopUpStage.initModality(Modality.APPLICATION_MODAL);
         assetManagementPopUpStage.showAndWait();
         assetManagementPopUpStage.close();
     }
 
-    public void sellHouseHotel(Player currentPlayer, int fundNeededToRise){
+    /***
+     * Allow player to sell their developed properties to raise fund
+     * @param currentPlayer The current player
+     * @param fundNeededToRise The amount of money that they need to raise to
+     * @return The remaining amount of fund that they needed to raise after selling their houses or hotels
+     */
+    public int sellHouseHotel(Player currentPlayer, int fundNeededToRise){
+        Stage sellHouseHotelPopUpStage = new Stage();
         // TODO change !!!!
         VBox sellHouseHotelPane = new VBox(10);
         sellHouseHotelPane.setAlignment(Pos.CENTER);
+        sellHouseHotelPane.setPadding(new Insets(0, 20, 10, 20));
         HBox optionPane = new HBox(5);
         optionPane.setAlignment(Pos.CENTER);
 
+        int fundRemaining = fundNeededToRise;
         HashMap<Integer, Integer> houseSaleIds = new HashMap<>();
         HashMap<Integer, Integer> hotelSaleIds = new HashMap<>();
 
+        // Fetch all of the current player asset
         LinkedList<Object> playerAsset = currentPlayer.getAssets();
+
+        Label title = new Label("Property Tycoon Property Management (Selling Houses and Hotels)");
+        Label playerAssetMessage = new Label(currentPlayer.getName() + " this is all of your properties where you can sell houses and hotels");
 
         Button sellHouse = new Button("Selling a House");
         Button sellHotel = new Button("Selling a Hotel");
+        Button back = new Button("Return to Asset Selling Management ");
 
+        // Creating a table view with the following columns
         TableView assetInformation = new TableView();
-        TableColumn<String, Object> column1 = new TableColumn<>("Property Name");
+        TableColumn column1 = new TableColumn<>("Property Name");
         column1.setCellValueFactory(new PropertyValueFactory<>("title"));
-        column1.setMinWidth(100);
 
-        TableColumn<String, Integer> column2 = new TableColumn<>("House number");
+        TableColumn column2 = new TableColumn<>("House number");
         column2.setCellValueFactory(new PropertyValueFactory<>("housesNo"));
-        column2.setMinWidth(100);
 
-        TableColumn<String, Integer> column3 = new TableColumn<>("Hotel Number");
+        TableColumn column3 = new TableColumn<>("Hotel Number");
         column3.setCellValueFactory(new PropertyValueFactory<>("hotelNo"));
-        column3.setMinWidth(100);
 
+        assetInformation.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         assetInformation.getColumns().addAll(column1, column2, column3);
 
         for(Object asset: playerAsset){
@@ -1603,30 +1619,152 @@ public class Main extends Application {
             if(asset instanceof Property){
                 // Checking if the property contains houses or hotel
                 if(((Property) asset).isDeveloped()){
-                    System.out.println(asset);
                     assetInformation.getItems().add(asset);
                 }
             }
         }
+        // Creating a table view with a vertical scroll bar
+        ScrollPane scrollForAssetInformation = new ScrollPane(assetInformation);
+        scrollForAssetInformation.setFitToWidth(true);
+        scrollForAssetInformation.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
 
+        // CSS
+        title.setStyle(
+                "-fx-label-padding: 20 0 10 0;" + "-fx-font-size: 14;" + "-fx-font-weight: bold;"
+        );
+        playerAssetMessage.setStyle("-fx-font-size: 14;");
+
+        // Button Functionality
         sellHouse.setOnAction(e -> {
 
         });
         sellHotel.setOnAction(e -> {
 
         });
+        back.setOnAction(e -> {
 
-        optionPane.getChildren().addAll(sellHouse, sellHotel);
-        sellHouseHotelPane.getChildren().addAll(assetInformation, optionPane);
-        assetSellingHouse = new Scene(sellHouseHotelPane, 500,500);
-        window.setScene(assetSellingHouse);
-        window.show();
+        });
+
+        optionPane.getChildren().addAll(sellHouse, sellHotel, back);
+        sellHouseHotelPane.getChildren().addAll(title, playerAssetMessage, scrollForAssetInformation, optionPane);
+        assetSellingHouseScene = new Scene(sellHouseHotelPane);
+        // Creating the popup effect
+        sellHouseHotelPopUpStage.setScene(assetSellingHouseScene);
+        sellHouseHotelPopUpStage.initModality(Modality.APPLICATION_MODAL);
+        sellHouseHotelPopUpStage.showAndWait();
+        sellHouseHotelPopUpStage.close();
+        return fundRemaining;
+    }
+
+    /***
+     * Allow player to mortgage their properties to raise fund
+     * @param currentPlayer The current player
+     * @param fundNeededToRise The amount of money that they need to raise to
+     * @return The remaining amount of fund that they needed to raise after mortgaging their properties
+     */
+    public int mortgageProperties(Player currentPlayer, int fundNeededToRise){
+        Stage mortgagePopUpStage = new Stage();
+        VBox mortgagePropertiesPane = new VBox(10);
+        mortgagePropertiesPane.setAlignment(Pos.CENTER);
+        mortgagePropertiesPane.setPadding(new Insets(0, 20, 10, 20));
+        HBox optionPane = new HBox(10);
+        optionPane.setAlignment(Pos.CENTER);
+
+        int fundRemaining = fundNeededToRise;
+
+        Label title = new Label("Property Tycoon Property Management (Mortgaging Properties)");
+        Label playerAssetMessage = new Label(currentPlayer.getName() + " this is all of your properties where you can mortgage");
+
+        ListView asset = new ListView();
+
+        Button mortgage = new Button("Mortgage Properties");
+        Button back = new Button("Return to Asset Selling Management ");
+
+        // CSS
+        title.setStyle(
+                "-fx-label-padding: 20 0 10 0;" + "-fx-font-size: 14;" + "-fx-font-weight: bold;"
+        );
+        playerAssetMessage.setStyle("-fx-font-size: 14;");
+
+        // Button Functionality
+        mortgage.setOnAction(e -> {
+
+        });
+        back.setOnAction(e -> {
+
+        });
+
+        optionPane.getChildren().addAll(mortgage, back);
+        mortgagePropertiesPane.getChildren().addAll(title, playerAssetMessage, asset, optionPane);
+        assetMortgageScene = new Scene(mortgagePropertiesPane);
+        // Creating the popup effect
+        mortgagePopUpStage.setScene(assetMortgageScene);
+        mortgagePopUpStage.initModality(Modality.APPLICATION_MODAL);
+        mortgagePopUpStage.showAndWait();
+        mortgagePopUpStage.close();
+        return fundRemaining;
+    }
+
+    /***
+     * Allow player to sell their properties to raise fund
+     * @param currentPlayer The current player
+     * @param fundNeededToRise The amount of money that they need to raise to
+     * @return The remaining amount of fund that they needed to raise after selling their properties
+     */
+    public int sellProperties(Player currentPlayer, int fundNeededToRise){
+        Stage sellPropPopUpStage = new Stage();
+        VBox sellPropertiesPane = new VBox(10);
+        sellPropertiesPane.setAlignment(Pos.CENTER);
+        sellPropertiesPane.setPadding(new Insets(0, 20, 10, 20));
+        HBox optionPane = new HBox(10);
+        optionPane.setAlignment(Pos.CENTER);
+
+        int fundRemaining = fundNeededToRise;
+
+        Label title = new Label("Property Tycoon Property Management (Selling Properties)");
+        Label playerAssetMessage = new Label(currentPlayer.getName() + " this is all of your properties where you can sell");
+
+        ListView asset = new ListView();
+
+        Button sellProp = new Button("Sell Property");
+        Button back = new Button("Return to Asset Selling Management ");
+
+        // CSS
+        title.setStyle(
+                "-fx-label-padding: 20 0 10 0;" + "-fx-font-size: 14;" + "-fx-font-weight: bold;"
+        );
+        playerAssetMessage.setStyle("-fx-font-size: 14;");
+
+        // Button Functionality
+        sellProp.setOnAction(e -> {
+
+        });
+        back.setOnAction(e -> {
+
+        });
+
+        optionPane.getChildren().addAll(sellProp, back);
+        sellPropertiesPane.getChildren().addAll(title, playerAssetMessage, asset, optionPane);
+        assetSellingScene = new Scene(sellPropertiesPane);
+        // Creating the popup effect
+        sellPropPopUpStage.setScene(assetSellingScene);
+        sellPropPopUpStage.initModality(Modality.APPLICATION_MODAL);
+        sellPropPopUpStage.showAndWait();
+        sellPropPopUpStage.close();
+        return fundRemaining;
     }
 
     public void assetImprovement(Player currentPlayer){
-
     }
 
+    /***
+     * Create a leaving scene so if a player click leave, a vote begins (all player must tic the combo-box for current player to quit)
+     * @param currentPlayer The current player
+     */
+    public void leaveScene(Player currentPlayer){
+        VBox leaveSetupPane = new VBox(10);
+        // TODO finish leave-scene design
+    }
     /***
      * Create a popup scene where jail decision happens (serve time, bail or use get out of jail card)
      * @param currentPlayer The current player

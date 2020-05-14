@@ -28,7 +28,7 @@ public class Board {
     private Instant start;
     private Instant finished;
     public long timeElapsed;
-    private Main guiMain;
+    public Main guiMain;
 
     /**
      * Board constructor with specified version
@@ -40,7 +40,7 @@ public class Board {
      */
     public Board(LinkedList<Player> turnOrder, HashMap<Integer,BoardTile> tiles, Deque<CardEffect> potLuck, Deque<CardEffect> opportunityKnocks, String version, Main guiMain) {
 
-        if( version.equals("full") ){
+        if (version.equals("full")) {
             this.version = version;
         } else {
             System.out.println("Error in version");
@@ -53,7 +53,7 @@ public class Board {
         this.tiles = tiles;
         turns = 0;
         taxPot = 0;
-        repeat =  false;
+        repeat = false;
         dataStore = new HashMap<>();
         this.guiMain = guiMain;
         //Set board references for activation methods in tiles and cards
@@ -67,6 +67,10 @@ public class Board {
             b.setBoard(this);
         }
 
+    }
+
+    public Main getGuiMain(){
+        return guiMain;
     }
 
     public Board(LinkedList<Player> turnOrder, HashMap<Integer,BoardTile> tiles, Deque<CardEffect> potLuck, Deque<CardEffect> opportunityKnocks, String version) {
