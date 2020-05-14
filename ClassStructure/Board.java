@@ -464,7 +464,13 @@ public class Board {
      */
     public void updatePlayerAssets(Player currentPlayer, Object item, String use) {
         if (guiMain != null) {
-            guiMain.refreshPlayerAssets(currentPlayer);
+            guiMain.refreshPlayerCards(currentPlayer);
+        }
+    }
+
+    public void refreshTileDevelopment(Property tile) {
+        if (guiMain != null) {
+            guiMain.refreshDevelopment(tile);
         }
     }
 }

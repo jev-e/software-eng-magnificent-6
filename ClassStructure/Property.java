@@ -4,9 +4,14 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 
+
+import java.awt.*;
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 /**
@@ -30,6 +35,8 @@ public class Property extends BoardTile{
     // GUI Assets
     @JsonIgnore
     private Canvas colourDisplay; // Displays colour of property group
+    @JsonIgnore
+    private ArrayList<ImageView> development; // Stores Houses and Hotels
 
     /**
      * Default constructor for Jackson
@@ -78,6 +85,7 @@ public class Property extends BoardTile{
         super.tileName = new Label();
         super.tilePrice = new Label();
         colourDisplay = new Canvas(120,15);
+        development = new ArrayList<ImageView>();
     }
 
     /**
@@ -124,7 +132,6 @@ public class Property extends BoardTile{
      * @return boolean true if property developed, false otherwise
      */
     public boolean getDeveloped() { return developed; }
-
 
     /**
      * Function to sell houses and hotels on a property.
@@ -272,12 +279,49 @@ public class Property extends BoardTile{
                 developed = true;
                 updateRent();
             }
+            addHouseDisplay();
             owner.deductAmount(group.getBuildingCost());
             rent += buildingRents[housesNo - 1];
             return true;
         } else {
             return false;
         }
+    }
+
+    /**
+     * Adds House to the development array list
+     */
+    private void addHouseDisplay() {
+        Image tempHouse = new Image("Lib/Assets/house64bit.png");
+        ImageView house = new ImageView(tempHouse);
+        house.setPreserveRatio(true);
+        house.setFitWidth(25);
+        house.setFitHeight(25);
+
+        development.add(house);
+        board.refreshTileDevelopment(this);
+    }
+
+    /**
+     * Removes Last Index - Used for removing house or hotel
+     */
+    private void removeHouse() {
+        development.remove(development.size() - 1);
+    }
+
+
+    /**
+     * Adds hotel to the development array list
+     */
+    private void addHotelDisplay() {
+        Image tempHotel = new Image("Lib/Assets/hotel64bit.png");
+        ImageView hotel = new ImageView(tempHotel);
+        hotel.setPreserveRatio(true);
+        hotel.setFitWidth(25);
+        hotel.setFitHeight(25);
+        development.clear();
+        development.add(hotel);
+        board.refreshTileDevelopment(this);
     }
 
     /**
@@ -291,6 +335,7 @@ public class Property extends BoardTile{
             //'sell' 4 houses
             hotelNo = 1;
             housesNo = 0;
+            addHotelDisplay(); // Adds hotel to array list
             owner.deductAmount(group.getBuildingCost());
             rent += hotelRent;
             //System.out.println("Hotel purchased for " + title + ", the new rent is: £" + rent);
@@ -542,7 +587,22 @@ public class Property extends BoardTile{
         }
 
         GraphicsContext gc = this.colourDisplay.getGraphicsContext2D();
-        gc.setFill(temp);
+
+        gc.setFill(Color.BLACK);
         gc.fillRect(0, 0, 120, 15);
+
+        gc.setFill(temp);
+        gc.fillRect(2, 2, 116, 11);
+
+
     }
+
+    /**
+     * Getter for the houses and hotel ImageViews
+     * @return ArrayList of ImageViews containing houses and hotels
+     */
+    public ArrayList<ImageView> getDevelopment() {
+        return this.development;
+    }
+
 }

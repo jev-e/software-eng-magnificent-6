@@ -17,6 +17,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Pair;
@@ -38,13 +39,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Main extends Application {
 
     // Variables
-    private FlowPane[] playerCards;  // Player cards on right hand side of game screen
-    private FlowPane[] tokenDisplay; // FlowPanes showing tokens on tiles
-    private int playerNo;            // Number of players in the game
-    private Player[] players;        // Keep permanent order of players for player cards
-    private Label[] playerMoney;     // Labels to show how much money the player has
-    private Label[] playerNames;     // Labels of player names to show in assets
-    private ImageView[] playerIVs;       // Player token ImageViews to show in assets
+    private FlowPane[] playerCards;     // Player cards on right hand side of game screen
+    private FlowPane[] tokenDisplay;    // FlowPanes showing tokens on tiles
+    private FlowPane[] propDevelopment; // Shows houses and hotel on the property
+    private int playerNo;               // Number of players in the game
+    private Player[] players;           // Keep permanent order of players for player cards
+    private Label[] playerMoney;        // Labels to show how much money the player has
+    private Label[] playerNames;        // Labels of player names to show in assets
+    private ImageView[] playerIVs;      // Player token ImageViews to show in assets
 
     // Images - Tiles
     private Image goTilePNG;
@@ -300,7 +302,7 @@ public class Main extends Application {
      * Refresh's the given player's asset card
      * @param currentPlayer The player's assets to be redrawn
      */
-    public void refreshPlayerAssets(Player currentPlayer) {
+    public void refreshPlayerCards(Player currentPlayer) {
         int i = 0;
 
         for(int j = 0; j < playerNo; j++) {
@@ -333,14 +335,25 @@ public class Main extends Application {
     }
 
     /**
+     * Refresh the houses and hotel displays
+     * @param tile
+     */
+    public void refreshDevelopment(Property tile) {
+        int tileNo = tile.getiD();
+        propDevelopment[tileNo].getChildren().clear();
+        propDevelopment[tileNo].getChildren().addAll(tile.getDevelopment());
+    }
+
+    /**
      * Displays Board to primaryStage
      */
     public void displayGameBoard() {
 
-        double shortSide = 80, longSide = 120;
+        double shortSide = 90, longSide = 120;
 
         for (int i = 0; i < 40; i++) {
             Label label = board.get(i).getNameLabel();
+
             Label priceLabel = board.get(i).getTilePrice();
             Canvas canvas = board.get(i).getColourDisplay();
 
@@ -348,9 +361,12 @@ public class Main extends Application {
             Insets insets = new Insets(10);
             container.setMinSize(longSide, shortSide);
 
-            StackPane stack = new StackPane();              // Holds Background image and tokens FlowPane
-            FlowPane tokens = new FlowPane(5,5); // Holds tokens in each tile
-            tokens.setPrefWidth(100);
+            StackPane stack = new StackPane();                   // Holds Background image and tokens FlowPane
+            FlowPane tokens = new FlowPane(5,5);      // Holds tokens in each tile
+            tokens.setPrefWidth(longSide);
+
+            FlowPane developImgs = new FlowPane(5,5); // Holds houses and hotels
+            developImgs.setPrefWidth(longSide);
 
             // Add Tiles to GridPane
             switch (i) {
@@ -366,15 +382,17 @@ public class Main extends Application {
                 case 1: case 2: case 3: case 4: case 5: case 6: case 7: case 8: case 9:
                     container.add(label, 0,1);
                     container.setHalignment(label, HPos.CENTER);
-                    container.add(priceLabel, 0, 3);
+                    container.add(priceLabel, 0, 2);
                     container.setHalignment(priceLabel, HPos.CENTER);
-
 
                     // Properties
                     if(!(i == 2 || i == 4 || i == 5|| i == 7)) {
+                        label.setTextFill(Color.WHITE);
                         board.get(i).setColour();
-                        container.add(canvas,0,0);
-                        container.add(tokens, 0, 2);
+                        stack.getChildren().addAll(canvas, label);
+                        container.add(stack,0,0);
+                        container.add(tokens, 0, 4);
+                        container.add(developImgs, 0, 3);
                     }
 
                     // Pot Luck
@@ -385,7 +403,10 @@ public class Main extends Application {
 
                     // Income Tax
                     if(i == 4) {
-                        container.add(tokens, 0,2);
+                        Label Tax = new Label("£200");
+                        container.add(Tax, 0, 2);
+                        container.setHalignment(Tax, HPos.CENTER);
+                        container.add(tokens, 0,3);
                     }
 
                     // Brighton Station
@@ -413,14 +434,17 @@ public class Main extends Application {
                 case 11: case 12: case 13: case 14: case 15: case 16: case 17: case 18: case 19:
                     container.add(label, 0,1);
                     container.setHalignment(label, HPos.CENTER);
-                    container.add(priceLabel, 0, 3);
+                    container.add(priceLabel, 0, 2);
                     container.setHalignment(priceLabel, HPos.CENTER);
 
                     // Properties
                     if(!(i == 12 || i == 15 || i == 17)) {
+                        label.setTextFill(Color.WHITE);
                         board.get(i).setColour();
-                        container.add(canvas,0,0);
-                        container.add(tokens, 0, 2);
+                        stack.getChildren().addAll(canvas, label);
+                        container.add(stack,0,0);
+                        container.add(tokens, 0, 4);
+                        container.add(developImgs, 0, 3);
                     }
 
                     // Tesla Power
@@ -454,14 +478,20 @@ public class Main extends Application {
                 case 21: case 22: case 23: case 24: case 25: case 26: case 27: case 28: case 29:
                     container.add(label, 0,1);
                     container.setHalignment(label, HPos.CENTER);
-                    container.add(priceLabel, 0, 3);
+                    container.add(priceLabel, 0, 2);
                     container.setHalignment(priceLabel, HPos.CENTER);
+
+                    if(i == 21 || i == 23 || i == 24) {
+                        label.setTextFill(Color.WHITE);
+                    }
 
                     // Properties
                     if(!(i == 22 || i == 25 || i == 28)) {
                         board.get(i).setColour();
-                        container.add(canvas,0,0);
-                        container.add(tokens,0,2);
+                        stack.getChildren().addAll(canvas, label);
+                        container.add(stack,0,0);
+                        container.add(tokens, 0, 4);
+                        container.add(developImgs, 0, 3);
                     }
 
                     // Opportunity Knocks
@@ -495,14 +525,17 @@ public class Main extends Application {
                 case 31: case 32: case 33: case 34: case 35: case 36: case 37: case 38: case 39:
                     container.add(label, 0,1);
                     container.setHalignment(label, HPos.CENTER);
-                    container.add(priceLabel, 0, 3);
+                    container.add(priceLabel, 0, 2);
                     container.setHalignment(priceLabel, HPos.CENTER);
 
                     // Properties
                     if(!(i == 33 || i == 35 || i == 36 || i == 38)) {
+                        label.setTextFill(Color.WHITE);
                         board.get(i).setColour();
-                        container.add(canvas,0,0);
-                        container.add(tokens,0,2);
+                        stack.getChildren().addAll(canvas, label);
+                        container.add(stack,0,0);
+                        container.add(tokens, 0, 4);
+                        container.add(developImgs, 0, 3);
                     }
 
                     // Pot Luck
@@ -523,6 +556,14 @@ public class Main extends Application {
                         container.add(stack, 0, 2);
                     }
 
+                    // Super Tax
+                    if(i == 38) {
+                        Label sTax = new Label("£100");
+                        container.add(sTax,0,2);
+                        container.setHalignment(sTax, HPos.CENTER);
+                        container.add(tokens, 0,3);
+                    }
+
                     rightColGP.add(container, 0, (i - 31));
                     break;
 
@@ -531,6 +572,7 @@ public class Main extends Application {
                     break;
             }
             tokenDisplay[i] = tokens;
+            propDevelopment[i] = developImgs;
         }
     }
 
@@ -567,6 +609,13 @@ public class Main extends Application {
 
             playersVB.getChildren().add(playerPane);
         }
+    }
+
+    /**
+     * Displays houses and hotels to a given property
+     */
+    public void displayHousesHotels() {
+
     }
 
     /**
@@ -618,6 +667,7 @@ public class Main extends Application {
 
         // Initialise Variables
         tokenDisplay = new FlowPane[40];
+        propDevelopment = new FlowPane[40];
 
         playerNo = gameSystem.turnOrder.size();
 
@@ -739,6 +789,15 @@ public class Main extends Application {
         catToken.setPreserveRatio(true);
         catToken.setFitWidth(tokenSize);
         catToken.setFitHeight(tokenSize);
+
+        // Assets
+        house.setPreserveRatio(true);
+        house.setFitWidth(20);
+        house.setFitHeight(20);
+
+        hotel.setPreserveRatio(true);
+        hotel.setFitWidth(20);
+        hotel.setFitHeight(20);
 
     }
 

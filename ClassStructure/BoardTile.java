@@ -7,6 +7,10 @@ import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
+
+import java.util.ArrayList;
+
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
         property = "type")
