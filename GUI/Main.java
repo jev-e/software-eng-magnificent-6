@@ -1128,7 +1128,8 @@ public class Main extends Application {
 
     /***
      * Check to see that no duplicate token has been chosen
-     * @return A boolean value (true = no duplicate tokens found, false = duplicate tokens found amongst the players and AI)
+     * @return A boolean value (true = no duplicate tokens found, false = duplicate tokens found amongst the
+     * players and AI)
      */
     public boolean tokenConstraintCheck(){
         // true = pass constraint check, else failed constraint check
@@ -1204,14 +1205,16 @@ public class Main extends Application {
 
         for(int i = 0; i < playerNameTextField.size(); i++){
             // Creating a new player and assigning it to turn order
-            Player player = new Player(playerNameTextField.get(i).getText(), Token.valueOf(playerTokenSpin.get(i).getValue().toString().toUpperCase()), gameSystem,false);
+            Player player = new Player(playerNameTextField.get(i).getText(),
+                    Token.valueOf(playerTokenSpin.get(i).getValue().toString().toUpperCase()), gameSystem,false);
             order.add(player);
         }
 
         // Add AI to the turn order if aiSize >= 1
         for(int j = 0; j < aiNameTextField.size(); j++){
             // Creating a new player and assigning it to turn order
-            Player ai = new Player(aiNameTextField.get(j).getText(), Token.valueOf(aiTokenSpin.get(j).getValue().toString().toUpperCase()), gameSystem,true);
+            Player ai = new Player(aiNameTextField.get(j).getText(),
+                    Token.valueOf(aiTokenSpin.get(j).getValue().toString().toUpperCase()), gameSystem,true);
             order.add(ai);
         }
     }
@@ -1335,7 +1338,8 @@ public class Main extends Application {
             Alert helpMessage = new Alert(Alert.AlertType.INFORMATION);
             helpMessage.setTitle("Property Tycoon Trading");
             helpMessage.setHeaderText("Property Tycoon Help Message");
-            helpMessage.setContentText("To trade multiple assets, hold 'Ctrl' and click on the assets you wish to trade");
+            helpMessage.setContentText("To trade multiple assets, hold 'Ctrl' and click on the assets you wish " +
+                    "to trade");
             helpMessage.showAndWait();
         });
         ListView finalPlayerOneAsset = playerOneAsset;
@@ -1369,7 +1373,8 @@ public class Main extends Application {
             receiveObject = (LinkedList<Object>) getAsset(currentPlayer, receiveString);
 
             tradeMessage.setHeaderText(currentPlayer.getName() + " offering\n" + msgOffering);
-            // Fetch the information of all the assets that they wish for from the other player and display it into context
+            // Fetch the information of all the assets that they wish for from the other player and display it
+            // into context
             ObservableList listOfPlayerTwoAsset = finalPlayerTwoAsset.getSelectionModel().getSelectedItems();
             for(Object item: listOfPlayerTwoAsset){
                 msgFor += String.format("%s%n", item);
@@ -1444,15 +1449,18 @@ public class Main extends Application {
      * @param give A link-list which contains all the asset that tradePlayer will need to give to current player
      * @param receive A link-list which contains all the asset that current player will need to give to tradePlayer
      */
-    public void tradingChangeOwner(Player currentPlayer, Player tradePlayer, LinkedList<Object> give, LinkedList<Object> receive){
-        // Go through the 'give' link list on what tradePlayer (player two) will give to current player and change ownership of asset
+    public void tradingChangeOwner(Player currentPlayer, Player tradePlayer, LinkedList<Object> give,
+                                   LinkedList<Object> receive){
+        // Go through the 'give' link list on what tradePlayer (player two) will give to current player and
+        // change ownership of asset
         for(Object asset: give){
             tradePlayer.removeAsset(asset);
             currentPlayer.addAsset(asset);
         }
 
         // TODO merge will cal
-        // Go through the 'receive' link list on what current player will give to the selected player and change ownership of asset
+        // Go through the 'receive' link list on what current player will give to the selected player and
+        // change ownership of asset
         for(Object asset: receive){
             currentPlayer.removeAsset(asset);
             tradePlayer.addAsset(asset);
@@ -1518,7 +1526,8 @@ public class Main extends Application {
 
         // Adding the players name that current player could trade with (cannot be self)
         for(int i = 0; i < order.size(); i++){
-            // Make sure you cant trade with yourself and players are not in jail (cannot trade with players that is in jail)
+            // Make sure you cant trade with yourself and players are not in jail (cannot trade with players
+            // that is in jail)
             if(currentPlayer.getName() != order.get(i).getName() && !order.get(i).isInJail()){
                 listOfPlayer.getItems().add(order.get(i).getName());
                 // Default value set to the first player that is not itself
@@ -1579,14 +1588,16 @@ public class Main extends Application {
                 // Variable is used when auction is restarted (know who initiated the auction)
                 auctioneer = currentPlayer;
             }else if(bidder != currentPlayer && !bidder.isInJail()){
-                // Check bidder is not the auctioneer and is not in jail (player in jailed cannot participate in auctions)
+                // Check bidder is not the auctioneer and is not in jail (player in jailed cannot participate in
+                // auctions)
                 auctionSetupScene(bidder, asset);
             }
         }
     }
 
     /***
-     * Create a popup scene where the auctioning would happen if the current player does not want/ afford a unowned property
+     * Create a popup scene where the auctioning would happen if the current player does not want/ afford a unowned
+     * property
      * @param bidder The player from the turn order (not current player) that wishes to bid
      * @param asset A boardTile that could either be station, utility or property that can be auctioned
      */
@@ -1735,7 +1746,8 @@ public class Main extends Application {
             Alert auctionWinnerMessage = new Alert(Alert.AlertType.INFORMATION);
             auctionWinnerMessage.setTitle("Property Tycoon Auction");
             auctionWinnerMessage.setHeaderText("Congratulation " + highestPlayerBidder.getName());
-            auctionWinnerMessage.setContentText("You have won the auction and acquired "+ asset.getTitle() + " for £" + highestBidder.getValue());
+            auctionWinnerMessage.setContentText("You have won the auction and acquired "+ asset.getTitle() + " for £"
+                    + highestBidder.getValue());
             auctionWinnerMessage.showAndWait();
             auctionWinnerMessage.close();
             highestPlayerBidder.deductAmount(highestBidder.getValue());
@@ -1811,7 +1823,8 @@ public class Main extends Application {
         LinkedList<Object> playerAsset = currentPlayer.getAssets();
 
         Label title = new Label("Property Tycoon Property Management (Selling Houses and Hotels)");
-        Label playerAssetMessage = new Label(currentPlayer.getName() + " this is all of your properties where you can sell houses and hotels");
+        Label playerAssetMessage = new Label(currentPlayer.getName() + " this is all of your properties where" +
+                " you can sell houses and hotels");
 
         Button sellHouse = new Button("Selling a House");
         Button sellHotel = new Button("Selling a Hotel");
@@ -1888,7 +1901,8 @@ public class Main extends Application {
         optionPane.setAlignment(Pos.CENTER);
 
         Label title = new Label("Property Tycoon Property Management (Mortgaging Properties)");
-        Label playerAssetMessage = new Label(currentPlayer.getName() + " this is all of your properties where you can mortgage");
+        Label playerAssetMessage = new Label(currentPlayer.getName() + " this is all of your properties where" +
+                " you can mortgage");
 
         ListView asset = new ListView();
 
@@ -1935,7 +1949,8 @@ public class Main extends Application {
         optionPane.setAlignment(Pos.CENTER);
 
         Label title = new Label("Property Tycoon Property Management (Selling Properties)");
-        Label playerAssetMessage = new Label(currentPlayer.getName() + " this is all of your properties where you can sell");
+        Label playerAssetMessage = new Label(currentPlayer.getName() + " this is all of your properties " +
+                "where you can sell");
 
         ListView asset = new ListView();
 
@@ -2048,8 +2063,10 @@ public class Main extends Application {
         winningMessage.setHeaderText(winner.getName() + " has won the game with a net worth of " + winner.netWorth());
         gameSystem.storeData(winner, winner.netWorth());
         for( String key: gameSystem.dataStore.keySet() ){
-            System.out.println(gameSystem.dataStore.get(key).size() + " " + key + " " + gameSystem.dataStore.get(key).toString());
-            winningMessage.setContentText(gameSystem.dataStore.get(key).size() + " " + key + " " + gameSystem.dataStore.get(key).toString());
+            System.out.println(gameSystem.dataStore.get(key).size() + " " + key + " " +
+                    gameSystem.dataStore.get(key).toString());
+            winningMessage.setContentText(gameSystem.dataStore.get(key).size() + " " + key + " " +
+                    gameSystem.dataStore.get(key).toString());
         }
         winningMessage.showAndWait();
     }
@@ -2123,7 +2140,7 @@ public class Main extends Application {
     }
 
     /**
-     * Displays an action log fo teh current player at the end of their turn
+     * Displays an action log for the current player at the end of their turn
      * @param curPlayer the current active player in the game
      */
     public void displayActionLog(Player curPlayer){
@@ -2164,7 +2181,8 @@ public class Main extends Application {
             series.setName(key);
             for (int ii = 0; ii < gameSystem.dataStore.get(key).size(); ii++) {
                 //for each turn:net worth pair
-                series.getData().add(new XYChart.Data<>(gameSystem.dataStore.get(key).get(ii).getKey(), gameSystem.dataStore.get(key).get(ii).getValue()));
+                series.getData().add(new XYChart.Data<>(gameSystem.dataStore.get(key).get(ii).getKey(),
+                        gameSystem.dataStore.get(key).get(ii).getValue()));
             }
             lineChart.getData().add(series);
         }
@@ -2257,5 +2275,47 @@ public class Main extends Application {
             e.printStackTrace();
             System.out.println(e.getMessage());
         }
+    }
+
+    /**
+     * gets confirmation from the user whether they want to leave teh game or not
+     * @param currentPlayer the player asking to leave the game.
+     * @return the decision to leave game or not
+     */
+    public boolean leaveConfirmationAlert(Player currentPlayer) {
+        boolean decision;
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Property Tycoon");
+        alert.setHeaderText(currentPlayer.getName() + " leave confirmation");
+        alert.setContentText("Are you sure you want to leave the game? Note that you can only leave with the " +
+                "permission with all of the rest of the players." );
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == ButtonType.OK){
+            decision = true;
+        } else {
+            decision = false;
+        }
+        return(decision);
+    }
+
+    /**
+     * Get confirmation from current player on whether if the player who wishes to leave can or not?
+     * @param currentPlayer The current player being asked.
+     * @param leavingPlayer The player who is wishing to leave the game.
+     * @return The decision from current player on if leaving player can leave.
+     */
+    public boolean getLeavePermission(Player currentPlayer, Player leavingPlayer) {
+        boolean decision;
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Property Tycoon");
+        alert.setHeaderText(currentPlayer.getName() + ", " + leavingPlayer.getName() + " wants to leave the game.");
+        alert.setContentText("Are you ok with " + leavingPlayer.getName()+ " leaving the game early?" );
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == ButtonType.OK){
+            decision = true;
+        } else {
+            decision = false;
+        }
+        return(decision);
     }
 }

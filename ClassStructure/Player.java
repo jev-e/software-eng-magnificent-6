@@ -549,7 +549,7 @@ public class Player {
     public void leaveGame() {
         //ask user
         if (!isAiAgent()) {//ask human players only
-            boolean confirm = true;//TODO change this to get user decision from GUI
+            boolean confirm = board.leaveConfirmation(this);
             boolean possible;
 
             //get user votes

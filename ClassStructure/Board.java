@@ -332,14 +332,13 @@ public class Board {
 
         for (Player player : turnOrder) {
             if (player != leavingPlayer && !player.isAiAgent()) {//ignore AI agents
-                confirm = true;//TODO change to get user decision from GUI
+                confirm = guiMain.getLeavePermission(player, leavingPlayer);
                 if (!confirm) { //votes must be unanimous so if one disagrees, player can't leave
                     canLeave = false;
                     break;
                 }
             }
         }
-
         return canLeave;
     }
 
@@ -412,6 +411,15 @@ public class Board {
      */
     public boolean payTaxOrDrawOpKnock(){
         return(guiMain.taxOrDrawScreen());
+    }
+
+    /**
+     * Middle man function to grab player's decision to leave ethe game
+     * @param currentPlayer the player asking to leave the game
+     * @returnplayer's decision to leave the game or not
+     */
+    public boolean leaveConfirmation(Player currentPlayer){
+        return(guiMain.leaveConfirmationAlert(currentPlayer));
     }
 
     /**
