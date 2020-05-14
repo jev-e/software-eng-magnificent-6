@@ -10,11 +10,15 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Pair;
@@ -2108,7 +2112,7 @@ public class Main extends Application {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Property Tycoon");
         alert.setHeaderText("You've landed on pay tax or Opportunity knocks ");
-        alert.setContentText("Do you want to pay the tax or cancel and draw an Oppotunity Knocks card instead?" );
+        alert.setContentText("Do you want to pay the tax or cancel and draw an Opportunity Knocks card instead?" );
         Optional<ButtonType> result = alert.showAndWait();
         if (result.get() == ButtonType.OK){
             decision = true;
@@ -2118,9 +2122,69 @@ public class Main extends Application {
         return(decision);
     }
 
-    /***
-     * How the game is run
+    /**
+     * Displays an action log fo teh current player at the end of their turn
+     * @param curPlayer the current active player in the game
      */
+    public void displayActionLog(Player curPlayer){
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setHeaderText(curPlayer.getName() + "'s end of turn log.");
+        alert.setContentText(curPlayer.getActionLog());
+        alert.showAndWait();
+    }
+
+    /**
+     * Creates end game summary screen
+     */
+    private void endGameSummary( Stage primaryStage ) {
+        primaryStage.setTitle("Game Summary");
+
+        //defining the axes
+        final NumberAxis xAxis = new NumberAxis();
+        xAxis.setLabel("Turns");
+        final NumberAxis yAxis = new NumberAxis();
+        yAxis.setLabel("Net-Worth");
+
+        //define setup
+        VBox root = new VBox();
+        Scene scene = new Scene(root, 800, 600);
+        //align
+        root.setAlignment(Pos.CENTER);
+        //create line chart
+        final LineChart<Number, Number> lineChart = new LineChart<Number, Number>(xAxis, yAxis);
+        //graph styling
+        xAxis.setTickUnit(1);
+        lineChart.setTitle("Net-Worth Over Turns");
+        lineChart.setCreateSymbols(false);
+
+        //defining a series
+        for (String key : gameSystem.dataStore.keySet()) {
+            //for each player
+            XYChart.Series series = new XYChart.Series();
+            series.setName(key);
+            for (int ii = 0; ii < gameSystem.dataStore.get(key).size(); ii++) {
+                //for each turn:net worth pair
+                series.getData().add(new XYChart.Data<>(gameSystem.dataStore.get(key).get(ii).getKey(), gameSystem.dataStore.get(key).get(ii).getValue()));
+            }
+            lineChart.getData().add(series);
+        }
+        root.getChildren().add(lineChart);
+
+        //other stats
+        Text text = new Text("Turns taken: " + gameSystem.turns);
+        root.getChildren().add(text);
+        Text timing = new Text("Length of game: " + gameSystem.timeElapsed + "ms");
+        root.getChildren().add(timing);
+
+        primaryStage.setScene(scene);
+        primaryStage.sizeToScene();
+
+        primaryStage.show();
+    }
+
+        /***
+         * How the game is run
+         */
     public void gameLoop() {
         int retirePoint = 300;
         gameSystem.setStart(Instant.now());
@@ -2180,7 +2244,7 @@ public class Main extends Application {
                     }
                     // roll again
                 } while (gameSystem.repeat);
-                // TODO end turn screen (actionlog)
+                displayActionLog(currentPlayer);
             }
             if (gameSystem.timeUp) {
 
