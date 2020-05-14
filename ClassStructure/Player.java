@@ -38,8 +38,7 @@ public class Player {
         this.token = token;
         currentPos = 0;
         previousPos = 0;
-        // todo chagne back to 1500
-        money = 0;//All references to money is in £'s
+        money = 1500;//All references to money is in £'s
         assets = new LinkedList<>();
         canBuy = false;
         inJail = false;

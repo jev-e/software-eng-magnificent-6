@@ -173,10 +173,6 @@ public class Property extends BoardTile{
         if( mortgaged && owner.getMoney() >= (cost/2)){
             owner.deductAmount(cost/2); //pay un mortgaging fee
             mortgaged = false; //update flag
-        } else if( mortgaged && (owner.getMoney() < (cost/2))) {
-            //System.out.println("Sorry, you cannot afford to do this");
-        } else{
-            //System.out.println("Property not currently mortgaged");
         }
     }
 
@@ -309,7 +305,7 @@ public class Property extends BoardTile{
      */
     public boolean canBuyHouse() {
         int desiredCount = housesNo + 1;//user wants to add one more house
-        if (desiredCount > 4) {
+        if (desiredCount > 4 || hotelNo == 1) {
             return false;//House limit reached
         } else {
             LinkedList<Property> setMembers = new LinkedList<>();

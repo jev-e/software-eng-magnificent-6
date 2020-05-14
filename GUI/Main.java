@@ -105,7 +105,7 @@ public class Main extends Application {
 
     Stage window;
     Scene menuScene, ruleScene, playerSetupScene, gameSetupScene, gameBoardScene, tradingSetupScene, tradingScene, auctionScene, jailSetupScene;
-    Scene assetSellingManagementScene, assetSellingHouseScene, assetMortgageScene,  assetSellingScene;
+    Scene assetSellingManagementScene, assetSellingHouseScene, assetMortgageScene,  assetSellingScene, assetImproveScene, improveScene, unMortgageScene;
 
     // Holds the players name
     public ArrayList<TextField> playerNameTextField = new ArrayList<>();
@@ -140,6 +140,7 @@ public class Main extends Application {
         window.show();
         //displayGameScene();
 
+        Player basic = new Player("Calvin", Token.SPOON, gameSystem, false);
 //        createBoard("full");
 //        int[] buildingRents = {10,10,20,30};
 //        Player basic = new Player("Calvin", Token.SPOON, gameSystem, false);
@@ -1201,23 +1202,35 @@ public class Main extends Application {
             Property test3 = (Property) gameSystem.tiles.get(39);
             Property test4 = (Property) gameSystem.tiles.get(14);
             Property test5 = (Property) gameSystem.tiles.get(19);
+            Property test11 = (Property) gameSystem.tiles.get(9);
+            Property test12 = (Property) gameSystem.tiles.get(8);
             Station test6 = (Station) gameSystem.tiles.get(5);
             Station test7 = (Station) gameSystem.tiles.get(15);
             Utility test8 = (Utility) gameSystem.tiles.get(12);
             Utility test9 = (Utility) gameSystem.tiles.get(28);
-            test2.setHotelNo(1);
+
+            test.setCompletedSet(true);
+            test2.setHotelNo(0);
+            test2.setCompletedSet(true);
             test2.setDeveloped(true);
             test3.setHotelNo(1);
             test3.setDeveloped(true);
+            test3.setCompletedSet(true);
+            test11.setMortgaged(true);
+            test12.setMortgaged(true);
             gameSystem.turnOrder.getFirst().addAsset(test);
+            gameSystem.turnOrder.getFirst().addAsset(test11);
             gameSystem.turnOrder.getFirst().addAsset(test4);
             gameSystem.turnOrder.getFirst().addAsset(test2);
             gameSystem.turnOrder.getFirst().addAsset(test6);
             gameSystem.turnOrder.getFirst().addAsset(test8);
-            gameSystem.turnOrder.get(1).addAsset(test3);
+            gameSystem.turnOrder.getFirst().addAsset(test3);
+
             gameSystem.turnOrder.get(1).addAsset(test5);
+            gameSystem.turnOrder.get(1).addAsset(test8);
             gameSystem.turnOrder.get(1).addAsset(test7);
             gameSystem.turnOrder.get(1).addAsset(test9);
+            gameSystem.turnOrder.get(1).addAsset(test12);
             displayGameScene();
             window.setScene(gameScene);
             gameLoop();
@@ -2125,8 +2138,235 @@ public class Main extends Application {
         sellPropPopUpStage.close();
     }
 
-    public void assetImprovement(Player currentPlayer){
+    /***
+     * Create the property management scene (improving building and un-mortgage)
+     * @param currentPlayer The current player
+     */
+    public void endOfTurnOptionSetupScene(Player currentPlayer){
+        Stage assetManagePopUp = new Stage();
+        VBox assetManagementSetupPane = new VBox(10);
+        assetManagementSetupPane.setPadding(new Insets(0, 20, 10, 20));
+        assetManagementSetupPane.setAlignment(Pos.CENTER);
+        HBox optionPane = new HBox(5);
+        optionPane.setAlignment(Pos.CENTER);
+
+        Label title = new Label("Property Tycoon End of Turn Options");
+
+        Button improveBuilding = new Button("Add buildings");
+        Button unMortgage = new Button("Un-Mortgage Properties");
+        // TODO might need to be chagned
+        Button trade = new Button("Trade");
+        Button leaveGame = new Button("Leave Game");
+        Button endTurn = new Button("End Turn");
+
+        // CSS
+        title.setStyle(
+                "-fx-label-padding: 20 0 10 0;" + "-fx-font-size: 14;" + "-fx-font-weight: bold;"
+        );
+
+        // Button functionality
+        improveBuilding.setOnAction(e -> {
+            improveBuilding(currentPlayer);
+        });
+        unMortgage.setOnAction(e -> {
+            unMortgageProperty(currentPlayer);
+        });
+        trade.setOnAction(e -> {
+            tradingSetupScene(currentPlayer);
+        });
+        leaveGame.setOnAction(e -> {
+            currentPlayer.leaveGame();
+        });
+        endTurn.setOnAction(e -> {
+
+        });
+
+        optionPane.getChildren().addAll(improveBuilding, unMortgage, trade, leaveGame, endTurn);
+        assetManagementSetupPane.getChildren().addAll(title, optionPane);
+        assetImproveScene = new Scene(assetManagementSetupPane);
+
+        // Pop Up
+        assetManagePopUp.setScene(assetImproveScene);
+        assetManagePopUp.initModality(Modality.APPLICATION_MODAL);
+        assetManagePopUp.showAndWait();
+        assetManagePopUp.close();
     }
+
+    /***
+     * Create a scene which allow the player to improve their properties
+     * @param currentPlayer
+     */
+    public void improveBuilding(Player currentPlayer){
+        Stage improveHouseHotelPopUpStage = new Stage();
+        VBox improveHouseHotelPane = new VBox(10);
+        improveHouseHotelPane.setAlignment(Pos.CENTER);
+        improveHouseHotelPane.setPadding(new Insets(0, 20, 10, 20));
+        HBox optionPane = new HBox(5);
+        optionPane.setAlignment(Pos.CENTER);
+
+        // Fetch all of the current player asset
+        LinkedList<Object> playerAsset = currentPlayer.getAssets();
+
+        Label title = new Label("Property Tycoon Property Management (Buying buildings)");
+        Label playerAssetMessage = new Label(currentPlayer.getName() + " this is all of your completed set of properties");
+
+
+        Button improveBuilding = new Button("Add Building to property");
+        Button back = new Button("Back");
+
+        // Creating a table view with the following columns
+        TableView assetInformation = new TableView();
+        TableColumn column1 = new TableColumn<>("Property Name");
+        column1.setCellValueFactory(new PropertyValueFactory<>("title"));
+
+        TableColumn column2 = new TableColumn<>("House number");
+        column2.setCellValueFactory(new PropertyValueFactory<>("housesNo"));
+
+        TableColumn column3 = new TableColumn<>("Hotel Number");
+        column3.setCellValueFactory(new PropertyValueFactory<>("hotelNo"));
+
+        assetInformation.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        assetInformation.getColumns().addAll(column1, column2, column3);
+
+        // Going through players asset and add it to table-view if its a property and is developed
+        for(Object asset: playerAsset){
+            if(asset instanceof Property){
+                // Add asset that is in a complete set to table-view
+                if(((Property) asset).isCompletedSet()){
+                    assetInformation.getItems().add(asset);
+                }
+            }
+        }
+        // Creating a table view with a vertical scroll bar
+        ScrollPane scrollForAssetInformation = new ScrollPane(assetInformation);
+        scrollForAssetInformation.setFitToWidth(true);
+        scrollForAssetInformation.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
+
+        // CSS
+        title.setStyle(
+                "-fx-label-padding: 20 0 10 0;" + "-fx-font-size: 14;" + "-fx-font-weight: bold;"
+        );
+        playerAssetMessage.setStyle("-fx-font-size: 14;");
+
+        // Button Functionality
+        improveBuilding.setOnAction(e -> {
+            // Fetch the information that has been selected for the current player and display it into alert header
+            ObservableList listOfPlayerAsset = assetInformation.getSelectionModel().getSelectedItems();
+            Property assetObject = (Property) listOfPlayerAsset.get(0);
+
+            Alert improveError = new Alert(Alert.AlertType.ERROR);
+            int buildingCost = assetObject.getGroup().getBuildingCost();
+            if(currentPlayer.getMoney() >= buildingCost){
+                if(assetObject.canBuyHouse()){
+                    assetObject.purchaseHouse();
+                    assetInformation.refresh();
+                }else if(assetObject.canBuyHotel()){
+                    assetObject.purchaseHotel();
+                    assetInformation.refresh();
+                }else{
+                    improveError.setTitle("Property Tycoon Improvement Management");
+                    improveError.setHeaderText("Building improvement violates regulations");
+                    improveError.showAndWait();
+                    improveError.close();
+                }
+            }else{
+                improveError.setTitle("Property Tycoon Improvement Management");
+                improveError.setHeaderText(currentPlayer.getName() + " insufficient fund");
+                improveError.showAndWait();
+                improveError.close();
+            }
+
+        });
+        back.setOnAction(e -> {
+            improveHouseHotelPopUpStage.close();
+        });
+
+        optionPane.getChildren().addAll(improveBuilding, back);
+        improveHouseHotelPane.getChildren().addAll(title, playerAssetMessage, scrollForAssetInformation, optionPane);
+        improveScene = new Scene(improveHouseHotelPane);
+        // Creating the popup effect
+        improveHouseHotelPopUpStage.setScene(improveScene);
+        improveHouseHotelPopUpStage.initModality(Modality.APPLICATION_MODAL);
+        improveHouseHotelPopUpStage.showAndWait();
+        improveHouseHotelPopUpStage.close();
+    }
+
+    /***
+     * Create a scene which allow the player to un-mortgage their properties
+     * @param currentPlayer
+     */
+    public void unMortgageProperty(Player currentPlayer){
+        Stage unMortgagePopUpStage = new Stage();
+        VBox unMortgagePropertiesPane = new VBox(10);
+        unMortgagePropertiesPane.setAlignment(Pos.CENTER);
+        unMortgagePropertiesPane.setPadding(new Insets(0, 20, 10, 20));
+        HBox optionPane = new HBox(10);
+        optionPane.setAlignment(Pos.CENTER);
+
+        Label title = new Label("Property Tycoon Property Management (Un-Mortgaging Properties)");
+
+        ListView assetList = new ListView();
+
+        Button unMortgage = new Button("Un-Mortgage Properties");
+        Button back = new Button("Back");
+
+        // Fetch all of the current player asset
+        LinkedList<Object> playerAsset = currentPlayer.getAssets();
+
+        // TODO change commetns
+        // Going through players assets and add it to list-view (asset = String) if its a property
+        for(Object asset: playerAsset){
+            if(asset instanceof Property){
+                // Checking if the property is able to mortgaged and not is not developed
+                if(((Property) asset).isMortgaged()){
+                    assetList.getItems().add(((Property) asset).getTitle());
+                }
+            }
+        }
+
+        // CSS
+        title.setStyle(
+                "-fx-label-padding: 20 0 10 0;" + "-fx-font-size: 14;" + "-fx-font-weight: bold;"
+        );
+
+        // Button Functionality
+        unMortgage.setOnAction(e -> {
+            // Fetch the information that has been selected for the current player
+            ObservableList listOfPlayerAsset = assetList.getSelectionModel().getSelectedItems();
+
+            // Finding the Property object with the selected string from list-view
+            for (Object item: playerAsset){
+                if(item instanceof Property){
+                    if(((Property)item).getTitle().equals(listOfPlayerAsset.get(0))){
+                        if(currentPlayer.getMoney() >= (((Property)item).getCost()/2)){
+                            ((Property)item).unmortgageProperty();
+                            assetList.getItems().remove(((Property)item).getTitle());
+                            assetList.refresh();
+                        }else{
+                            Alert unMortError = new Alert(Alert.AlertType.ERROR);
+                            unMortError.setTitle("Property Tycoon Management");
+                            unMortError.setHeaderText(currentPlayer.getName() + " insufficient fund");
+                            unMortError.showAndWait();
+                            unMortError.close();
+                        }
+                    }
+                }
+            }
+        });
+        back.setOnAction(e -> {
+            unMortgagePopUpStage.close();
+        });
+
+        optionPane.getChildren().addAll(unMortgage, back);
+        unMortgagePropertiesPane.getChildren().addAll(title, assetList, optionPane);
+        unMortgageScene = new Scene(unMortgagePropertiesPane);
+        // Creating the popup effect
+        unMortgagePopUpStage.setScene(unMortgageScene);
+        unMortgagePopUpStage.initModality(Modality.APPLICATION_MODAL);
+        unMortgagePopUpStage.showAndWait();
+        unMortgagePopUpStage.close();
+    }
+
 
     /***
      * Create a popup scene where jail decision happens (serve time, bail or use get out of jail card)
@@ -2309,7 +2549,6 @@ public class Main extends Application {
                     count++;
                     // Dice rolling the same number
                     gameSystem.repeat = false;
-                    currentPlayer.deductAmount(1);
                     // Get dice roll input from player (not AI)
                     if (!currentPlayer.isAiAgent()) {
                         // Player click roll dice from alert
@@ -2322,11 +2561,7 @@ public class Main extends Application {
                     //currentPlayer.passGo();
                     if (gameSystem.turnOrder.contains(currentPlayer) && !currentPlayer.isInJail()) {
                         if (!currentPlayer.isAiAgent()) {
-                            //currentPlayer.leaveGame();
-                            // Changes to the trading setup scene (popup)
-                            tradingSetupScene(currentPlayer);
-                            //TODO Player property management GUI here
-                            //TODO Ask player if they want to trade/ GUI trade here
+                            endOfTurnOptionSetupScene(currentPlayer);
                         } else {
                             currentPlayer.initiateTrade();
                             if (gameSystem.turns > retirePoint && gameSystem.turnOrder.size() > 4) {
