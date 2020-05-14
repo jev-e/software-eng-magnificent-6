@@ -84,6 +84,6 @@ public abstract class BoardTile {
 
     public void setColour() { }
 
-    public Canvas getColourDisplay() { return new Canvas();}
+    public Canvas getColourDisplay() { return new Canvas(); }
 
 }

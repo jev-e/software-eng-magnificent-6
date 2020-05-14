@@ -217,7 +217,7 @@ public class Property extends BoardTile{
         if (wishToPurchase) {
             if (cost > currentPlayer.getMoney()) {
                 //no purchase can be made, trigger auction
-                //TODO GUI auction activated here
+                super.board.callAuctionSetupScene(currentPlayer,this);
             } else {
                 //deduct purchase cost from player
                 currentPlayer.deductAmount(cost);
@@ -225,11 +225,9 @@ public class Property extends BoardTile{
                 owner = currentPlayer;
                 currentPlayer.addAsset(this);
                 currentPlayer.addAction("Purchased " + title + " for £" + cost);
-
             }
         } else {
-            //trigger auction
-            //TODO GUI auction activated here
+            super.board.callAuctionSetupScene(currentPlayer,this);
         }
     }
 

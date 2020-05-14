@@ -100,7 +100,7 @@ public class Station extends TileEffect {
         if (wishToPurchase) {
             if (cost > currentPlayer.getMoney()) {
                 //no purchase can be made, trigger auction
-                //TODO GUI auction activated here
+                super.board.callAuctionSetupScene(currentPlayer, this);
             } else {
                 //deduct purchase cost from player
                 currentPlayer.deductAmount(cost);
@@ -110,8 +110,7 @@ public class Station extends TileEffect {
                 currentPlayer.addAction("Purchased " + title + " for £" + cost);
             }
         } else {
-            //trigger auction
-            //TODO GUI auction activated here
+            super.board.callAuctionSetupScene(currentPlayer, this);
         }
 
     }

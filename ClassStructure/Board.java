@@ -1,6 +1,7 @@
 package ClassStructure;
 
 import GUI.Main;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import javafx.util.Pair;
 
 import java.time.Duration;
@@ -28,6 +29,7 @@ public class Board {
     private Instant start;
     private Instant finished;
     public long timeElapsed;
+    @JsonIgnore
     private Main guiMain;
 
     /**
@@ -185,6 +187,24 @@ public class Board {
      */
     public void callJailSetupScene(Player currentPlayer, GetOutOfJail jailCard){
         guiMain.sentToJailSetupScene(currentPlayer, jailCard);
+    }
+
+    /***
+     * Call the front-end function to create the Scene for auctioning
+     * @param currentPlayer the current player
+     * @param asset The asset (station, property, utility) that is up for auction
+     */
+    public void callAuctionSetupScene(Player currentPlayer, BoardTile asset){
+        guiMain.auctionPlayerSetup(currentPlayer, asset);
+    }
+
+    /***
+     * Call the front-end function to create the Scene for asset selling Management
+     * @param currentPlayer the current player
+     * @param fundNeeded The amount that the current player has to rise to
+     */
+    public void callAssetSellingScene(Player currentPlayer, int fundNeeded){
+        guiMain.assetSellingManagementSetupScene(currentPlayer, fundNeeded);
     }
 
     /**
@@ -374,11 +394,25 @@ public class Board {
         return version;
     }
 
+    // -- "Middle Man" Functions --
+
+    /**
+     * Middle man function to get current player's decision on whether he wants to buy an asset or not
+     * @param title The name of the asset
+     * @param cost How much the asset cost to buy
+     * @return Current player's decision to buy purchase or not
+     */
     public boolean getPurchase(String title, String cost) {
         return (guiMain.assetBuyingScene(title,cost));
     }
 
-    // -- "Middle Man" Functions --
+    /**
+     * Middle man function to grab player's decision on whether to pay tax or draw opportunity knock card
+     * @return player's decision
+     */
+    public boolean payTaxOrDrawOpKnock(){
+        return(guiMain.taxOrDrawScreen());
+    }
 
     /**
      * Called by Player in .setCurrentPos() to update the player's token position

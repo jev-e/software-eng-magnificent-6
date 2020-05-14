@@ -11,6 +11,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
@@ -103,7 +104,7 @@ public class Main extends Application {
 
     Stage window;
     Scene menuScene, ruleScene, playerSetupScene, gameSetupScene, gameBoardScene, tradingSetupScene, tradingScene, auctionScene, jailSetupScene;
-    Scene test123;
+    Scene assetSellingManagementScene, assetSellingHouseScene, assetMortgageScene,  assetSellingScene;
 
     // Holds the players name
     public ArrayList<TextField> playerNameTextField = new ArrayList<>();
@@ -119,13 +120,14 @@ public class Main extends Application {
     private static List<CardEffect> potLuckPack;
     private Board gameSystem;
     private Player playerTwo;
-    LinkedList<Player> auctionPlayerList;
     private Pair<String, Integer> highestBidder = new Pair<String, Integer>("", 0);
     private Pair<String, Integer> secondHighestBidder = new Pair<String, Integer>("", 0);
     // The player that activated the auction scene (player could not afford the asset or didnt want to buy it)
     Player auctioneer;
-    // TODO double check if this is needed
+    // Holds the player object with the highest bid in auction
     Player highestPlayerBidder;
+    AtomicInteger bidderLeft;
+    AtomicInteger fundRequired;
 
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -1277,10 +1279,10 @@ public class Main extends Application {
         Label playerOneName = new Label(currentPlayer.getName() + " Assets");
         Label playerTwoName = new Label(tradePlayer + " Assets");
 
-        // Store a link list of what playerTwo will give to current player
-        LinkedList<Object> give = new LinkedList<>();
-        // Store a link list of what playerTwo will receive from current player
-        LinkedList<Object> receive = new LinkedList<>();
+        // Store a link list of what playerTwo will give to current player in a datatype String
+        LinkedList<Object> giveString = new LinkedList<>();
+        // Store a link list of what playerTwo will receive from current player in a datatype String
+        LinkedList<Object> receiveString = new LinkedList<>();
 
         ListView playerOneAsset = new ListView();
         // Add current player assets to it their listView
@@ -1294,6 +1296,8 @@ public class Main extends Application {
         while(i < order.size()){
             if(tradePlayer == order.get(i).getName()){
                 playerTwo = order.get(i);
+                // TODO remove after testing
+                //playerTwo.addAsset(temp3);
                 // Add selected player assets to their listView
                 playerTwoAsset = addAssetToViewList(playerTwo, playerTwoAsset);
                 break;
@@ -1332,57 +1336,74 @@ public class Main extends Application {
         });
         ListView finalPlayerOneAsset = playerOneAsset;
         ListView finalPlayerTwoAsset = playerTwoAsset;
+
         trade.setOnAction(e -> {
             // Close trading setup
             tradePopUpStage.close();
             Alert tradeMessage = new Alert(Alert.AlertType.NONE);
             tradeMessage.setTitle("Property Tycoon Trading Offer" );
+            Alert decisionMessage = new Alert(Alert.AlertType.INFORMATION);
+            decisionMessage.setTitle("Property Tycoon Trading Decision" );
             ButtonType acceptTrade = new ButtonType("Accept Trade");
             ButtonType declineTrade = new ButtonType("Decline Trade");
             String msgOffering = "";
             String msgFor = "";
 
+            // Store a link list of objects on what playerTwo will give to current player
+            LinkedList<Object> giveObject = new LinkedList<>();
+            // Store a link list of objects on what playerTwo will receive from current player
+            LinkedList<Object> receiveObject = new LinkedList<>();
+
             // Fetch the information that has been selected for the current player and display it into alert header
             ObservableList listOfPlayerOneAsset = finalPlayerOneAsset.getSelectionModel().getSelectedItems();
             for(Object item: listOfPlayerOneAsset){
-                msgOffering += String.format("%s%n", (String) item);
+                msgOffering += String.format("%s%n", item);
                 // Add the properties playerTwo will receive from current player
-                receive.add(item);
+                receiveString.add(item);
             }
-            tradeMessage.setHeaderText(currentPlayer.getName() + " Offering\n" + msgOffering);
+            // Converting the String asset into a object asset that playerTwo will receive from current player
+            receiveObject = (LinkedList<Object>) getAsset(currentPlayer, receiveString);
+
+            tradeMessage.setHeaderText(currentPlayer.getName() + " offering\n" + msgOffering);
             // Fetch the information of all the assets that they wish for from the other player and display it into context
             ObservableList listOfPlayerTwoAsset = finalPlayerTwoAsset.getSelectionModel().getSelectedItems();
             for(Object item: listOfPlayerTwoAsset){
-                msgFor += String.format("%s%n", (String) item);
+                msgFor += String.format("%s%n", item);
                 // Add the properties playerTwo will give to current player
-                give.add(item);
+                giveString.add(item);
             }
-            tradeMessage.setContentText("For your\n"  + msgFor);
+            // Converting the String asset into a object asset that playerTwo will give to current player
+            giveObject = (LinkedList<Object>) getAsset(playerTwo, giveString);
+
+            tradeMessage.setContentText("For these assets " + playerTwo.getName() + "\n" + msgFor);
 
             // If playerTwo is not a AI
             if(playerTwo.isAiAgent() == false){
                 tradeMessage.getButtonTypes().addAll(acceptTrade, declineTrade);
                 Optional<ButtonType> option = tradeMessage.showAndWait();
                 if(option.get() == acceptTrade){
-                    tradeMessage.setContentText(playerTwo.getName() + "accepted your offer");
-                    tradingChangeOwner(currentPlayer, playerTwo, give, receive);
-                    tradeMessage.show();
-                    tradeMessage.close();
+                    decisionMessage.setHeaderText(playerTwo.getName() + " accepted your offer");
+                    tradingChangeOwner(currentPlayer, playerTwo, giveObject, receiveObject);
+                    // Check for complete set
+                    currentPlayer.completeSetProperties();
+                    playerTwo.completeSetProperties();
+                    decisionMessage.showAndWait();
+                    decisionMessage.close();
                 }else if(option.get() == declineTrade){
-                    tradeMessage.setContentText(playerTwo.getName() + "declined your offer");
-                    tradeMessage.show();
-                    tradeMessage.close();
+                    decisionMessage.setHeaderText(playerTwo.getName() + " declined your offer");
+                    decisionMessage.showAndWait();
+                    decisionMessage.close();
                     window.setScene(gameBoardScene);
                 }
             }else{ // playerTwo is a AI
                 tradeMessage = new Alert(Alert.AlertType.INFORMATION);
                 tradeMessage.setTitle("Property Tycoon AI Trading Decision" );
                 // AI decide if they want to trade or not
-                boolean tradeDecision = playerTwo.decide(give, receive);
+                boolean tradeDecision = playerTwo.decide( giveObject, receiveObject);
                 // tradeDecision (true = accept, false = decline trade)
                 if(tradeDecision == true){
                     tradeMessage.setHeaderText(playerTwo.getName() + " accepted your offer");
-                    tradingChangeOwner(currentPlayer, playerTwo, give, receive);
+                    tradingChangeOwner(currentPlayer, playerTwo, giveObject, receiveObject);
                     tradeMessage.show();
                     tradeMessage.close();
                 }else{
@@ -1425,6 +1446,7 @@ public class Main extends Application {
             tradePlayer.removeAsset(asset);
             currentPlayer.addAsset(asset);
         }
+
         // TODO merge will cal
         // Go through the 'receive' link list on what current player will give to the selected player and change ownership of asset
         for(Object asset: receive){
@@ -1437,7 +1459,7 @@ public class Main extends Application {
      * Add all of the trade-able assets to the given list view with the given player
      * @param player The current player you wish to find their assets
      * @param asset A empty list view which will show all of the trade-able assets
-     * @return A filled list view of all of the trade-able assets
+     * @return A filled list view of all of the trade-able assets in the datatype String
      */
     public ListView addAssetToViewList(Player player, ListView asset){
         LinkedList<Object> tradeableAsset = player.tradeableAssets(player);
@@ -1448,6 +1470,24 @@ public class Main extends Application {
             asset.getItems().add(propertyTile.getTitle());
         }
         return asset;
+    }
+
+    /***
+     * A function used to fetch the asset object with the given name in the linked-list
+     * @param assetName A list of all the names of the asset in the datatype of String
+     * @return A list of objects of the given assetName
+     */
+    public Object getAsset(Player player, LinkedList<Object> assetName){
+        LinkedList<Object> assetObject = new LinkedList<>();
+        for(Object asset: assetName){
+            for(int i = 0; i < player.getAssets().size(); i++){
+                BoardTile assetTile = (BoardTile) player.getAssets().get(i);
+                if(asset == assetTile.getTitle()){
+                    assetObject.add(player.getAssets().get(i));
+                }
+            }
+        }
+        return assetObject;
     }
 
     /***
@@ -1471,15 +1511,14 @@ public class Main extends Application {
         Button leaveTrade = new Button("Leave Trade");
 
         ComboBox listOfPlayer = new ComboBox();
-        // Copying all of the players - current player (choices for current player to trade with)
-        LinkedList<Player> tempPlayerList = (LinkedList<Player>) order.clone();
+
+        // Adding the players name that current player could trade with (cannot be self)
         for(int i = 0; i < order.size(); i++){
-            // todo remove after test
-            // Make sure you cant trade with yourself
-            if(currentPlayer.getName() != tempPlayerList.get(i).getName()){
-                listOfPlayer.getItems().add(tempPlayerList.get(i).getName());
+            // Make sure you cant trade with yourself and players are not in jail (cannot trade with players that is in jail)
+            if(currentPlayer.getName() != order.get(i).getName() && !order.get(i).isInJail()){
+                listOfPlayer.getItems().add(order.get(i).getName());
                 // Default value set to the first player that is not itself
-                listOfPlayer.setValue(tempPlayerList.get(i).getName());
+                listOfPlayer.setValue(order.get(i).getName());
             }
         }
 
@@ -1504,11 +1543,11 @@ public class Main extends Application {
             tradeSetupPopUpStage.close();
         });
         leaveTrade.setOnAction(e -> {
+            // Close the trading popup scene
+            tradeSetupPopUpStage.close();
             // Doesnt want to trade, go back to board scene
             window.setScene(gameScene);
             window.show();
-            // Close the trading popup scene
-            tradeSetupPopUpStage.close();
         });
 
         selectPlayerPane.getChildren().addAll(tradeMessage, listOfPlayer);
@@ -1526,45 +1565,46 @@ public class Main extends Application {
     /***
      * Create a list of all of the players in turn order minus current player (potential bidders)
      * @param currentPlayer The current Player that cannot afford the asset or wishes to auction it
+     * @param asset The asset (station, property, utility) that is up for auction
      */
-    public void auctionPlayerSetup(Player currentPlayer){
-        // Copying all of the players - current player (current player could not afford the boardTile or does not wish to buy it)
-        auctionPlayerList = (LinkedList<Player>) order.clone();
-        for(int i = 0; i < order.size(); i++){
-            // Constraint check to ensure current player cant bid in the auction
-            if(currentPlayer.getName() == auctionPlayerList.get(i).getName()){
-                auctioneer = auctionPlayerList.get(i);
-                auctionPlayerList.remove(i);
+    public void auctionPlayerSetup(Player currentPlayer, BoardTile asset){
+        // How many bidders left to bid
+        bidderLeft = new AtomicInteger(order.size() - 1);
+        for(Player bidder: gameSystem.turnOrder){
+            if(bidder == currentPlayer){
+                // Variable is used when auction is restarted (know who initiated the auction)
+                auctioneer = currentPlayer;
+            }else if(bidder != currentPlayer && !bidder.isInJail()){
+                // Check bidder is not the auctioneer and is not in jail (player in jailed cannot participate in auctions)
+                auctionSetupScene(bidder, asset);
             }
         }
     }
 
     /***
      * Create a popup scene where the auctioning would happen if the current player does not want/ afford a unowned property
-     * @param player The player from the turn order (not current player) that wishes to bid
+     * @param bidder The player from the turn order (not current player) that wishes to bid
      * @param asset A boardTile that could either be station, utility or property that can be auctioned
      */
-    public void auctionSetupScene(Player player, BoardTile asset){
-        Stage auctionPopUpStage = new Stage();
+    public void auctionSetupScene(Player bidder, BoardTile asset){
         // TODO copy over in merge cal
+        Stage auctionPopUpStage = new Stage();
         VBox auctionSetupPane = new VBox(10);
         auctionSetupPane.setAlignment(Pos.CENTER);
         auctionSetupPane.setPadding(new Insets(0, 20, 10, 20));
         HBox optionPane = new HBox(10);
         optionPane.setAlignment(Pos.CENTER);
 
-        // Holds the player index from auctionPlayerList
-        int playerIndex = 0;
         Label title = new Label("Property Tycoon Auctioning");
         Label propName = new Label();
-        Label bidTitle = new Label("Enter in your bid down below " + player.getName());
+        Label bidTitle = new Label("Enter in your bid down below " + bidder.getName());
         Label highestBid = new Label();
 
         // If its not the first person to bid
         if(highestBidder.getValue() != 0){
             String highestBidPlayerName = highestBidder.getKey();
             int currentBid = highestBidder.getValue();
-            highestBid.setText("Highest bid currently " + currentBid + " by " + highestBidPlayerName);
+            highestBid.setText("Highest bid currently £" + currentBid + " by " + highestBidPlayerName);
         }else{
             highestBid.setText("No bid currently for this item");
         }
@@ -1598,13 +1638,6 @@ public class Main extends Application {
             propName.setText(asset.getTitle());
         }
 
-        // Finding the player index
-        for(int i = 0; i < auctionPlayerList.size(); i++){
-            if(player.getName() == auctionPlayerList.get(i).getName()){
-                playerIndex = i;
-            }
-        }
-
         // CSS
         title.setStyle(
                 "-fx-label-padding: 20 0 10 0;" + "-fx-font-size: 14;" + "-fx-font-weight: bold;"
@@ -1614,25 +1647,33 @@ public class Main extends Application {
 
         // Button functionality
         bid.setOnAction(e -> {
+            Alert errorMessage = new Alert(Alert.AlertType.ERROR);
+            errorMessage.setTitle("Property Tycoon Auction");
             try{
-                // TODO check if they have enough money to buy this asset with the bid they entered
                 // Check to see if the bid is a number and doesnt contain any text
-                player.getMoney();
                 int numConstraint = Integer.parseInt(bidTxt.getText());
-                auctionLogic(player, numConstraint, asset);
+                if(bidder.getMoney() >= numConstraint){
+                    auctionLogic(bidder, numConstraint, asset, bidderLeft);
+                    auctionPopUpStage.close();
+                }else{
+                    errorMessage.setHeaderText("Property Tycoon Bid Error");
+                    errorMessage.setContentText("Bid exceeded balance " + bidder.getName());
+                    errorMessage.showAndWait();
+                    errorMessage.close();
+                }
             }catch(Exception except){
+                except.printStackTrace();
                 // Remove invalid bid from text field
                 bidTxt.clear();
-                Alert errorMessage = new Alert(Alert.AlertType.ERROR);
-                errorMessage.setTitle("Property Tycoon Auction");
                 errorMessage.setHeaderText("Property Tycoon Bid Error");
                 errorMessage.setContentText("Please enter in a valid bid (numbers only!)");
                 errorMessage.showAndWait();
+                errorMessage.close();
             }
         });
-        int finalPlayerIndex = playerIndex;
         withdraw.setOnAction(e -> {
-            auctionPlayerList.remove(finalPlayerIndex);
+            bidderLeft.getAndDecrement();
+            auctionPopUpStage.close();
         });
         help.setOnAction(e -> {
             Alert helpMessage = new Alert(Alert.AlertType.INFORMATION);
@@ -1652,34 +1693,279 @@ public class Main extends Application {
         auctionPopUpStage.close();
     }
 
-    public void auctionLogic(Player player, int bid, BoardTile asset){
+    /***
+     * Perform the auction logic (setting the highest and second highest bidder and bid, trigger won auction)
+     * @param bidder The current player that wishes to bid for the asset
+     * @param bid The current player entered in bid for the property (amount they wish to pay for)
+     * @param asset The asset that is up for auction
+     * @param bidderLeft How many players are left to auction
+     */
+    public void auctionLogic(Player bidder, int bid, BoardTile asset, AtomicInteger bidderLeft){
         // If current bid is higher than the highest bidder, replace with the newest bid
         if(bid > highestBidder.getValue()){
             // Replace highestBidder with the new highest bidder (name and their bid)
-            highestBidder = new Pair<>(player.getName(), bid);
+            highestBidder = new Pair<>(bidder.getName(), bid);
+            // Basically bidderLeft--
+            bidderLeft.getAndDecrement();
         }else if(bid > secondHighestBidder.getValue()){
             // Stores the second highest bid for the current auction (use for constraint check)
-            secondHighestBidder = new Pair<>(player.getName(), bid);
+            secondHighestBidder = new Pair<>(bidder.getName(), bid);
+            // Basically bidderLeft--
+            bidderLeft.getAndDecrement();
+        }else{
+            // Basically bidderLeft--
+            bidderLeft.getAndDecrement();
         }
 
-        if(auctionPlayerList.size() == 1){
+        if(bidderLeft.intValue() == 0){
             // Fetch the highest bidder player object with the given string
-            for(int i = 0; i < auctionPlayerList.size(); i++){
-                if(highestBidder.getKey() == auctionPlayerList.get(i).getName()){
-                    highestPlayerBidder = auctionPlayerList.get(i);
+            for(int i = 0; i < order.size(); i++){
+                if(highestBidder.getKey() == order.get(i).getName()){
+                    highestPlayerBidder = order.get(i);
                 }
             }
         }
 
-        // to do
-        if(auctionPlayerList.size() == 1 && highestBidder.getValue() > secondHighestBidder.getValue()){
-            // have player deduct the price
-        }else if(auctionPlayerList.size() == 1 && highestBidder.getValue() == secondHighestBidder.getValue()){
+        // If highest bid is > the second highest bid then deduct that amount from bidder and set owner to bidder
+        if(bidderLeft.intValue() == 0 && highestBidder.getValue() > secondHighestBidder.getValue()){
+            Alert auctionWinnerMessage = new Alert(Alert.AlertType.INFORMATION);
+            auctionWinnerMessage.setTitle("Property Tycoon Auction");
+            auctionWinnerMessage.setHeaderText("Congratulation " + highestPlayerBidder.getName());
+            auctionWinnerMessage.setContentText("You have won the auction and acquired "+ asset.getTitle() + " for £" + highestBidder.getValue());
+            auctionWinnerMessage.showAndWait();
+            auctionWinnerMessage.close();
+            highestPlayerBidder.deductAmount(highestBidder.getValue());
+            highestPlayerBidder.addAsset(asset);
+        }else if(bidderLeft.intValue() == 0 && highestBidder.getValue() == secondHighestBidder.getValue()){
             // Restart auction if highest bid == second highest bid
-            auctionPlayerSetup(auctioneer);
-            auctionSetupScene(player, asset);
+            auctionPlayerSetup(auctioneer, asset);
         }
+    }
 
+    public void assetSellingManagementSetupScene(Player currentPlayer, int fundNeededToRise){
+        Stage assetManagementPopUpStage = new Stage();
+        VBox assetManagementSetupPane = new VBox(10);
+        assetManagementSetupPane.setAlignment(Pos.CENTER);
+        HBox optionPane = new HBox(5);
+        optionPane.setAlignment(Pos.CENTER);
+
+        Label title = new Label("Property Tycoon Asset Management");
+        //Label fundNeed = new Label("£" + fundNeededToRise + " fund is required " + currentPlayer.getName());
+        Label fundNeed = new Label("£" + fundNeededToRise + " fund is required ");
+
+        Button sellBuilding = new Button("Sell Houses and Hotels");
+        Button mortgageProp = new Button("Mortgage Properties");
+        Button sellAsset = new Button("Sell Properties");
+        fundRequired = new AtomicInteger(fundNeededToRise);
+        // CSS
+        title.setStyle(
+                "-fx-label-padding: 20 0 10 0;" + "-fx-font-size: 14;" + "-fx-font-weight: bold;"
+        );
+        fundNeed.setStyle("-fx-font-size: 14;");
+
+        // Button functionality
+        sellBuilding.setOnAction(e -> {
+            assetManagementPopUpStage.close();
+            sellHouseHotel(currentPlayer);
+        });
+        mortgageProp.setOnAction(e -> {
+            assetManagementPopUpStage.close();
+            mortgageProperties(currentPlayer);
+        });
+        sellAsset.setOnAction(e -> {
+            assetManagementPopUpStage.close();
+            sellProperties(currentPlayer);
+        });
+
+        optionPane.getChildren().addAll(sellBuilding, mortgageProp, sellAsset);
+        assetManagementSetupPane.getChildren().addAll(title, fundNeed, optionPane);
+        assetSellingManagementScene = new Scene(assetManagementSetupPane, 400,400);
+        // Creating the popup effect
+        assetManagementPopUpStage.setScene(assetSellingManagementScene);
+        assetManagementPopUpStage.initModality(Modality.APPLICATION_MODAL);
+        assetManagementPopUpStage.showAndWait();
+        assetManagementPopUpStage.close();
+    }
+
+    /***
+     * Allow player to sell their developed properties to raise fund
+     * @param currentPlayer The current player
+     */
+    public void sellHouseHotel(Player currentPlayer){
+        Stage sellHouseHotelPopUpStage = new Stage();
+        // TODO change !!!!
+        VBox sellHouseHotelPane = new VBox(10);
+        sellHouseHotelPane.setAlignment(Pos.CENTER);
+        sellHouseHotelPane.setPadding(new Insets(0, 20, 10, 20));
+        HBox optionPane = new HBox(5);
+        optionPane.setAlignment(Pos.CENTER);
+
+        HashMap<Integer, Integer> houseSaleIds = new HashMap<>();
+        HashMap<Integer, Integer> hotelSaleIds = new HashMap<>();
+
+        // Fetch all of the current player asset
+        LinkedList<Object> playerAsset = currentPlayer.getAssets();
+
+        Label title = new Label("Property Tycoon Property Management (Selling Houses and Hotels)");
+        Label playerAssetMessage = new Label(currentPlayer.getName() + " this is all of your properties where you can sell houses and hotels");
+
+        Button sellHouse = new Button("Selling a House");
+        Button sellHotel = new Button("Selling a Hotel");
+        Button back = new Button("Return to Asset Selling Management ");
+
+        // Creating a table view with the following columns
+        TableView assetInformation = new TableView();
+        TableColumn column1 = new TableColumn<>("Property Name");
+        column1.setCellValueFactory(new PropertyValueFactory<>("title"));
+
+        TableColumn column2 = new TableColumn<>("House number");
+        column2.setCellValueFactory(new PropertyValueFactory<>("housesNo"));
+
+        TableColumn column3 = new TableColumn<>("Hotel Number");
+        column3.setCellValueFactory(new PropertyValueFactory<>("hotelNo"));
+
+        assetInformation.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        assetInformation.getColumns().addAll(column1, column2, column3);
+
+        for(Object asset: playerAsset){
+            // Making sure asset is a property
+            if(asset instanceof Property){
+                // Checking if the property contains houses or hotel
+                if(((Property) asset).isDeveloped()){
+                    assetInformation.getItems().add(asset);
+                }
+            }
+        }
+        // Creating a table view with a vertical scroll bar
+        ScrollPane scrollForAssetInformation = new ScrollPane(assetInformation);
+        scrollForAssetInformation.setFitToWidth(true);
+        scrollForAssetInformation.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
+
+        // CSS
+        title.setStyle(
+                "-fx-label-padding: 20 0 10 0;" + "-fx-font-size: 14;" + "-fx-font-weight: bold;"
+        );
+        playerAssetMessage.setStyle("-fx-font-size: 14;");
+
+        // Button Functionality
+        sellHouse.setOnAction(e -> {
+
+        });
+        sellHotel.setOnAction(e -> {
+
+        });
+        back.setOnAction(e -> {
+            sellHouseHotelPopUpStage.close();
+            if(fundRequired.intValue() <= 0){
+                window.setScene(assetSellingHouseScene);
+            }
+        });
+
+        optionPane.getChildren().addAll(sellHouse, sellHotel, back);
+        sellHouseHotelPane.getChildren().addAll(title, playerAssetMessage, scrollForAssetInformation, optionPane);
+        assetSellingHouseScene = new Scene(sellHouseHotelPane);
+        // Creating the popup effect
+        sellHouseHotelPopUpStage.setScene(assetSellingHouseScene);
+        sellHouseHotelPopUpStage.initModality(Modality.APPLICATION_MODAL);
+        sellHouseHotelPopUpStage.showAndWait();
+        sellHouseHotelPopUpStage.close();
+    }
+
+    /***
+     * Allow player to mortgage their properties to raise fund
+     * @param currentPlayer The current player
+     */
+    public void mortgageProperties(Player currentPlayer){
+        Stage mortgagePopUpStage = new Stage();
+        VBox mortgagePropertiesPane = new VBox(10);
+        mortgagePropertiesPane.setAlignment(Pos.CENTER);
+        mortgagePropertiesPane.setPadding(new Insets(0, 20, 10, 20));
+        HBox optionPane = new HBox(10);
+        optionPane.setAlignment(Pos.CENTER);
+
+        Label title = new Label("Property Tycoon Property Management (Mortgaging Properties)");
+        Label playerAssetMessage = new Label(currentPlayer.getName() + " this is all of your properties where you can mortgage");
+
+        ListView asset = new ListView();
+
+        Button mortgage = new Button("Mortgage Properties");
+        Button back = new Button("Return to Asset Selling Management ");
+
+        // CSS
+        title.setStyle(
+                "-fx-label-padding: 20 0 10 0;" + "-fx-font-size: 14;" + "-fx-font-weight: bold;"
+        );
+        playerAssetMessage.setStyle("-fx-font-size: 14;");
+
+        // Button Functionality
+        mortgage.setOnAction(e -> {
+
+        });
+        back.setOnAction(e -> {
+            mortgagePopUpStage.close();
+            if(fundRequired.intValue() <= 0){
+                window.setScene(assetSellingHouseScene);
+            }
+        });
+
+        optionPane.getChildren().addAll(mortgage, back);
+        mortgagePropertiesPane.getChildren().addAll(title, playerAssetMessage, asset, optionPane);
+        assetMortgageScene = new Scene(mortgagePropertiesPane);
+        // Creating the popup effect
+        mortgagePopUpStage.setScene(assetMortgageScene);
+        mortgagePopUpStage.initModality(Modality.APPLICATION_MODAL);
+        mortgagePopUpStage.showAndWait();
+        mortgagePopUpStage.close();
+    }
+
+    /***
+     * Allow player to sell their properties to raise fund
+     * @param currentPlayer The current player
+     */
+    public void sellProperties(Player currentPlayer){
+        Stage sellPropPopUpStage = new Stage();
+        VBox sellPropertiesPane = new VBox(10);
+        sellPropertiesPane.setAlignment(Pos.CENTER);
+        sellPropertiesPane.setPadding(new Insets(0, 20, 10, 20));
+        HBox optionPane = new HBox(10);
+        optionPane.setAlignment(Pos.CENTER);
+
+        Label title = new Label("Property Tycoon Property Management (Selling Properties)");
+        Label playerAssetMessage = new Label(currentPlayer.getName() + " this is all of your properties where you can sell");
+
+        ListView asset = new ListView();
+
+        Button sellProp = new Button("Sell Property");
+        Button back = new Button("Return to Asset Selling Management ");
+
+        // CSS
+        title.setStyle(
+                "-fx-label-padding: 20 0 10 0;" + "-fx-font-size: 14;" + "-fx-font-weight: bold;"
+        );
+        playerAssetMessage.setStyle("-fx-font-size: 14;");
+
+        // Button Functionality
+        sellProp.setOnAction(e -> {
+
+        });
+        back.setOnAction(e -> {
+            sellPropPopUpStage.close();
+            if(fundRequired.intValue() <= 0){
+                window.setScene(assetSellingHouseScene);
+            }
+        });
+
+        optionPane.getChildren().addAll(sellProp, back);
+        sellPropertiesPane.getChildren().addAll(title, playerAssetMessage, asset, optionPane);
+        assetSellingScene = new Scene(sellPropertiesPane);
+        // Creating the popup effect
+        sellPropPopUpStage.setScene(assetSellingScene);
+        sellPropPopUpStage.initModality(Modality.APPLICATION_MODAL);
+        sellPropPopUpStage.showAndWait();
+        sellPropPopUpStage.close();
+    }
+
+    public void assetImprovement(Player currentPlayer){
     }
 
     /***
@@ -1688,7 +1974,6 @@ public class Main extends Application {
      * @param jailCard Tell us if the current own a get out of jail card or not
      */
     public void sentToJailSetupScene(Player currentPlayer, GetOutOfJail jailCard){
-        // TODO merge
         Stage jailPopUpStage = new Stage();
         VBox sentToJailSetupPane = new VBox(10);
         sentToJailSetupPane.setPadding(new Insets(0, 20, 10, 20));
@@ -1805,6 +2090,25 @@ public class Main extends Application {
         alert.setTitle("Property Tycoon");
         alert.setHeaderText("You've landed on " + title + ".");
         alert.setContentText("Do you want to buy this for £" + cost);
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == ButtonType.OK){
+            decision = true;
+        } else {
+            decision = false;
+        }
+        return(decision);
+    }
+
+    /**
+     * Creates an alert box that ask the player whether they want to pay the tax or draw an opportunity knocks card
+     * @return Player's decision on whether to pay tax or draw opportunity knock card
+     */
+    public boolean taxOrDrawScreen(){
+        boolean decision = false;
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Property Tycoon");
+        alert.setHeaderText("You've landed on pay tax or Opportunity knocks ");
+        alert.setContentText("Do you want to pay the tax or cancel and draw an Oppotunity Knocks card instead?" );
         Optional<ButtonType> result = alert.showAndWait();
         if (result.get() == ButtonType.OK){
             decision = true;
