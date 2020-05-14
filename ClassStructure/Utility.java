@@ -53,7 +53,9 @@ public class Utility extends TileEffect {
             currentPlayer.addAction(text);//add tile text to action log
         }else{
             if(owner == null) {
-                purchase(currentPlayer);
+                if (currentPlayer.CanBuy()) {
+                    purchase(currentPlayer);
+                }
             }
         }
     }
