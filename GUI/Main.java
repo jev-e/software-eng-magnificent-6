@@ -41,6 +41,8 @@ public class Main extends Application {
     // Variables
     private int playerNo;               // Number of players in the game
     private Label potTotal;             // Keeps track of the tax / Free Parking pot total
+
+    private FlowPane jailTokens;      // Tokens of InJail Players
     private FlowPane[] playerCards;     // Player cards on right hand side of game screen
     private FlowPane[] tokenDisplay;    // FlowPanes showing tokens on tiles
     private FlowPane[] propDevelopment; // Shows houses and hotel on the property
@@ -172,6 +174,8 @@ public class Main extends Application {
 
         // Show Game Screen
         window.setScene(gameScene);
+        window.setX(0);
+        window.setY(0);
         window.show();
     }
 
@@ -277,9 +281,23 @@ public class Main extends Application {
         int pos = currentPlayer.getCurrentPos();
         Token token = currentPlayer.getToken();
 
+        boolean inJail = currentPlayer.isInJail();
+
         // Prevents Duplicate Children
-        if(!tokenDisplay[pos].getChildren().contains(getTokenIV(token))){
-            tokenDisplay[pos].getChildren().add(getTokenIV(token));
+        if(pos != 10) {
+            if (!tokenDisplay[pos].getChildren().contains(getTokenIV(token))) {
+                tokenDisplay[pos].getChildren().add(getTokenIV(token));
+            }
+        }else{
+            if(!inJail) {
+                if (!tokenDisplay[pos].getChildren().contains(getTokenIV(token))) {
+                    tokenDisplay[pos].getChildren().add(getTokenIV(token));
+                } else {
+                    if (!jailTokens.getChildren().contains(getTokenIV(token))) {
+                        jailTokens.getChildren().add(getTokenIV(token));
+                    }
+                }
+            }
         }
     }
 
@@ -388,8 +406,14 @@ public class Main extends Application {
             container.setMinSize(longSide, shortSide);
 
             StackPane stack = new StackPane();                   // Holds Background image and tokens FlowPane
+
             FlowPane tokens = new FlowPane(5,5);      // Holds tokens in each tile
             tokens.setPrefWidth(longSide);
+            tokens.setMinHeight(100);
+
+            jailTokens = new FlowPane(5, 5);          // Holds tokens in jail
+            jailTokens.setPrefWidth(longSide);
+
 
             FlowPane developImgs = new FlowPane(5,5); // Holds houses and hotels
             developImgs.setPrefWidth(longSide);
@@ -452,7 +476,9 @@ public class Main extends Application {
 
                 // Jail Tile
                 case 10:
-                    stack.getChildren().addAll(visitingJail, tokens);
+                    stack.getChildren().addAll(visitingJail, tokens, jailTokens);
+                    stack.setAlignment(jailTokens, Pos.TOP_LEFT);
+                    stack.setAlignment(tokens, Pos.BOTTOM_LEFT);
                     boardGP.add(stack, 0,2);
                     break;
 
