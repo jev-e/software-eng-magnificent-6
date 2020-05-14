@@ -84,8 +84,7 @@ public class Utility extends TileEffect {
         }
         if (wishToPurchase) {
             if (cost > currentPlayer.getMoney()) {
-                //TODO GUI auction activated here double check
-                // No purchase can be made, trigger auction
+                //no purchase can be made, trigger auction
                 super.board.callAuctionSetupScene(currentPlayer, this);
             } else {
                 //deduct purchase cost from player
@@ -96,8 +95,7 @@ public class Utility extends TileEffect {
                 currentPlayer.addAction("Purchased " + title + " for £" + cost);
             }
         } else {
-            //TODO GUI auction activated here double check
-            // Trigger auction
+            //trigger auction
             super.board.callAuctionSetupScene(currentPlayer, this);
         }
 

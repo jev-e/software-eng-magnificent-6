@@ -37,9 +37,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Main extends Application {
 
     // Variables
-    private FlowPane[] playerCards;
-    private int playerNo; // Number of players in the game
-    private Player[] players; // Keep permanent order of players for player cards
+    private FlowPane[] playerCards;  // Player cards on right hand side of game screen
+    private FlowPane[] tokenDisplay; // FlowPanes showing tokens on tiles
+    private int playerNo;            // Number of players in the game
+    private Player[] players;        // Keep permanent order of players for player cards
 
     // Images - Tiles
     private Image goTilePNG;
@@ -66,7 +67,11 @@ public class Main extends Application {
     private Image spoonTokenPNG;
 
     // ImageViews - Tiles
-    private ImageView goTile, goJail, freeParking, visitingJail, edisonWater, teslaPower, oppKnocks, potLuck, station;
+    private ImageView goTile, goJail, freeParking, visitingJail; // Corner Tiles
+    private ImageView edisonWater, teslaPower;                   // Utilities
+    private ImageView oppKnocks7, oppKnocks22, oppKnocks36;      // Opportunity Knocks
+    private ImageView potLuck2, potLuck17, potLuck33;            // Pot Lucks
+    private ImageView bStation, hStation, fStation, lStation;    // Stations
 
     // ImageViews - Assets
     private ImageView hotel, house, jailFreeCard;
@@ -115,7 +120,6 @@ public class Main extends Application {
     private static List<CardEffect> potLuckPack;
     private Board gameSystem;
     private Player playerTwo;
-    LinkedList<Player> auctionPlayerList;
     private Pair<String, Integer> highestBidder = new Pair<String, Integer>("", 0);
     private Pair<String, Integer> secondHighestBidder = new Pair<String, Integer>("", 0);
     // The player that activated the auction scene (player could not afford the asset or didnt want to buy it)
@@ -130,17 +134,10 @@ public class Main extends Application {
         window = primaryStage;
         window.setTitle("Property Tycoon");
 
-//        createMainMenuScene();
-//        window.setScene(menuScene);
-//        window.show();
-//        displayGameScene();
-        int[] buildingRents = {10,10,20,30};
-        Player basic = new Player("Calvin", Token.SPOON, gameSystem, false);
-        Property test = new Property(1, "Test", Group.DEEP_BLUE, 100, 10, buildingRents, 50, basic);
-        basic.addAsset(test);
-        test.setHousesNo(3);
-        test.setDeveloped(true);
-        assetSellingManagementSetupScene(basic,500);
+        createMainMenuScene();
+        window.setScene(menuScene);
+        window.show();
+        //displayGameScene();
     }
 
     public static void main(String[] args) {
@@ -154,11 +151,13 @@ public class Main extends Application {
         initGameVariables();  // Initialise Variables and Containers
         initGameImages();     // Load Game Images
         initGameImageViews(); // Loads Game Images into their respective ImageViews
+        formatGameImageViews(); // Formats Game ImageViews
         formatGameScene();    // Formats Game Scene
         retrieveBoardData();  // Provides initial data from board to scene
         addKeyGameButtons();  // Adds any buttons needed on the main game scene
         displayPlayerCards(); // Displays player cards to the gameBP
         displayGameBoard();   // Displays main game board
+        initalTokenDisplay(); // Draw Tokens at GO Tile
 
         // Show Game Screen
         window.setScene(gameScene);
@@ -198,25 +197,151 @@ public class Main extends Application {
     }
 
     /**
+     * Draws tokens to the GO Tile at the start of the game
+     */
+    public void initalTokenDisplay() {
+        for(int i = 0; i < playerNo; i++) {
+            Token token = players[i].getToken();
+
+            switch (token) {
+                case SMARTPHONE:
+
+                    tokenDisplay[0].getChildren().add(phoneToken);
+                    break;
+
+                case BOOT:
+
+                    tokenDisplay[0].getChildren().add(bootToken);
+                    break;
+
+                case SPOON:
+                    tokenDisplay[0].getChildren().add(spoonToken);
+                    break;
+
+                case CAT:
+                    tokenDisplay[0].getChildren().add(catToken);
+                    break;
+
+                case GOBLET:
+                    tokenDisplay[0].getChildren().add(gobletToken);
+                    break;
+
+                case HATSTAND:
+                    tokenDisplay[0].getChildren().add(hatstandToken);
+                    break;
+            }
+        }
+    }
+
+    /**
+     * Updates visual tokens on the board to position of players
+     * @param currentPlayer The player who's positon needs to be updated
+     */
+    public void displayTokens(Player currentPlayer) {
+
+        int pos = currentPlayer.getCurrentPos();
+        Token token = currentPlayer.getToken();
+
+        switch (token) {
+            case SMARTPHONE:
+                if(!tokenDisplay[pos].getChildren().contains(phoneToken)){ // Prevents Duplicate Children
+                    tokenDisplay[pos].getChildren().add(phoneToken);
+                }
+                break;
+            case BOOT:
+                if(!tokenDisplay[pos].getChildren().contains(bootToken)) {
+                    tokenDisplay[pos].getChildren().add(bootToken);
+                }
+                break;
+
+            case SPOON:
+                if(!tokenDisplay[pos].getChildren().contains(spoonToken)) {
+                    tokenDisplay[pos].getChildren().add(spoonToken);
+                }
+                break;
+
+            case CAT:
+                if(!tokenDisplay[pos].getChildren().contains(catToken)) {
+                    tokenDisplay[pos].getChildren().add(catToken);
+                }
+                break;
+            case GOBLET:
+                if(!tokenDisplay[pos].getChildren().contains(gobletToken)) {
+                    tokenDisplay[pos].getChildren().add(gobletToken);
+                }
+                break;
+            case HATSTAND:
+                if(!tokenDisplay[pos].getChildren().contains(hatstandToken)) {
+                    tokenDisplay[pos].getChildren().add(hatstandToken);
+                }
+                break;
+        }
+    }
+
+    /**
+     * Updates all players' asset cards on screen
+     * @param currentPlayer The current player who's assets need to be updated on screen
+     * @param item The item which needs to be added or removed
+     * @param use The situation the method being called, "add" or "remove"
+     */
+    public void displayPlayerAssets(Player currentPlayer, Object item, String use) {
+
+        int i = 0;
+
+        for(int j = 0; j < playerNo; j++) {
+            if(currentPlayer == players[j]) {
+                i = j;
+            }
+        }
+
+        if (use == "add") {
+            Label label = new Label();
+
+            if (item instanceof Property) {
+                String name = ((Property) item).getNameLabel().getText();
+                label.setText(name);
+            } else if (item instanceof Station) {
+                String name = ((Station) item).getNameLabel().getText();
+                label.setText(name);
+            } else if (item instanceof Utility) {
+                String name = ((Utility) item).getNameLabel().getText();
+                label.setText(name);
+            }
+
+            playerCards[i].getChildren().add(label);
+        }
+        else if (use == "remove") {
+
+        }
+        else {
+            System.out.println("Unknown use case: " + use);
+        }
+    }
+
+    /**
      * Displays Board to primaryStage
      */
     public void displayGameBoard() {
 
-        int shortSide = 60, longSide = 100;
+        int shortSide = 80, longSide = 120;
 
         for (int i = 0; i < 40; i++) {
             Label label = board.get(i).getNameLabel();
             Canvas canvas = board.get(i).getColourDisplay();
+
             GridPane container = new GridPane();
 
+            StackPane stack = new StackPane();              // Holds Background image and tokens FlowPane
+            FlowPane tokens = new FlowPane(5,5); // Holds tokens in each tile
+            tokens.setPrefWidth(100);
 
             // Add Tiles to GridPane
             switch (i) {
 
                 // Go Tile
                 case 0:
-                    //container.add(label,0,0);
-                    container.add(goTile,0,1);
+                    stack.getChildren().addAll(goTile, tokens);
+                    container.add(stack,0,1);
                     boardGP.add(container, 2, 2);
                     break;
 
@@ -225,19 +350,33 @@ public class Main extends Application {
                     container.add(label, 0,1);
 
                     // Properties
-                    if(!(i == 2 || i == 4 || i == 7)) {
+                    if(!(i == 2 || i == 4 || i == 5|| i == 7)) {
                         board.get(i).setColour();
                         container.add(canvas,0,0);
+                        container.add(tokens, 0, 2);
                     }
 
                     // Pot Luck
                     if(i == 2) {
-                        container.add(potLuck,0,2);
+                        stack.getChildren().addAll(potLuck2, tokens);
+                        container.add(stack,0,2);
+                    }
+
+                    // Income Tax
+                    if(i == 4) {
+                        container.add(tokens, 0,2);
+                    }
+
+                    // Brighton Station
+                    if(i == 5) {
+                        stack.getChildren().addAll(bStation, tokens);
+                        container.add(stack, 0, 2);
                     }
 
                     // Opportunity Knocks
                     if(i == 7) {
-                        container.add(oppKnocks, 0, 2);
+                        stack.getChildren().addAll(oppKnocks7, tokens);
+                        container.add(stack, 0, 2);
                     }
 
                     botRowGP.add(container, (9 - i), 0);
@@ -245,8 +384,8 @@ public class Main extends Application {
 
                 // Jail Tile
                 case 10:
-                    container.add(visitingJail, 0, 0);
-                    boardGP.add(container, 0,2);
+                    stack.getChildren().addAll(visitingJail, tokens);
+                    boardGP.add(stack, 0,2);
                     break;
 
                 // Left Column
@@ -257,16 +396,25 @@ public class Main extends Application {
                     if(!(i == 12 || i == 15 || i == 17)) {
                         board.get(i).setColour();
                         container.add(canvas,0,0);
+                        container.add(tokens, 0, 2);
                     }
 
                     // Tesla Power
                     if(i == 12) {
-                        container.add(teslaPower,0,2);
+                        stack.getChildren().addAll(teslaPower, tokens);
+                        container.add(stack,0,2);
+                    }
+
+                    // Hove Station
+                    if(i == 15) {
+                        stack.getChildren().addAll(hStation, tokens);
+                        container.add(stack, 0, 2);
                     }
 
                     // Pot Luck
                     if(i == 17) {
-                        container.add(potLuck, 0, 2);
+                        stack.getChildren().addAll(potLuck17, tokens);
+                        container.add(stack, 0, 2);
                     }
 
                     leftColGP.add(container, 0, (20 - i));
@@ -274,8 +422,8 @@ public class Main extends Application {
 
                 // Free Parking Tile
                 case 20:
-                    container.add(freeParking, 0,0);
-                    boardGP.add(container, 0, 0);
+                    stack.getChildren().addAll(freeParking, tokens);
+                    boardGP.add(stack, 0, 0);
                     break;
 
                 // Top Row
@@ -286,16 +434,25 @@ public class Main extends Application {
                     if(!(i == 22 || i == 25 || i == 28)) {
                         board.get(i).setColour();
                         container.add(canvas,0,0);
+                        container.add(tokens,0,2);
                     }
 
                     // Opportunity Knocks
                     if(i == 22) {
-                        container.add(oppKnocks,0,2);
+                        stack.getChildren().addAll(oppKnocks22, tokens);
+                        container.add(stack,0,2);
+                    }
+
+                    // Falmer Station
+                    if(i == 25) {
+                        stack.getChildren().addAll(fStation, tokens);
+                        container.add(stack, 0, 2);
                     }
 
                     // Edison Water
                     if(i == 28) {
-                        container.add(edisonWater, 0, 2);
+                        stack.getChildren().addAll(edisonWater, tokens);
+                        container.add(tokens, 0, 2);
                     }
 
                     topRowGP.add(container, (i - 21), 0);
@@ -303,8 +460,8 @@ public class Main extends Application {
 
                 // Go To Jail Tile
                 case 30:
-                    container.add(goJail, 0,0);
-                    boardGP.add(container, 2,0);
+                    stack.getChildren().addAll(goJail, tokens);
+                    boardGP.add(stack, 2,0);
                     break;
 
                 // Right Column
@@ -315,16 +472,25 @@ public class Main extends Application {
                     if(!(i == 33 || i == 35 || i == 36 || i == 38)) {
                         board.get(i).setColour();
                         container.add(canvas,0,0);
+                        container.add(tokens,0,2);
                     }
 
                     // Pot Luck
                     if(i == 33) {
-                        container.add(potLuck, 0, 2);
+                        stack.getChildren().addAll(potLuck33, tokens);
+                        container.add(stack, 0, 2);
+                    }
+
+                    // Lewis Station
+                    if(i == 35) {
+                        stack.getChildren().addAll(lStation, tokens);
+                        container.add(stack, 0, 2);
                     }
 
                     // Opportunity Knocks
                     if(i == 36) {
-                        container.add(oppKnocks, 0, 2);
+                        stack.getChildren().addAll(oppKnocks36, tokens);
+                        container.add(stack, 0, 2);
                     }
 
                     rightColGP.add(container, 0, (i - 31));
@@ -334,8 +500,7 @@ public class Main extends Application {
 
                     break;
             }
-
-            //tileNames[i] = label;
+            tokenDisplay[i] = tokens;
         }
     }
 
@@ -409,6 +574,8 @@ public class Main extends Application {
         boardGP.add(botRowGP,1,2);
 
         // Initialise Variables
+        tokenDisplay = new FlowPane[40];
+
         playerNo = gameSystem.turnOrder.size();
         players = new Player[playerNo];
         playerCards = new FlowPane[playerNo];
@@ -444,7 +611,7 @@ public class Main extends Application {
             gobletTokenPNG = new Image(new FileInputStream("Lib/Tokens/GobletToken.png"));
             hatstandTokenPNG = new Image(new FileInputStream("Lib/Tokens/HatstandToken.png"));
             phoneTokenPNG = new Image(new FileInputStream("Lib/Tokens/SmartphoneToken.png"));
-            spoonTokenPNG = new Image(new FileInputStream("Lib/Tokens/BootToken.png"));
+            spoonTokenPNG = new Image(new FileInputStream("Lib/Tokens/SpoonToken.png"));
 
         } catch (FileNotFoundException e) {
             System.out.println(e);
@@ -455,26 +622,74 @@ public class Main extends Application {
      * Loads Game Images into ImageViews
      */
     public void initGameImageViews() {
+        // Tiles
         goTile = new ImageView(goTilePNG);
         goJail = new ImageView(goJailPNG);
         freeParking = new ImageView(freeParkingPNG);
         visitingJail = new ImageView(visitingPNG);
         edisonWater = new ImageView(waterPNG);
         teslaPower = new ImageView(powerPNG);
-        oppKnocks = new ImageView(oppKnocksPNG);
-        potLuck = new ImageView(potLuckPNG);
-        station = new ImageView(stationPNG);
 
+        // Tiles - Stations
+        bStation = new ImageView(stationPNG);
+        hStation = new ImageView(stationPNG);
+        fStation = new ImageView(stationPNG);
+        lStation = new ImageView(stationPNG);
+
+        // Tiles - Opportunity Knocks
+        oppKnocks7 = new ImageView(oppKnocksPNG);
+        oppKnocks22 = new ImageView(oppKnocksPNG);
+        oppKnocks36 = new ImageView(oppKnocksPNG);
+
+        // Tiles - Pot Lucks
+        potLuck2 = new ImageView(potLuckPNG);
+        potLuck17 = new ImageView(potLuckPNG);
+        potLuck33 = new ImageView(potLuckPNG);
+
+        // Assets
         hotel = new ImageView(hotelPNG);
         house = new ImageView(housePNG);
         jailFreeCard = new ImageView(jailFreePNG);
 
+        // Tokens
         bootToken = new ImageView(bootTokenPNG);
         catToken = new ImageView(catTokenPNG);
         gobletToken = new ImageView(gobletTokenPNG);
         hatstandToken = new ImageView(hatstandTokenPNG);
         phoneToken = new ImageView(phoneTokenPNG);
         spoonToken = new ImageView(spoonTokenPNG);
+    }
+
+    /**
+     * Formats the ImageViews used on the Game Scene
+     */
+    public void formatGameImageViews() {
+        int tokenSize = 25;
+
+        phoneToken.setPreserveRatio(true);
+        phoneToken.setFitWidth(tokenSize);
+        phoneToken.setFitHeight(tokenSize);
+
+        spoonToken.setPreserveRatio(true);
+        spoonToken.setFitWidth(tokenSize);
+        spoonToken.setFitHeight(tokenSize);
+
+        bootToken.setPreserveRatio(true);
+        bootToken.setFitWidth(tokenSize);
+        bootToken.setFitHeight(tokenSize);
+
+        gobletToken.setPreserveRatio(true);
+        gobletToken.setFitWidth(tokenSize);
+        gobletToken.setFitHeight(tokenSize);
+
+        hatstandToken.setPreserveRatio(true);
+        hatstandToken.setFitWidth(tokenSize);
+        hatstandToken.setFitHeight(tokenSize);
+
+        catToken.setPreserveRatio(true);
+        catToken.setFitWidth(tokenSize);
+        catToken.setFitHeight(tokenSize);
+
     }
 
     /**
@@ -1320,12 +1535,12 @@ public class Main extends Application {
         leaveTrade.setStyle("-fx-font-size:14;");
 
         nextSetup.setOnAction(e -> {
-            // Close the popup (to select which person you want to trade with)
-            tradeSetupPopUpStage.close();
             // Fetch the name of the player that they want to trade with
             String tradingPlayer = listOfPlayer.getValue().toString();
             // Change scene with current player asset and selected player asset to trade with
             tradingScene(currentPlayer, tradingPlayer);
+            // Close the popup (to select which person you want to trade with)
+            tradeSetupPopUpStage.close();
         });
         leaveTrade.setOnAction(e -> {
             // Close the trading popup scene
@@ -1754,20 +1969,11 @@ public class Main extends Application {
     }
 
     /***
-     * Create a leaving scene so if a player click leave, a vote begins (all player must tic the combo-box for current player to quit)
-     * @param currentPlayer The current player
-     */
-    public void leaveScene(Player currentPlayer){
-        VBox leaveSetupPane = new VBox(10);
-        // TODO finish leave-scene design
-    }
-    /***
      * Create a popup scene where jail decision happens (serve time, bail or use get out of jail card)
      * @param currentPlayer The current player
      * @param jailCard Tell us if the current own a get out of jail card or not
      */
     public void sentToJailSetupScene(Player currentPlayer, GetOutOfJail jailCard){
-        // TODO merge
         Stage jailPopUpStage = new Stage();
         VBox sentToJailSetupPane = new VBox(10);
         sentToJailSetupPane.setPadding(new Insets(0, 20, 10, 20));
@@ -1893,6 +2099,25 @@ public class Main extends Application {
         return(decision);
     }
 
+    /**
+     * Creates an alert box that ask the player whether they want to pay the tax or draw an opportunity knocks card
+     * @return Player's decision on whether to pay tax or draw opportunity knock card
+     */
+    public boolean taxOrDrawScreen(){
+        boolean decision = false;
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Property Tycoon");
+        alert.setHeaderText("You've landed on pay tax or Opportunity knocks ");
+        alert.setContentText("Do you want to pay the tax or cancel and draw an Oppotunity Knocks card instead?" );
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == ButtonType.OK){
+            decision = true;
+        } else {
+            decision = false;
+        }
+        return(decision);
+    }
+
     /***
      * How the game is run
      */
@@ -1927,8 +2152,10 @@ public class Main extends Application {
                     if (!currentPlayer.isAiAgent()) {
                         // Player click roll dice from alert
                         diceRollMessage(currentPlayer, count);
+                    }else{
+                        gameSystem.roll(currentPlayer, count);
                     }
-                    //currentPlayer.setLastRoll(gameSystem.roll(currentPlayer, count));//keep track of player roll
+                    //displayTokens(currentPlayer); TODO Remove
                     currentPlayer.passGo();
                     gameSystem.tiles.get(currentPlayer.getCurrentPos()).activeEffect(currentPlayer);
 
@@ -1938,6 +2165,7 @@ public class Main extends Application {
                             // Changes to the trading setup scene (popup)
                             tradingSetupScene(currentPlayer);
                             //TODO Player property management GUI here
+                            //TODO Ask player if they want to trade/ GUI trade here
                         } else {
                             currentPlayer.initiateTrade();
                             if (gameSystem.turns > retirePoint && gameSystem.turnOrder.size() > 4) {
