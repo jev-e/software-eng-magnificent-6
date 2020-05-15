@@ -2507,7 +2507,7 @@ public class Main extends Application {
     }
 
     /***
-     * Function to display all of the actions that they have taken
+     * Function to display all of the actions that they have taken (actionLog)
      * @param currentPlayer The current player
      */
     public void summaryTurn(Player currentPlayer) {
