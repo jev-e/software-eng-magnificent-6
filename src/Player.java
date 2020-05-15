@@ -55,6 +55,7 @@ public class Player {
      */
     public void payPlayerAmount(int amount) {
         money += amount;
+        board.showPlayerMoney(this);
     }
 
     /**
