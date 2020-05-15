@@ -1,0 +1,10 @@
+<component name="ArtifactManager">
+  <artifact type="javafx" name="software-eng-magnificent-6">
+    <output-path>$PROJECT_DIR$/out/artifacts/software_eng_magnificent_6</output-path>
+    <root id="root">
+      <element id="archive" name="software_eng_magnificent_6.jar">
+        <element id="module-output" name="software-eng-magnificent-6" />
+      </element>
+    </root>
+  </artifact>
+</component>

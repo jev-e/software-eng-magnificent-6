@@ -1,11 +1,11 @@
 package GUI;
 
-import ClassStructure.*;
+import src.*;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -18,19 +18,18 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
 
-import javax.xml.stream.events.DTD;
 import java.lang.Object;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -42,10 +41,18 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Main extends Application {
 
     // Variables
-    private FlowPane[] playerCards;  // Player cards on right hand side of game screen
-    private FlowPane[] tokenDisplay; // FlowPanes showing tokens on tiles
-    private int playerNo;            // Number of players in the game
-    private Player[] players;        // Keep permanent order of players for player cards
+    private int playerNo;               // Number of players in the game
+    private Label potTotal;             // Keeps track of the tax / Free Parking pot total
+
+    private FlowPane jailTokens;      // Tokens of InJail Players
+    private FlowPane[] playerCards;     // Player cards on right hand side of game screen
+    private FlowPane[] tokenDisplay;    // FlowPanes showing tokens on tiles
+    private FlowPane[] propDevelopment; // Shows houses and hotel on the property
+
+    private Player[] players;           // Keep permanent order of players for player cards
+    private Label[] playerMoney;        // Labels to show how much money the player has
+    private Label[] playerNames;        // Labels of player names to show in assets
+    private ImageView[] playerIVs;      // Player token ImageViews to show in assets
 
     // Images - Tiles
     private Image goTilePNG;
@@ -57,6 +64,7 @@ public class Main extends Application {
     private Image oppKnocksPNG;
     private Image potLuckPNG;
     private Image stationPNG;
+    private Image globalPotPNG;
 
     // Images - Assets
     private Image hotelPNG;
@@ -77,6 +85,7 @@ public class Main extends Application {
     private ImageView oppKnocks7, oppKnocks22, oppKnocks36;      // Opportunity Knocks
     private ImageView potLuck2, potLuck17, potLuck33;            // Pot Lucks
     private ImageView bStation, hStation, fStation, lStation;    // Stations
+    private ImageView globalPot;
 
     // ImageViews - Assets
     private ImageView hotel, house, jailFreeCard;
@@ -100,6 +109,7 @@ public class Main extends Application {
     private GridPane leftColGP;  // Left 9 tiles container (Not the Corners)
     private GridPane rightColGP; // Right 9 tiles container (Not the corners)
     private GridPane botRowGP;   // Bottom 9 tiles container (Not the corners)
+    private GridPane midGridGP;  // Middle of the board
 
     // VBoxes
 
@@ -173,13 +183,15 @@ public class Main extends Application {
         formatGameImageViews(); // Formats Game ImageViews
         formatGameScene();    // Formats Game Scene
         retrieveBoardData();  // Provides initial data from board to scene
-        addKeyGameButtons();  // Adds any buttons needed on the main game scene
         displayPlayerCards(); // Displays player cards to the gameBP
         displayGameBoard();   // Displays main game board
         initalTokenDisplay(); // Draw Tokens at GO Tile
+        displayPot();
 
         // Show Game Screen
         window.setScene(gameScene);
+        window.setX(0);
+        window.setY(0);
         window.show();
     }
 
@@ -190,29 +202,8 @@ public class Main extends Application {
         for (int i = 0; i < 40; i++) {
             board.get(i).initGuiElements();
             board.get(i).setTileName();
+            board.get(i).setTilePrice();
         }
-    }
-
-    public void addKeyGameButtons() {
-        // Initialise Buttons
-        Button propManageBtn = new Button("Manage Properties");
-        Button endTurnBtn = new Button("End Turn");
-        Button leaveBtn = new Button("Leave");
-
-        propManageBtn.setOnAction((ActionEvent event) -> {
-
-        });
-
-        endTurnBtn.setOnAction((ActionEvent event) -> {
-
-        });
-
-        leaveBtn.setOnAction((ActionEvent event) -> {
-
-        });
-
-        buttonFP.getChildren().addAll(propManageBtn, endTurnBtn, leaveBtn);
-
     }
 
     /**
@@ -222,34 +213,80 @@ public class Main extends Application {
         for (int i = 0; i < playerNo; i++) {
             Token token = players[i].getToken();
 
-            switch (token) {
-                case SMARTPHONE:
-
-                    tokenDisplay[0].getChildren().add(phoneToken);
-                    break;
-
-                case BOOT:
-
-                    tokenDisplay[0].getChildren().add(bootToken);
-                    break;
-
-                case SPOON:
-                    tokenDisplay[0].getChildren().add(spoonToken);
-                    break;
-
-                case CAT:
-                    tokenDisplay[0].getChildren().add(catToken);
-                    break;
-
-                case GOBLET:
-                    tokenDisplay[0].getChildren().add(gobletToken);
-                    break;
-
-                case HATSTAND:
-                    tokenDisplay[0].getChildren().add(hatstandToken);
-                    break;
-            }
+            tokenDisplay[0].getChildren().add(getTokenIV(token));
         }
+    }
+
+    /**
+     * Returns the Image Object that represents the token
+     *
+     * @param token The token to be represented
+     * @return The Image Object of the token
+     */
+    private Image getTokenImage(Token token) {
+        switch (token) {
+            case SMARTPHONE:
+                return phoneTokenPNG;
+
+            case BOOT:
+                return bootTokenPNG;
+
+            case SPOON:
+                return spoonTokenPNG;
+
+            case CAT:
+                return catTokenPNG;
+
+            case GOBLET:
+                return gobletTokenPNG;
+
+            case HATSTAND:
+                return hatstandTokenPNG;
+
+        }
+        return null;
+    }
+
+    /**
+     * Returns the imageview that represents that token
+     *
+     * @param token The token to be represented
+     * @return The imageview of the token
+     */
+    private ImageView getTokenIV(Token token) {
+        switch (token) {
+            case SMARTPHONE:
+                return phoneToken;
+
+            case BOOT:
+                return bootToken;
+
+            case SPOON:
+                return spoonToken;
+
+            case CAT:
+                return catToken;
+
+            case GOBLET:
+                return gobletToken;
+
+            case HATSTAND:
+                return hatstandToken;
+
+        }
+        return null;
+    }
+
+    /**
+     * Removes Player's token from the board
+     *
+     * @param currentPlayer The player to remove
+     */
+    public void removeToken(Player currentPlayer) {
+        int pos = currentPlayer.getCurrentPos();
+        Token token = currentPlayer.getToken();
+
+        tokenDisplay[pos].getChildren().remove(getTokenIV(token));
     }
 
     /**
@@ -262,51 +299,56 @@ public class Main extends Application {
         int pos = currentPlayer.getCurrentPos();
         Token token = currentPlayer.getToken();
 
-        switch (token) {
-            case SMARTPHONE:
-                if (!tokenDisplay[pos].getChildren().contains(phoneToken)) { // Prevents Duplicate Children
-                    tokenDisplay[pos].getChildren().add(phoneToken);
-                }
-                break;
-            case BOOT:
-                if (!tokenDisplay[pos].getChildren().contains(bootToken)) {
-                    tokenDisplay[pos].getChildren().add(bootToken);
-                }
-                break;
+        boolean inJail = currentPlayer.isInJail();
 
-            case SPOON:
-                if (!tokenDisplay[pos].getChildren().contains(spoonToken)) {
-                    tokenDisplay[pos].getChildren().add(spoonToken);
+        // Prevents Duplicate Children
+        if (pos != 10) {
+            if (!tokenDisplay[pos].getChildren().contains(getTokenIV(token))) {
+                tokenDisplay[pos].getChildren().add(getTokenIV(token));
+            }
+        } else {
+            if (!inJail) {
+                if (!tokenDisplay[pos].getChildren().contains(getTokenIV(token))) {
+                    tokenDisplay[pos].getChildren().add(getTokenIV(token));
                 }
-                break;
-
-            case CAT:
-                if (!tokenDisplay[pos].getChildren().contains(catToken)) {
-                    tokenDisplay[pos].getChildren().add(catToken);
+            } else {
+                if (!jailTokens.getChildren().contains(getTokenIV(token))) {
+                    jailTokens.getChildren().add(getTokenIV(token));
                 }
-                break;
-            case GOBLET:
-                if (!tokenDisplay[pos].getChildren().contains(gobletToken)) {
-                    tokenDisplay[pos].getChildren().add(gobletToken);
-                }
-                break;
-            case HATSTAND:
-                if (!tokenDisplay[pos].getChildren().contains(hatstandToken)) {
-                    tokenDisplay[pos].getChildren().add(hatstandToken);
-                }
-                break;
+            }
         }
     }
 
     /**
-     * Updates all players' asset cards on screen
-     *
-     * @param currentPlayer The current player who's assets need to be updated on screen
-     * @param item          The item which needs to be added or removed
-     * @param use           The situation the method being called, "add" or "remove"
+     * Updates every player's money label
      */
-    public void displayPlayerAssets(Player currentPlayer, Object item, String use) {
+    private void updateAllMoneyLabels() {
+        for (int i = 0; i < playerNo; i++) {
+            playerMoney[i].setText("£" + String.valueOf(players[i].getMoney()));
+        }
+    }
 
+    /**
+     * Updates given player's money label on board
+     *
+     * @param currentPlayer player's money label to be updated
+     */
+    public void showPlayerMoney(Player currentPlayer) {
+        int money = currentPlayer.getMoney();
+
+        for (int i = 0; i < playerNo; i++) {
+            if (currentPlayer == players[i]) {
+                playerMoney[i].setText("£" + String.valueOf(money));
+            }
+        }
+    }
+
+    /**
+     * Refresh's the given player's asset card
+     *
+     * @param currentPlayer The player's assets to be redrawn
+     */
+    public void refreshPlayerCards(Player currentPlayer) {
         int i = 0;
 
         for (int j = 0; j < playerNo; j++) {
@@ -315,44 +357,85 @@ public class Main extends Application {
             }
         }
 
-        if (use == "add") {
+        playerCards[i].getChildren().clear();
+        playerCards[i].getChildren().addAll(playerIVs[i], playerNames[i], playerMoney[i]);
+
+        for (Object item : currentPlayer.getAssets()) {
             Label label = new Label();
 
             if (item instanceof Property) {
                 String name = ((Property) item).getNameLabel().getText();
                 label.setText(name);
+                label.setAccessibleText(name);
             } else if (item instanceof Station) {
                 String name = ((Station) item).getNameLabel().getText();
                 label.setText(name);
+                label.setAccessibleText(name);
             } else if (item instanceof Utility) {
                 String name = ((Utility) item).getNameLabel().getText();
                 label.setText(name);
+                label.setAccessibleText(name);
             }
-
             playerCards[i].getChildren().add(label);
-        } else if (use == "remove") {
-
-        } else {
-            System.out.println("Unknown use case: " + use);
         }
     }
 
     /**
-     * Displays Board to primaryStage
+     * Refresh the houses and hotel displays
+     *
+     * @param tile
+     */
+    public void refreshDevelopment(Property tile) {
+        int tileNo = tile.getiD();
+        propDevelopment[tileNo].getChildren().clear();
+        propDevelopment[tileNo].getChildren().addAll(tile.getDevelopment());
+    }
+
+    /**
+     * Displays pot image and label for pot total
+     */
+    public void displayPot() {
+        updatePot();
+
+        midGridGP.add(globalPot, 0, 0);
+        midGridGP.add(potTotal, 1, 0);
+    }
+
+    /**
+     * Updates the Tax Pot label
+     */
+    public void updatePot() {
+        potTotal.setText("Tax Pot: £" + String.valueOf(gameSystem.getTaxPot()));
+    }
+
+    /**
+     * Displays All Tiles to the boardGP
      */
     public void displayGameBoard() {
 
-        int shortSide = 80, longSide = 120;
+        double shortSide = 90, longSide = 120;
 
         for (int i = 0; i < 40; i++) {
             Label label = board.get(i).getNameLabel();
+
+            Label priceLabel = board.get(i).getTilePrice();
             Canvas canvas = board.get(i).getColourDisplay();
 
             GridPane container = new GridPane();
+            Insets insets = new Insets(10);
+            container.setMinSize(longSide, shortSide);
 
-            StackPane stack = new StackPane();              // Holds Background image and tokens FlowPane
-            FlowPane tokens = new FlowPane(5, 5); // Holds tokens in each tile
-            tokens.setPrefWidth(100);
+            StackPane stack = new StackPane();                   // Holds Background image and tokens FlowPane
+
+            FlowPane tokens = new FlowPane(5, 5);      // Holds tokens in each tile
+            tokens.setPrefWidth(longSide);
+
+            jailTokens = new FlowPane(5, 5);          // Holds tokens in jail
+            jailTokens.setPrefWidth(longSide);
+            jailTokens.setMinHeight(50);
+
+            FlowPane developImgs = new FlowPane(5, 5); // Holds houses and hotels
+            developImgs.setPrefWidth(longSide);
 
             // Add Tiles to GridPane
             switch (i) {
@@ -375,12 +458,18 @@ public class Main extends Application {
                 case 8:
                 case 9:
                     container.add(label, 0, 1);
+                    container.setHalignment(label, HPos.CENTER);
+                    container.add(priceLabel, 0, 2);
+                    container.setHalignment(priceLabel, HPos.CENTER);
 
                     // Properties
                     if (!(i == 2 || i == 4 || i == 5 || i == 7)) {
+                        label.setTextFill(Color.WHITE);
                         board.get(i).setColour();
-                        container.add(canvas, 0, 0);
-                        container.add(tokens, 0, 2);
+                        stack.getChildren().addAll(canvas, label);
+                        container.add(stack, 0, 0);
+                        container.add(tokens, 0, 4);
+                        container.add(developImgs, 0, 3);
                     }
 
                     // Pot Luck
@@ -391,7 +480,10 @@ public class Main extends Application {
 
                     // Income Tax
                     if (i == 4) {
-                        container.add(tokens, 0, 2);
+                        Label Tax = new Label("£200");
+                        container.add(Tax, 0, 2);
+                        container.setHalignment(Tax, HPos.CENTER);
+                        container.add(tokens, 0, 3);
                     }
 
                     // Brighton Station
@@ -411,7 +503,9 @@ public class Main extends Application {
 
                 // Jail Tile
                 case 10:
-                    stack.getChildren().addAll(visitingJail, tokens);
+                    stack.getChildren().addAll(visitingJail, tokens, jailTokens);
+                    stack.setAlignment(jailTokens, Pos.TOP_LEFT);
+                    stack.setAlignment(tokens, Pos.BOTTOM_LEFT);
                     boardGP.add(stack, 0, 2);
                     break;
 
@@ -426,12 +520,18 @@ public class Main extends Application {
                 case 18:
                 case 19:
                     container.add(label, 0, 1);
+                    container.setHalignment(label, HPos.CENTER);
+                    container.add(priceLabel, 0, 2);
+                    container.setHalignment(priceLabel, HPos.CENTER);
 
                     // Properties
                     if (!(i == 12 || i == 15 || i == 17)) {
+                        label.setTextFill(Color.WHITE);
                         board.get(i).setColour();
-                        container.add(canvas, 0, 0);
-                        container.add(tokens, 0, 2);
+                        stack.getChildren().addAll(canvas, label);
+                        container.add(stack, 0, 0);
+                        container.add(tokens, 0, 4);
+                        container.add(developImgs, 0, 3);
                     }
 
                     // Tesla Power
@@ -472,18 +572,27 @@ public class Main extends Application {
                 case 28:
                 case 29:
                     container.add(label, 0, 1);
+                    container.setHalignment(label, HPos.CENTER);
+                    container.add(priceLabel, 0, 2);
+                    container.setHalignment(priceLabel, HPos.CENTER);
+
+                    if (i == 21 || i == 23 || i == 24) {
+                        label.setTextFill(Color.WHITE);
+                    }
 
                     // Properties
                     if (!(i == 22 || i == 25 || i == 28)) {
                         board.get(i).setColour();
-                        container.add(canvas, 0, 0);
-                        container.add(tokens, 0, 2);
+                        stack.getChildren().addAll(canvas, label);
+                        container.add(stack, 0, 0);
+                        container.add(tokens, 0, 4);
+                        container.add(developImgs, 0, 3);
                     }
 
                     // Opportunity Knocks
                     if (i == 22) {
                         stack.getChildren().addAll(oppKnocks22, tokens);
-                        container.add(stack, 0, 2);
+                        container.add(stack,0,2);
                     }
 
                     // Falmer Station
@@ -495,7 +604,7 @@ public class Main extends Application {
                     // Edison Water
                     if (i == 28) {
                         stack.getChildren().addAll(edisonWater, tokens);
-                        container.add(tokens, 0, 2);
+                        container.add(stack, 0, 2);
                     }
 
                     topRowGP.add(container, (i - 21), 0);
@@ -518,12 +627,18 @@ public class Main extends Application {
                 case 38:
                 case 39:
                     container.add(label, 0, 1);
+                    container.setHalignment(label, HPos.CENTER);
+                    container.add(priceLabel, 0, 2);
+                    container.setHalignment(priceLabel, HPos.CENTER);
 
                     // Properties
                     if (!(i == 33 || i == 35 || i == 36 || i == 38)) {
+                        label.setTextFill(Color.WHITE);
                         board.get(i).setColour();
-                        container.add(canvas, 0, 0);
-                        container.add(tokens, 0, 2);
+                        stack.getChildren().addAll(canvas, label);
+                        container.add(stack, 0, 0);
+                        container.add(tokens, 0, 4);
+                        container.add(developImgs, 0, 3);
                     }
 
                     // Pot Luck
@@ -544,6 +659,14 @@ public class Main extends Application {
                         container.add(stack, 0, 2);
                     }
 
+                    // Super Tax
+                    if (i == 38) {
+                        Label sTax = new Label("£100");
+                        container.add(sTax, 0, 2);
+                        container.setHalignment(sTax, HPos.CENTER);
+                        container.add(tokens, 0, 3);
+                    }
+
                     rightColGP.add(container, 0, (i - 31));
                     break;
 
@@ -552,6 +675,7 @@ public class Main extends Application {
                     break;
             }
             tokenDisplay[i] = tokens;
+            propDevelopment[i] = developImgs;
         }
     }
 
@@ -562,8 +686,17 @@ public class Main extends Application {
     public void displayPlayerCards() {
 
         for (int i = 0; i < playerNo; i++) {
-            FlowPane playerPane = new FlowPane();
+            FlowPane playerPane = new FlowPane(5, 5);
+            formatGivenCard(playerPane);
+
+            ImageView token = new ImageView(getTokenImage(players[i].getToken()));
+            token.setPreserveRatio(true);
+            token.setFitWidth(20);
+            token.setFitHeight(20);
+
             Label playerName;
+
+            updateAllMoneyLabels();
 
             if (!players[i].isAiAgent()) {
                 playerName = new Label("Player: " + players[i].getName());
@@ -571,12 +704,22 @@ public class Main extends Application {
                 playerName = new Label("AI: " + players[i].getName());
             }
 
-            playerPane.getChildren().add(playerName);
+            playerPane.getChildren().addAll(token, playerName, playerMoney[i]);
 
+            playerNames[i] = playerName;
+            playerIVs[i] = token;
             playerCards[i] = playerPane;
 
             playersVB.getChildren().add(playerPane);
         }
+    }
+
+    /**
+     * Formats a given player card, called by displayPlayerCards()
+     *
+     * @param card The player card to be formatted
+     */
+    private void formatGivenCard(FlowPane card) {
     }
 
     /**
@@ -588,8 +731,7 @@ public class Main extends Application {
         // Initialise main Game containers
         gameBP = new BorderPane();
         boardGP = new GridPane();
-        buttonFP = new FlowPane();
-        playersVB = new VBox();
+        playersVB = new VBox(25);
 
         // Initialise Scene
         gameScene = new Scene(gameBP);
@@ -601,7 +743,6 @@ public class Main extends Application {
         // Add Panes to gameBP
         gameBP.setLeft(boardGP);
         gameBP.setRight(playersVB);
-        gameBP.setBottom(buttonFP);
         gameBP.setPadding(insets);
 
         // Initialise inner containers
@@ -609,29 +750,39 @@ public class Main extends Application {
         leftColGP = new GridPane();
         rightColGP = new GridPane();
         botRowGP = new GridPane();
+        midGridGP = new GridPane();
 
         // Format GameBP
         gameBP.setCenter(label);
         gameBP.setMargin(label, insets);
-        gameBP.setMargin(buttonFP, insets);
 
-        // Format buttonGP
-        buttonFP.setHgap(10);
+        // Format midGridGP
+        midGridGP.setPadding(insets);
 
         // Add inner containers to boardGP
         boardGP.add(topRowGP, 1, 0);
         boardGP.add(leftColGP, 0, 1);
         boardGP.add(rightColGP, 2, 1);
         boardGP.add(botRowGP, 1, 2);
+        boardGP.add(midGridGP, 1, 1);
 
         // Initialise Variables
+        potTotal = new Label("£ 0");
         tokenDisplay = new FlowPane[40];
+        propDevelopment = new FlowPane[40];
 
         playerNo = gameSystem.turnOrder.size();
+
         players = new Player[playerNo];
         playerCards = new FlowPane[playerNo];
+        playerMoney = new Label[playerNo];
+        playerNames = new Label[playerNo];
+        playerIVs = new ImageView[playerNo];
+
         for (int i = 0; i < playerNo; i++) {
+            Label moneyLabel = new Label();
             players[i] = gameSystem.turnOrder.get(i);
+            playerMoney[i] = moneyLabel;
         }
     }
 
@@ -650,6 +801,7 @@ public class Main extends Application {
             oppKnocksPNG = new Image(new FileInputStream("Lib/TilesDesign/opportunityKnock64bit.png"));
             potLuckPNG = new Image(new FileInputStream("Lib/TilesDesign/potLuck64bit.png"));
             stationPNG = new Image(new FileInputStream("Lib/TilesDesign/trainStation64bit.png"));
+            globalPotPNG = new Image(new FileInputStream("Lib/TilesDesign/globalPot64bit.png"));
 
             // Assets
             hotelPNG = new Image(new FileInputStream("Lib/Assets/hotel64bit.png"));
@@ -680,6 +832,7 @@ public class Main extends Application {
         visitingJail = new ImageView(visitingPNG);
         edisonWater = new ImageView(waterPNG);
         teslaPower = new ImageView(powerPNG);
+        globalPot = new ImageView(globalPotPNG);
 
         // Tiles - Stations
         bStation = new ImageView(stationPNG);
@@ -740,6 +893,15 @@ public class Main extends Application {
         catToken.setPreserveRatio(true);
         catToken.setFitWidth(tokenSize);
         catToken.setFitHeight(tokenSize);
+
+        // Assets
+        house.setPreserveRatio(true);
+        house.setFitWidth(20);
+        house.setFitHeight(20);
+
+        hotel.setPreserveRatio(true);
+        hotel.setFitWidth(20);
+        hotel.setFitHeight(20);
 
     }
 
@@ -2287,6 +2449,7 @@ public class Main extends Application {
                 error.close();
             } else {
                 summaryTurn(currentPlayer);
+                assetManagePopUp.close();
             }
         });
         endTurn.setOnAction(e -> {
