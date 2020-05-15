@@ -111,7 +111,7 @@ public class Player {
         } else if (item instanceof Utility) {
             ((Utility) item).setOwner(this);
         }
-        //board.updatePlayerAssets(this, item, "add");
+        board.updatePlayerAssets(this, item, "add");
     }
 
     /**
