@@ -2345,11 +2345,10 @@ public class Main extends Application {
         // Fetch all of the current player asset
         LinkedList<Object> playerAsset = currentPlayer.getAssets();
 
-        // TODO change commetns
         // Going through players assets and add it to list-view (asset = String) if its a property
         for(Object asset: playerAsset){
             if(asset instanceof Property){
-                // Checking if the property is able to mortgaged and not is not developed
+                // Checking if the property is mortgaged
                 if(((Property) asset).isMortgaged()){
                     assetList.getItems().add(((Property) asset).getTitle());
                 }
@@ -2733,6 +2732,7 @@ public class Main extends Application {
                 } else if (currentPlayer.isInJail()) {
                     gameSystem.tiles.get(10).activeEffect(currentPlayer);//Activate the jail tile to serve time
                     gameSystem.storeData(currentPlayer, currentPlayer.netWorth());
+                    summaryTurn(currentPlayer);
                     continue;//move to next turn
                 }
                 int count = 0;
