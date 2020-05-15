@@ -48,6 +48,7 @@ class GameTest {
      */
     @BeforeEach
     public void setup() {
+
         //player creation
         Player ayman = new Player("Ayman", Token.HATSTAND, null, false);
         Player danny = new Player("Danny", Token.CAT, null, false);
@@ -909,9 +910,7 @@ class GameTest {
 
 
         gtj.setBoard(board);
-        board.turnOrder.getFirst().setAiAgent(true);
-        board.turnOrder.getFirst().setMoney(1);
-        board.turnOrder.getFirst().assets = new LinkedList<>();
+
         gtj.activeEffect(board.turnOrder.getFirst());
         assertEquals(board.turnOrder.getFirst().getCurrentPos(),10);
         assertEquals(board.turnOrder.getFirst().isInJail(), true);
@@ -927,13 +926,12 @@ class GameTest {
         BoardTile temp = new Jail(10, "Jail","You are in jail");
         tileSet = new HashMap<>();
         tileSet.put(10,temp);
+        opp.add(new Birthday());
         board = new Board(order, tileSet, pot, opp, "full");
 
 
         card.setBoard(board);
-        board.turnOrder.getFirst().setAiAgent(true);
-        board.turnOrder.getFirst().setMoney(1);
-        board.turnOrder.getFirst().assets = new LinkedList<>();
+
         card.effect(board.turnOrder.getFirst());
         assertEquals(board.turnOrder.getFirst().getCurrentPos(),10);
         assertEquals(board.turnOrder.getFirst().isInJail(), true);

@@ -486,6 +486,13 @@ public class Board {
         }
     }
 
+    public boolean isGuiMainNull() {
+        if(guiMain == null) {
+            return true;
+        }
+        return false;
+    }
+
     /**
      * Update the Tax Pot Label on the GUI
      */

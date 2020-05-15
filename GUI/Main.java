@@ -292,10 +292,10 @@ public class Main extends Application {
             if(!inJail) {
                 if (!tokenDisplay[pos].getChildren().contains(getTokenIV(token))) {
                     tokenDisplay[pos].getChildren().add(getTokenIV(token));
-                } else {
-                    if (!jailTokens.getChildren().contains(getTokenIV(token))) {
-                        jailTokens.getChildren().add(getTokenIV(token));
-                    }
+                }
+            } else {
+                if (!jailTokens.getChildren().contains(getTokenIV(token))) {
+                    jailTokens.getChildren().add(getTokenIV(token));
                 }
             }
         }
@@ -409,11 +409,10 @@ public class Main extends Application {
 
             FlowPane tokens = new FlowPane(5,5);      // Holds tokens in each tile
             tokens.setPrefWidth(longSide);
-            tokens.setMinHeight(100);
 
             jailTokens = new FlowPane(5, 5);          // Holds tokens in jail
             jailTokens.setPrefWidth(longSide);
-
+            jailTokens.setMinHeight(50);
 
             FlowPane developImgs = new FlowPane(5,5); // Holds houses and hotels
             developImgs.setPrefWidth(longSide);

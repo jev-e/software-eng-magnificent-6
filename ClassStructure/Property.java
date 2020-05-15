@@ -279,7 +279,9 @@ public class Property extends BoardTile{
                 developed = true;
                 updateRent();
             }
-            addHouseDisplay();
+            if(!board.isGuiMainNull()) {
+                addHouseDisplay();
+            }
             owner.deductAmount(group.getBuildingCost());
             rent += buildingRents[housesNo - 1];
             return true;
@@ -335,7 +337,9 @@ public class Property extends BoardTile{
             //'sell' 4 houses
             hotelNo = 1;
             housesNo = 0;
-            addHotelDisplay(); // Adds hotel to array list
+            if(!board.isGuiMainNull()) {
+                addHotelDisplay(); // Adds hotel to array list
+            }
             owner.deductAmount(group.getBuildingCost());
             rent += hotelRent;
             //System.out.println("Hotel purchased for " + title + ", the new rent is: £" + rent);
