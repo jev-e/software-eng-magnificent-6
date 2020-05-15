@@ -545,7 +545,6 @@ public class Player {
      */
     public boolean leaveGame() {
         //ask user
-        // todo merge cal
         if (!isAiAgent()) {//ask human players only
             boolean confirm = board.leaveConfirmation(this);
             boolean possible;
@@ -554,7 +553,6 @@ public class Player {
             if (confirm) {//if player wishes to leave
                 possible = board.getLeaveVotes(this);//ask other players
                 if (possible) {//if all player agree
-                    // todo merge
                     bankrupt(); //remove from turn order and transfer all assets
                     return true;
                 }

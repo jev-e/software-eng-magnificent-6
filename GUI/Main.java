@@ -1421,41 +1421,7 @@ public class Main extends Application {
             }
             // Assign player to the turn order
             assignPlayerToTurnOrder();
-//            // TODO delete after
-//            Property test = (Property) gameSystem.tiles.get(1);
-//            Property test2 = (Property) gameSystem.tiles.get(3);
-//            Property test3 = (Property) gameSystem.tiles.get(39);
-//            Property test4 = (Property) gameSystem.tiles.get(14);
-//            Property test5 = (Property) gameSystem.tiles.get(19);
-//            Property test11 = (Property) gameSystem.tiles.get(9);
-//            Property test12 = (Property) gameSystem.tiles.get(8);
-//            Station test6 = (Station) gameSystem.tiles.get(5);
-//            Station test7 = (Station) gameSystem.tiles.get(15);
-//            Utility test8 = (Utility) gameSystem.tiles.get(12);
-//            Utility test9 = (Utility) gameSystem.tiles.get(28);
-//
-//            test.setCompletedSet(true);
-//            test2.setHotelNo(0);
-//            test2.setCompletedSet(true);
-//            test2.setDeveloped(true);
-//            test3.setHotelNo(1);
-//            test3.setDeveloped(true);
-//            test3.setCompletedSet(true);
-//            test11.setMortgaged(true);
-//            test12.setMortgaged(true);
-//            gameSystem.turnOrder.getFirst().addAsset(test);
-//            gameSystem.turnOrder.getFirst().addAsset(test11);
-//            gameSystem.turnOrder.getFirst().addAsset(test4);
-//            gameSystem.turnOrder.getFirst().addAsset(test2);
-//            gameSystem.turnOrder.getFirst().addAsset(test6);
-//            gameSystem.turnOrder.getFirst().addAsset(test8);
-//            gameSystem.turnOrder.getFirst().addAsset(test3);
-//
-//            gameSystem.turnOrder.get(1).addAsset(test5);
-//            gameSystem.turnOrder.get(1).addAsset(test8);
-//            gameSystem.turnOrder.get(1).addAsset(test7);
-//            gameSystem.turnOrder.get(1).addAsset(test9);
-//            gameSystem.turnOrder.get(1).addAsset(test12);
+
             displayGameScene();
             window.setScene(gameScene);
             gameLoop();
@@ -1568,9 +1534,6 @@ public class Main extends Application {
         while (i < order.size()) {
             if (tradePlayer == order.get(i).getName()) {
                 playerTwo = order.get(i);
-                // TODO remove after testing
-                //playerTwo.addAsset(temp3);
-                // Add selected player assets to their listView
                 playerTwoAsset = addAssetToViewList(playerTwo, playerTwoAsset);
                 break;
             }
@@ -1719,7 +1682,7 @@ public class Main extends Application {
             currentPlayer.addAsset(asset);
         }
 
-        // TODO merge will cal
+
         // Go through the 'receive' link list on what current player will give to the selected player and change ownership of asset
         for (Object asset : receive) {
             currentPlayer.removeAsset(asset);
@@ -2384,10 +2347,10 @@ public class Main extends Application {
         sellPropPopUpStage.showAndWait();
         sellPropPopUpStage.close();
     }
-    //TODO update comment here
+
 
     /***
-     *
+     * Collection of options a player can do at end of turn
      * @param currentPlayer The current player
      */
     public void endOfTurnOptionSetupScene(Player currentPlayer) {
@@ -2916,7 +2879,6 @@ public class Main extends Application {
         Optional<ButtonType> result = alert.showAndWait();
         if (result.get() == yes) {
             decision = true;
-            // todo CALL END turn;
         } else if (result.get() == no) {
             decision = false;
         }

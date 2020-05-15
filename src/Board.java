@@ -221,7 +221,6 @@ public class Board {
      * @returnplayer's decision to leave the game or not
      */
     public boolean leaveConfirmation(Player currentPlayer) {
-        // TODO add merge
         return (guiMain.leaveConfirmationAlert(currentPlayer));
     }
 
