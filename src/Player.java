@@ -57,7 +57,6 @@ public class Player {
         money += amount;
         board.showPlayerMoney(this);
     }
-
     /**
      * Deducts amount from players money if they can pay returning the amount
      * if they cannot pay assets can be sold
