@@ -1688,6 +1688,8 @@ public class Main extends Application {
             currentPlayer.removeAsset(asset);
             tradePlayer.addAsset(asset);
         }
+        currentPlayer.completeSetProperties();
+        tradePlayer.completeSetProperties();
     }
 
     /***
@@ -1980,6 +1982,7 @@ public class Main extends Application {
             }
             highestPlayerBidder.deductAmount(highestBidder.getValue());
             highestPlayerBidder.addAsset(asset);
+            highestPlayerBidder.completeSetProperties();
         } else if (bidderLeft.intValue() == 0 && highestBidder.getValue() == secondHighestBidder.getValue()) {
             // Restart auction if highest bid == second highest bid
             if (highestBidder.getValue() != 0) {

@@ -228,6 +228,7 @@ public class Property extends BoardTile{
                 owner = currentPlayer;
                 currentPlayer.addAsset(this);
                 currentPlayer.addAction("Purchased " + title + " for £" + cost);
+                currentPlayer.completeSetProperties();
             }
         } else {
             super.board.callAuctionSetupScene(currentPlayer,this);
