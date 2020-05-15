@@ -95,7 +95,7 @@ public class Station extends TileEffect {
         boolean wishToPurchase; //flag for purchase choice
 
         if (!currentPlayer.isAiAgent()) {
-            wishToPurchase = super.board.getPurchase(title, Integer.toString(cost));
+            wishToPurchase = super.board.getPurchase(title, cost, currentPlayer);
         } else {
             wishToPurchase = currentPlayer.decide(this);
         }

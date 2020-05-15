@@ -20,6 +20,7 @@ public class Board {
     public HashMap<Integer,BoardTile> tiles;// key: iD value: (Property|Effect)
     int taxPot; // subject to change see free parking in spec
     public boolean repeat;
+    public boolean isAIGame;
     private String version;
     private int timeLimit = 5;
     Timer timer;
@@ -220,12 +221,13 @@ public class Board {
      * Starts the game timer, must be called before starting main game loop
      */
     public void startGameTimer(){
-        if( version == "abridged"){
+        if (version.equals("abridged")) {
             timer = new Timer();
             TimerTask endGame = new TimerTask() {
                 @Override
                 public void run() {
-                    timeUp = true; System.out.println("timeUp" + timeUp);
+                    timeUp = true;
+                    System.out.println("timeUp" + timeUp);
                 }
             };
             timer.schedule(endGame, (timeLimit * 60) * 1000);
@@ -262,7 +264,6 @@ public class Board {
      * die 1 and 2 result stored in player
      */
     public void roll(Player currentPlayer, int count) {
-        System.out.println("Roll Function Called " + currentPlayer.getName());
         int result;
         Random rand = new Random();
         int die1 = rand.nextInt(6) + 1;
@@ -270,7 +271,7 @@ public class Board {
         currentPlayer.setLastRoll1(die1);//maintain last roll ints
         currentPlayer.setLastRoll2(die2);
         if (currentPlayer.isAiAgent()) {//if AI record roll in action log
-            currentPlayer.addAction("Rolled |" + die1 + "||" + die2 + "|");
+            currentPlayer.addAction("Rolled |" + die1 + "| |" + die2 + "|");
         }
         currentPlayer.passGo();
         if (die1 == die2) {
@@ -401,12 +402,13 @@ public class Board {
 
     /**
      * Middle man function to get current player's decision on whether he wants to buy an asset or not
+     *
      * @param title The name of the asset
-     * @param cost How much the asset cost to buy
+     * @param cost  How much the asset cost to buy
      * @return Current player's decision to buy purchase or not
      */
-    public boolean getPurchase(String title, String cost) {
-        return (guiMain.assetBuyingScene(title,cost));
+    public boolean getPurchase(String title, int cost, Player currentPlayer) {
+        return (guiMain.assetBuyingScene(title, cost, currentPlayer));
     }
 
     /**
@@ -430,10 +432,31 @@ public class Board {
      * Called by Player's add and remove assset functions to update on screen assets owned
      *
      * @param currentPlayer current player who's assets need to be update
-     * @param item The asset that has been added or removed
-     * @param use The case in which being called, "add" or "remove"
+     * @param item          The asset that has been added or removed
+     * @param use           The case in which being called, "add" or "remove"
      */
     public void updatePlayerAssets(Player currentPlayer, Object item, String use) {
         guiMain.displayPlayerAssets(currentPlayer, item, use);
+    }
+
+    /**
+     * Returns true is a simulation game and false otherwise
+     *
+     * @return true|false
+     */
+    public boolean isAIGame() {
+        return isAIGame;
+    }
+
+    /**
+     * Check if the game is full of AI and update isAIGame
+     */
+    public void checkSimulated() {
+        isAIGame = true;
+        for (Player p : turnOrder) {
+            if (!p.isAiAgent()) {
+                isAIGame = false;
+            }
+        }
     }
 }

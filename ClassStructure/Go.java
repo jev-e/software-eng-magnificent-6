@@ -23,7 +23,7 @@ public class Go extends TileEffect {
      */
     @Override
     public void activeEffect(Player currentPlayer) {
-        currentPlayer.addAction(text);//add text to log
+        currentPlayer.addAction("You landed on Go");//add text to log
     }
 
     /**

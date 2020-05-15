@@ -247,7 +247,6 @@ public class Player {
      * Pass go check and money
      */
     public void passGo() {
-        System.out.println("Pass Go Called");
         if(currentPos < previousPos) {
             payPlayerAmount(200);//collect £200
             addAction("Passed Go, collect £200");//add text to log
@@ -280,7 +279,6 @@ public class Player {
         }
         //Player choice here
         if (!isAiAgent()) {//if human player
-            //TODO GUI Jail decision
             board.callJailSetupScene(this, getOutOfJail);
         } else {
             if (getOutOfJail != null) {
@@ -301,6 +299,7 @@ public class Player {
                     }
                 }
             }
+            addAction("serve time");
             //otherwise do nothing and serve time
         }
     }
@@ -606,7 +605,7 @@ public class Player {
         Group propGroup = property.getGroup();
         if (money < property.getCost()) {
             return false;//AI cannot afford the property
-        } else if (money > 1000) {//TODO tune this value, requires testing
+        } else if (money > 1000) {
             return true;//player has a lot of money always buy
         } else if (personality.hasTwoSetAffinity()) {
 
@@ -652,7 +651,7 @@ public class Player {
     public boolean decide(Station station) {
         if (money < station.getCost()) {
             return false;//cannot afford tile
-        } else if (money > 1000) {//TODO tune this value, requires testing
+        } else if (money > 1000) {
             return true;//player has a lot of money always buy
         } else if (personality.hasTrainAffinity()) {
             return true;//player has affinity for stations
@@ -679,7 +678,7 @@ public class Player {
     public boolean decide(Utility utility) {
         if (money < utility.getCost()) {
             return false;//cannot afford tile
-        } else if (money > 1000) {//TODO tune this value, requires testing
+        } else if (money > 1000) {
             return true;//player has a lot of money always buy
         } else if (personality.hasUtilityAffinity()) {
             return true;//player has affinity for utilities
@@ -987,7 +986,7 @@ public class Player {
     public boolean decideDevelop() {
         if (personality.isInvestor()) {
             return true;//investors will always attempt to develop
-        } else if (money > 1500) {//TODO tune this value, requires testing
+        } else if (money > 1500) {
             return true;//player has a lot of money develop
         } else if (personality.isCautious()) {
             return cautiousWillBuy(125);//cost verses net worth using average building cost
