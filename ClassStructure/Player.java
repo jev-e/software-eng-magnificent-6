@@ -420,10 +420,7 @@ public class Player {
         if (improvableProperties().size() == 0) {
             return;//no properties to develop
         }
-        if (!isAiAgent()) {
-            //TODO GUI develop properties
-        } else {
-            //AI decision
+        if (isAiAgent()) {
             if (decideDevelop()) {
                 agentDevelopProperties();//AI developing logic
             }
@@ -547,20 +544,26 @@ public class Player {
     /**
      * Processes player request to leave the game
      */
-    public void leaveGame() {
+    public boolean leaveGame() {
         //ask user
+        // todo merge cal
         if (!isAiAgent()) {//ask human players only
-            boolean confirm = true;//TODO change this to get user decision from GUI
+            boolean confirm = board.leaveConfirmation(this);
             boolean possible;
 
             //get user votes
             if (confirm) {//if player wishes to leave
                 possible = board.getLeaveVotes(this);//ask other players
                 if (possible) {//if all player agree
+                    // todo merge
                     bankrupt(); //remove from turn order and transfer all assets
+                    return true;
                 }
             }
+        }else{
+            return false;
         }
+        return false;
     }
 
     /*

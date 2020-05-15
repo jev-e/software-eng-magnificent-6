@@ -206,6 +206,15 @@ public class Board {
     public void callAssetSellingScene(Player currentPlayer, int fundNeeded){
         guiMain.assetSellingManagementSetupScene(currentPlayer, fundNeeded);
     }
+    /**
+     * Middle man function to grab player's decision to leave ethe game
+     * @param currentPlayer the player asking to leave the game
+     * @returnplayer's decision to leave the game or not
+     */
+    public boolean leaveConfirmation(Player currentPlayer){
+        // TODO add merge
+        return(guiMain.leaveConfirmationAlert(currentPlayer));
+    }
 
     /**
      * Starts the game timer, must be called before starting main game loop
@@ -310,21 +319,13 @@ public class Board {
             throw new Exception("illegal end game state");
         }
 
-
         assert winner != null;
         guiMain.winnerSetupScene(winner);
         storeData( winner, winner.netWorth() );
-        for( String key: dataStore.keySet() ){
-            System.out.println(dataStore.get(key).size() + " " + key + " " + dataStore.get(key).toString());
-        }
-
-
-
     }
 
     /**
      * Asks all players if it is okay for one player to leave the game
-     *
      * @param leavingPlayer the player who wants to leave
      * @return boolean true if all players agree to the leaving player leaving, false other
      */
@@ -335,14 +336,13 @@ public class Board {
 
         for (Player player : turnOrder) {
             if (player != leavingPlayer && !player.isAiAgent()) {//ignore AI agents
-                confirm = true;//TODO change to get user decision from GUI
+                confirm = guiMain.getLeavePermission(player, leavingPlayer);
                 if (!confirm) { //votes must be unanimous so if one disagrees, player can't leave
                     canLeave = false;
                     break;
                 }
             }
         }
-
         return canLeave;
     }
 

@@ -10,11 +10,15 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Pair;
@@ -106,6 +110,7 @@ public class Main extends Application {
     Stage window;
     Scene menuScene, ruleScene, playerSetupScene, gameSetupScene, gameBoardScene, tradingSetupScene, tradingScene, auctionScene, jailSetupScene;
     Scene assetSellingManagementScene, assetSellingHouseScene, assetMortgageScene,  assetSellingScene, assetImproveScene, improveScene, unMortgageScene;
+    Scene winnerSetup, summaryScene;
 
     // Holds the players name
     public ArrayList<TextField> playerNameTextField = new ArrayList<>();
@@ -1196,41 +1201,41 @@ public class Main extends Application {
             createBoard(gameMode);
             // Assign player to the turn order
             assignPlayerToTurnOrder();
-            // TODO delete after
-            Property test = (Property) gameSystem.tiles.get(1);
-            Property test2 = (Property) gameSystem.tiles.get(3);
-            Property test3 = (Property) gameSystem.tiles.get(39);
-            Property test4 = (Property) gameSystem.tiles.get(14);
-            Property test5 = (Property) gameSystem.tiles.get(19);
-            Property test11 = (Property) gameSystem.tiles.get(9);
-            Property test12 = (Property) gameSystem.tiles.get(8);
-            Station test6 = (Station) gameSystem.tiles.get(5);
-            Station test7 = (Station) gameSystem.tiles.get(15);
-            Utility test8 = (Utility) gameSystem.tiles.get(12);
-            Utility test9 = (Utility) gameSystem.tiles.get(28);
-
-            test.setCompletedSet(true);
-            test2.setHotelNo(0);
-            test2.setCompletedSet(true);
-            test2.setDeveloped(true);
-            test3.setHotelNo(1);
-            test3.setDeveloped(true);
-            test3.setCompletedSet(true);
-            test11.setMortgaged(true);
-            test12.setMortgaged(true);
-            gameSystem.turnOrder.getFirst().addAsset(test);
-            gameSystem.turnOrder.getFirst().addAsset(test11);
-            gameSystem.turnOrder.getFirst().addAsset(test4);
-            gameSystem.turnOrder.getFirst().addAsset(test2);
-            gameSystem.turnOrder.getFirst().addAsset(test6);
-            gameSystem.turnOrder.getFirst().addAsset(test8);
-            gameSystem.turnOrder.getFirst().addAsset(test3);
-
-            gameSystem.turnOrder.get(1).addAsset(test5);
-            gameSystem.turnOrder.get(1).addAsset(test8);
-            gameSystem.turnOrder.get(1).addAsset(test7);
-            gameSystem.turnOrder.get(1).addAsset(test9);
-            gameSystem.turnOrder.get(1).addAsset(test12);
+//            // TODO delete after
+//            Property test = (Property) gameSystem.tiles.get(1);
+//            Property test2 = (Property) gameSystem.tiles.get(3);
+//            Property test3 = (Property) gameSystem.tiles.get(39);
+//            Property test4 = (Property) gameSystem.tiles.get(14);
+//            Property test5 = (Property) gameSystem.tiles.get(19);
+//            Property test11 = (Property) gameSystem.tiles.get(9);
+//            Property test12 = (Property) gameSystem.tiles.get(8);
+//            Station test6 = (Station) gameSystem.tiles.get(5);
+//            Station test7 = (Station) gameSystem.tiles.get(15);
+//            Utility test8 = (Utility) gameSystem.tiles.get(12);
+//            Utility test9 = (Utility) gameSystem.tiles.get(28);
+//
+//            test.setCompletedSet(true);
+//            test2.setHotelNo(0);
+//            test2.setCompletedSet(true);
+//            test2.setDeveloped(true);
+//            test3.setHotelNo(1);
+//            test3.setDeveloped(true);
+//            test3.setCompletedSet(true);
+//            test11.setMortgaged(true);
+//            test12.setMortgaged(true);
+//            gameSystem.turnOrder.getFirst().addAsset(test);
+//            gameSystem.turnOrder.getFirst().addAsset(test11);
+//            gameSystem.turnOrder.getFirst().addAsset(test4);
+//            gameSystem.turnOrder.getFirst().addAsset(test2);
+//            gameSystem.turnOrder.getFirst().addAsset(test6);
+//            gameSystem.turnOrder.getFirst().addAsset(test8);
+//            gameSystem.turnOrder.getFirst().addAsset(test3);
+//
+//            gameSystem.turnOrder.get(1).addAsset(test5);
+//            gameSystem.turnOrder.get(1).addAsset(test8);
+//            gameSystem.turnOrder.get(1).addAsset(test7);
+//            gameSystem.turnOrder.get(1).addAsset(test9);
+//            gameSystem.turnOrder.get(1).addAsset(test12);
             displayGameScene();
             window.setScene(gameScene);
             gameLoop();
@@ -1604,7 +1609,6 @@ public class Main extends Application {
         // Creating the popup effect
         tradeSetupPopUpStage.setScene(tradingSetupScene);
         tradeSetupPopUpStage.initModality(Modality.APPLICATION_MODAL);
-        // TODO change
         tradeSetupPopUpStage.showAndWait();
         tradeSetupPopUpStage.close();
     }
@@ -1739,9 +1743,12 @@ public class Main extends Application {
         auctionSetupPane.getChildren().addAll(title, propImg, propName, highestBid, bidTitle, bidTxt, optionPane);
         auctionScene = new Scene(auctionSetupPane,400,400);
         // Creating the popup effect
-        auctionPopUpStage.setScene(auctionScene);
-        auctionPopUpStage.initModality(Modality.APPLICATION_MODAL);
-        auctionPopUpStage.showAndWait();
+        if(!(bidder.isAiAgent())){
+            auctionPopUpStage.setScene(auctionScene);
+            auctionPopUpStage.initModality(Modality.APPLICATION_MODAL);
+            auctionPopUpStage.showAndWait();
+            auctionPopUpStage.close();
+        }
         auctionPopUpStage.close();
     }
 
@@ -1780,12 +1787,14 @@ public class Main extends Application {
 
         // If highest bid is > the second highest bid then deduct that amount from bidder and set owner to bidder
         if(bidderLeft.intValue() == 0 && highestBidder.getValue() > secondHighestBidder.getValue()){
-            Alert auctionWinnerMessage = new Alert(Alert.AlertType.INFORMATION);
-            auctionWinnerMessage.setTitle("Property Tycoon Auction");
-            auctionWinnerMessage.setHeaderText("Congratulation " + highestPlayerBidder.getName());
-            auctionWinnerMessage.setContentText("You have won the auction and acquired "+ asset.getTitle() + " for £" + highestBidder.getValue());
-            auctionWinnerMessage.showAndWait();
-            auctionWinnerMessage.close();
+            if(!(highestPlayerBidder.isAiAgent())){
+                Alert auctionWinnerMessage = new Alert(Alert.AlertType.INFORMATION);
+                auctionWinnerMessage.setTitle("Property Tycoon Auction");
+                auctionWinnerMessage.setHeaderText("Congratulation " + highestPlayerBidder.getName());
+                auctionWinnerMessage.setContentText("You have won the auction and acquired "+ asset.getTitle() + " for £" + highestBidder.getValue());
+                auctionWinnerMessage.showAndWait();
+                auctionWinnerMessage.close();
+            }
             highestPlayerBidder.deductAmount(highestBidder.getValue());
             highestPlayerBidder.addAsset(asset);
         }else if(bidderLeft.intValue() == 0 && highestBidder.getValue() == secondHighestBidder.getValue()){
@@ -1801,8 +1810,8 @@ public class Main extends Application {
      */
     public void assetSellingManagementSetupScene(Player currentPlayer, int fundNeededToRise){
         Stage assetSellingManagePopUp = new Stage();
-
         VBox assetManagementSetupPane = new VBox(10);
+        assetManagementSetupPane.setPadding(new Insets(0, 20, 10, 20));
         assetManagementSetupPane.setAlignment(Pos.CENTER);
         HBox optionPane = new HBox(5);
         optionPane.setAlignment(Pos.CENTER);
@@ -1813,6 +1822,8 @@ public class Main extends Application {
         Button sellBuilding = new Button("Sell Houses and Hotels");
         Button mortgageProp = new Button("Mortgage Properties");
         Button sellAsset = new Button("Sell Properties");
+        Button autoSell = new Button("Auto-Sell");
+
         fundRequired = new AtomicInteger(fundNeededToRise);
 
         // CSS
@@ -1843,11 +1854,19 @@ public class Main extends Application {
                 assetSellingManagePopUp.close();
             }
         });
+        autoSell.setOnAction(e -> {
+            currentPlayer.agentSellAssets(fundNeededToRise);
+            Alert moneyRaised = new Alert(Alert.AlertType.INFORMATION);
+            moneyRaised.setTitle("Property Tycoon fund raising");
+            moneyRaised.setHeaderText(currentPlayer.getName() + " you have raised enough fund");
+            moneyRaised.showAndWait();
+            moneyRaised.close();
+            assetSellingManagePopUp.close();
+        });
 
-        optionPane.getChildren().addAll(sellBuilding, mortgageProp, sellAsset);
+        optionPane.getChildren().addAll(sellBuilding, mortgageProp, sellAsset, autoSell);
         assetManagementSetupPane.getChildren().addAll(title, fundNeed, optionPane);
-        assetSellingManagementScene = new Scene(assetManagementSetupPane, 400,400);
-
+        assetSellingManagementScene = new Scene(assetManagementSetupPane, 500,500);
         // Pop Up
         assetSellingManagePopUp.setScene(assetSellingManagementScene);
         assetSellingManagePopUp.initModality(Modality.APPLICATION_MODAL);
@@ -2160,7 +2179,6 @@ public class Main extends Application {
 
         Button improveBuilding = new Button("Add buildings");
         Button unMortgage = new Button("Un-Mortgage Properties");
-        // TODO might need to be chagned
         Button trade = new Button("Trade");
         Button leaveGame = new Button("Leave Game");
         Button endTurn = new Button("End Turn");
@@ -2181,10 +2199,18 @@ public class Main extends Application {
             tradingSetupScene(currentPlayer);
         });
         leaveGame.setOnAction(e -> {
-            currentPlayer.leaveGame();
+            if(!currentPlayer.leaveGame()){
+                Alert error = new Alert(Alert.AlertType.ERROR);
+                error.setTitle("Property Tycoon Leaving Decision");
+                error.setHeaderText("Voting un-successful");
+                error.showAndWait();
+                error.close();
+            }else{
+                summaryTurn(currentPlayer);
+            }
         });
         endTurn.setOnAction(e -> {
-
+            summaryTurn(currentPlayer);
         });
 
         optionPane.getChildren().addAll(improveBuilding, unMortgage, trade, leaveGame, endTurn);
@@ -2447,15 +2473,75 @@ public class Main extends Application {
      * @param winner Last remaining player in order
      */
     public void winnerSetupScene(Player winner){
-        Alert winningMessage = new Alert(Alert.AlertType.INFORMATION);
-        winningMessage.setTitle("Property Tycoon Winner!");
-        winningMessage.setHeaderText(winner.getName() + " has won the game with a net worth of " + winner.netWorth());
-        gameSystem.storeData(winner, winner.netWorth());
-        for( String key: gameSystem.dataStore.keySet() ){
-            System.out.println(gameSystem.dataStore.get(key).size() + " " + key + " " + gameSystem.dataStore.get(key).toString());
-            winningMessage.setContentText(gameSystem.dataStore.get(key).size() + " " + key + " " + gameSystem.dataStore.get(key).toString());
-        }
-        winningMessage.showAndWait();
+        Stage winnerMessagePopUp = new Stage();
+        VBox winnerMessagePane = new VBox(10);
+        winnerMessagePane.setPadding(new Insets(0, 20, 10, 20));
+        winnerMessagePane.setAlignment(Pos.CENTER);
+        HBox optionPane = new HBox(5);
+        optionPane.setAlignment(Pos.CENTER);
+
+        Label title = new Label("Property Tycoon Winner!");
+        Label winMessage = new Label(winner.getName()+ " has won the game with a net worth of " + winner.netWorth());
+
+        Button stats = new Button("Show Stats");
+        Button endGame = new Button("End Game");
+
+        // CSS
+        title.setStyle(
+                "-fx-label-padding: 20 0 10 0;" + "-fx-font-size: 14;" + "-fx-font-weight: bold;"
+        );
+        winMessage.setStyle("-fx-font-size: 14;");
+
+        // Button Functionality
+        stats.setOnAction(e -> {
+            endGameSummary();
+        });
+
+        optionPane.getChildren().addAll(stats, endGame);
+        winnerMessagePane.getChildren().addAll(title, winMessage, optionPane);
+        winnerSetup = new Scene(winnerMessagePane);
+        // Creating the popup effect
+        winnerMessagePopUp.setScene(winnerSetup);
+        winnerMessagePopUp.initModality(Modality.APPLICATION_MODAL);
+        winnerMessagePopUp.showAndWait();
+        winnerMessagePopUp.close();
+    }
+
+    /***
+     * Function to display all of the actions that they have taken
+     * @param currentPlayer The current player
+     */
+    public void summaryTurn(Player currentPlayer) {
+        Stage summaryPopUp = new Stage();
+        VBox summaryTurnPane = new VBox(10);
+        summaryTurnPane.setAlignment(Pos.CENTER);
+        summaryTurnPane.setPadding(new Insets(0, 20, 10, 20));
+
+        Label title = new Label(currentPlayer.getName() + " turn summary");
+
+        Text summaryTxt = new Text();
+        summaryTxt.setText(currentPlayer.getActionLog());
+        summaryTxt.setDisable(true);
+
+        Button nextTurn = new Button("Next Turn");
+
+        // CSS
+        title.setStyle(
+                "-fx-label-padding: 20 0 10 0;" + "-fx-font-size: 14;" + "-fx-font-weight: bold;"
+        );
+
+        // Button Functionality
+        nextTurn.setOnAction(e -> {
+            summaryPopUp.close();
+        });
+
+        summaryTurnPane.getChildren().addAll(title, summaryTxt, nextTurn);
+        summaryScene = new Scene(summaryTurnPane);
+        // Creating the popup effect
+        summaryPopUp.setScene(summaryScene);
+        summaryPopUp.initModality(Modality.APPLICATION_MODAL);
+        summaryPopUp.showAndWait();
+        summaryPopUp.close();
     }
 
     /***
@@ -2527,6 +2613,103 @@ public class Main extends Application {
         return(decision);
     }
 
+    /**
+     * Get confirmation from current player on whether if the player who wishes to leave can or not?
+     * @param currentPlayer The current player being asked.
+     * @param leavingPlayer The player who is wishing to leave the game.
+     * @return The decision from current player on if leaving player can leave.
+     */
+    public boolean getLeavePermission(Player currentPlayer, Player leavingPlayer) {
+        boolean decision = true;
+        Alert alert = new Alert(Alert.AlertType.NONE);
+        alert.setTitle("Property Tycoon");
+        alert.setHeaderText(currentPlayer.getName() + ", "+ " do you agree?");
+        alert.setContentText("Are you ok with " + leavingPlayer.getName()+ " leaving the game early?" );
+        ButtonType yes = new ButtonType("Yes");
+        ButtonType no = new ButtonType("No");
+
+        alert.getButtonTypes().addAll(yes, no);
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == yes){
+            decision = true;
+            // todo CALL END turn;
+        } else if(result.get() == no){
+            decision = false;
+        }
+        return(decision);
+    }
+
+    /**
+     * gets confirmation from the user whether they want to leave teh game or not
+     * @param currentPlayer the player asking to leave the game.
+     * @return the decision to leave game or not
+     */
+    public boolean leaveConfirmationAlert(Player currentPlayer) {
+        boolean decision;
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Property Tycoon");
+        alert.setHeaderText(currentPlayer.getName() + " leave confirmation");
+        alert.setContentText("Are you sure you want to leave the game? Note that you can only leave with the " +
+                "permission with all of the rest of the players." );
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == ButtonType.OK){
+            decision = true;
+        } else {
+            decision = false;
+        }
+        return(decision);
+    }
+
+    /***
+     * Creates end game summary screen
+     */
+    private void endGameSummary() {
+        Stage graphStage = new Stage();
+        graphStage.setTitle("Game Summary");
+
+        //defining the axes
+        final NumberAxis xAxis = new NumberAxis();
+        xAxis.setLabel("Turns");
+        final NumberAxis yAxis = new NumberAxis();
+        yAxis.setLabel("Net-Worth");
+
+        //define setup
+        VBox root = new VBox();
+        Scene scene = new Scene(root, 800, 600);
+        //align
+        root.setAlignment(Pos.CENTER);
+        //create line chart
+        final LineChart<Number, Number> lineChart = new LineChart<Number, Number>(xAxis, yAxis);
+        //graph styling
+        xAxis.setTickUnit(1);
+        lineChart.setTitle("Net-Worth Over Turns");
+        lineChart.setCreateSymbols(false);
+
+        //defining a series
+        for (String key : gameSystem.dataStore.keySet()) {
+            //for each player
+            XYChart.Series series = new XYChart.Series();
+            series.setName(key);
+            for (int ii = 0; ii < gameSystem.dataStore.get(key).size(); ii++) {
+                //for each turn:net worth pair
+                series.getData().add(new XYChart.Data<>(gameSystem.dataStore.get(key).get(ii).getKey(),
+                        gameSystem.dataStore.get(key).get(ii).getValue()));
+            }
+            lineChart.getData().add(series);
+        }
+        root.getChildren().add(lineChart);
+
+        //other stats
+        Text text = new Text("Turns taken: " + gameSystem.turns);
+        root.getChildren().add(text);
+        Text timing = new Text("Length of game: " + gameSystem.timeElapsed + "ms");
+        root.getChildren().add(timing);
+
+        graphStage.setScene(scene);
+        graphStage.sizeToScene();
+        graphStage.show();
+    }
+
     /***
      * How the game is run
      */
@@ -2578,13 +2761,16 @@ public class Main extends Application {
                             }
                         }
                         currentPlayer.developProperties();
+
                         if (!gameSystem.repeat) {
                             gameSystem.storeData(currentPlayer, currentPlayer.netWorth());
                         }
                     }
                     // roll again
                 } while (gameSystem.repeat);
-                // TODO end turn screen (actionlog)
+                if(currentPlayer.isAiAgent()){
+                    summaryTurn(currentPlayer);
+                }
             }
             if (gameSystem.timeUp) {
 
